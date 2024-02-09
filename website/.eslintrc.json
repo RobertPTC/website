@@ -1,3 +1,47 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "@typescript-eslint/no-unused-vars": ["error"],
+    "import/order": [
+      "error",
+      {
+        "groups": ["builtin", "external", "internal", "sibling"],
+        "alphabetize": { "order": "asc", "caseInsensitive": false },
+        "pathGroups": [
+          { "pattern": "react**", "group": "builtin" },
+          { "pattern": "routes", "group": "external" },
+          { "pattern": "global-context", "group": "internal" },
+          { "pattern": "notification-context", "group": "internal"},
+          {
+            "pattern": "components/**",
+            "group": "internal"
+          },
+          { "pattern": "features/**", "group": "internal" },
+          { "pattern": "assets/**", "group": "internal" },
+          { "pattern": "utils/*", "group": "internal" },
+          { "pattern": "graphql/**", "group": "internal" },
+          { "pattern": "themes", "group": "internal" },
+          { "pattern": "generated", "group": "internal" },
+          { "pattern": "gql", "group": "internal" },
+          { "pattern": "gqlclient", "group": "internal" },
+          { "pattern": "reportWebVitals", "group": "internal" },
+          { "pattern": "tests/**", "group": "internal" },
+          { "pattern": "mocks/**", "group": "internal" },
+          { "pattern": "types", "group": "internal" },
+          { "pattern": "global-styles", "group": "internal" },
+          { "pattern": "hooks/*", "group": "internal" }
+        ],
+        "pathGroupsExcludedImportTypes": ["react", "react-dom"],
+        "newlines-between": "always"
+      }
+    ],
+    // Disable sort key errors as this conflicts with styling quite terribly e.g.
+    // being forced to set 'borderColor' ahead of 'borderRight' which then negates
+    // the color. Key order doesn't matter much anyway and is a waste of time to fix
+    // each time even if it wasn't a styling conflict.
+    // "sort-keys": ["error"],
+    "sort-keys": 0,
+    "no-console": ["error"],
+    "prefer-arrow-callback": ["error"]
+  },
 }
