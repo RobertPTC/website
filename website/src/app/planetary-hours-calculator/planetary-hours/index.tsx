@@ -1,14 +1,15 @@
 "use client";
 import { Box } from "@mui/material";
-import { getSunrise, getSunset } from "sunrise-sunset-js";
 
-import { calculatePlanetaryHourLength } from "app/planetary-hours-calculator/utils";
+import usePosition from "app/planetary-hours-calculator/planetary-hours/use-position";
 
 export default function PlanetaryHours() {
-  const now = new Date();
-  const sunrise = getSunrise(40.654367384881525, -73.94701971291698);
-  const sunset = getSunset(40.654367384881525, -73.94701971291698);
+  const [pos] = usePosition();
   return (
-    <Box>Day hour length: {calculatePlanetaryHourLength(sunset, sunrise)}</Box>
+    <Box>
+      <Box>Planetary Hours</Box>
+      <Box>Latitude: {pos?.latitude}</Box>
+      <Box>Longitude: {pos?.longitude}</Box>
+    </Box>
   );
 }

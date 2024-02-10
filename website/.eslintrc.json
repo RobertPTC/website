@@ -14,13 +14,7 @@
         "newlines-between": "always"
       }
     ],
-    // Disable sort key errors as this conflicts with styling quite terribly e.g.
-    // being forced to set 'borderColor' ahead of 'borderRight' which then negates
-    // the color. Key order doesn't matter much anyway and is a waste of time to fix
-    // each time even if it wasn't a styling conflict.
-    // "sort-keys": ["error"],
-    "sort-keys": 0,
-    "no-console": ["error"],
+    "sort-keys": ["error"],
     "prefer-arrow-callback": ["error"]
   }
 }
