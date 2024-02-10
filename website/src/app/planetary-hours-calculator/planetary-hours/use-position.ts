@@ -1,3 +1,4 @@
+"use client";
 import { Dispatch, SetStateAction, useState } from "react";
 
 import { Position } from "app/planetary-hours-calculator/types";
