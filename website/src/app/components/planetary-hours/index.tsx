@@ -1,7 +1,8 @@
 "use client";
+
 import { Box } from "@mui/material";
 
-import usePosition from "app/planetary-hours-calculator/planetary-hours/use-position";
+import usePosition from "app/components/planetary-hours/use-position";
 
 export default function PlanetaryHours() {
   const [pos] = usePosition();
