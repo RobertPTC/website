@@ -4,8 +4,8 @@ export const Sun = () => (
   <SvgIcon>
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="12pt"
-      height="12pt"
+      width="24px"
+      height="24px"
       viewBox="0 0 12 12"
       version="1.1"
     >
@@ -29,8 +29,8 @@ export const Venus = () => (
   <SvgIcon>
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="12pt"
-      height="12pt"
+      width="24px"
+      height="24px"
       viewBox="0 0 12 12"
       version="1.1"
     >
@@ -83,8 +83,8 @@ export const Mercury = () => (
   <SvgIcon>
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="12pt"
-      height="12pt"
+      width="24px"
+      height="24px"
       viewBox="0 0 12 12"
       version="1.1"
       id="svg11"
@@ -117,7 +117,6 @@ export const Mercury = () => (
           }}
           d="M 8.000001,1.0000001 C 6.894532,1.0000003 6,1.8945302 6,3"
           id="path4"
-          inkscape:connector-curvature="0"
         />
         <path
           style={{
@@ -170,8 +169,8 @@ export const Moon = () => (
   <SvgIcon>
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="12pt"
-      height="12pt"
+      width="24px"
+      height="24px"
       viewBox="0 0 12 12"
       version="1.1"
     >
@@ -192,8 +191,8 @@ export const Saturn = () => (
   <SvgIcon>
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="12pt"
-      height="12pt"
+      width="24px"
+      height="24px"
       viewBox="0 0 12 12"
       version="1.1"
       style={{
@@ -215,8 +214,8 @@ export const Jupiter = () => (
   <SvgIcon>
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="12pt"
-      height="12pt"
+      width="24px"
+      height="24px"
       viewBox="0 0 12 12"
       version="1.1"
       style={{
@@ -224,6 +223,7 @@ export const Jupiter = () => (
         stroke: "black",
         strokeLinecap: "round",
         strokeLinejoin: "round",
+        strokeWidth: "0.6",
       }}
     >
       <path d="m 2.25,1 c 1.3398438,0.773437 2.1640625,2.203125 2.1640625,3.75 0,1.546875 -0.8242187,2.9765625 -2.1640625,3.75 h 7.5" />
@@ -235,8 +235,8 @@ export const Jupiter = () => (
 export const Mars = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="12pt"
-    height="12pt"
+    width="24px"
+    height="24px"
     viewBox="0 0 12 12"
     version="1.1"
     style={{
