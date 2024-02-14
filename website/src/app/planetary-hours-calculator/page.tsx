@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import { Metadata } from "next";
 
-import PlanetaryHours from "app/components/planetary-hours";
+import PlanetaryHours from "app/features/planetary-hours";
 
 export const metadata: Metadata = {
   description: "Created by Robert P. Cunningham",

@@ -3,8 +3,8 @@ import { useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import { getSunrise, getSunset } from "sunrise-sunset-js";
 
-import { Position } from "app/planetary-hours-calculator/types";
-import { calculatePlanetaryHourLength } from "app/planetary-hours-calculator/utils";
+import { Position } from "app/features/planetary-hours/types";
+import { calculatePlanetaryHourLength } from "app/features/planetary-hours/utils";
 
 type PlanetaryHour = {};
 

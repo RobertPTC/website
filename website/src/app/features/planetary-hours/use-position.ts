@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useState } from "react";
 
-import { Position } from "app/planetary-hours-calculator/types";
+import { Position } from "app/features/planetary-hours/types";
 
 export default function usePosition(): [
   Position | undefined,

@@ -5,8 +5,8 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
-import useDate from "app/components/planetary-hours/use-date";
-import usePosition from "app/components/planetary-hours/use-position";
+import useDate from "app/features/planetary-hours/use-date";
+import usePosition from "app/features/planetary-hours/use-position";
 
 import useGetPlanetaryHours from "./use-get-planetary-hours";
 
