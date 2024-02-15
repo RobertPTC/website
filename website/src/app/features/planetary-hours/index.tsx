@@ -1,6 +1,16 @@
 "use client";
 
-import { Box, Card, CardContent, Grid, Typography } from "@mui/material";
+import { useEffect } from "react";
+
+import {
+  Autocomplete,
+  Box,
+  Card,
+  CardContent,
+  Grid,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -15,20 +25,51 @@ export default function PlanetaryHours() {
   const [pos] = usePosition();
   const [date] = useDate();
   const planetaryHours = useGetPlanetaryHours(pos, date);
+  // useEffect(() => {
+  //   fetch(
+  //     "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/geonames-all-cities-with-a-population-1000/records?select=name&where=name%20like%20%22ruiz%22&limit=20&refine=cou_name_en%3A%22Argentina%22"
+  //   ).then((res) => {
+  //     res.json().then((j) => {
+  //       console.log("j ", j);
+  //     });
+  //   });
+  // }, []);
   return (
     <Box>
-      <Box>Planetary Hours</Box>
-      <Box>Latitude: {pos?.latitude}</Box>
-      <Box>Longitude: {pos?.longitude}</Box>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DatePicker label="Date" value={date} />
-      </LocalizationProvider>
+      <Box mb={2}>
+        <Typography variant="h1" sx={{ fontSize: "36px", textAlign: "center" }}>
+          Planetary Hours
+        </Typography>
+      </Box>
+      <Grid container spacing={2} mb={5}>
+        <Grid item xs={12}>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label="Date"
+              value={date}
+              slotProps={{ textField: { fullWidth: true } }}
+            />
+          </LocalizationProvider>
+        </Grid>
+        <Grid item xs={12}>
+          <Autocomplete
+            options={[]}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="City"
+                InputLabelProps={{ shrink: true }}
+              />
+            )}
+          />
+        </Grid>
+      </Grid>
       {planetaryHours && (
         <Grid container spacing={2}>
           {planetaryHours.hours.map((h) => {
             return (
-              <Grid key={h.hourStart.toISOString()} item xs={2}>
-                <Card variant="outlined" sx={{ maxWidth: "250px" }}>
+              <Grid key={h.hourStart.toISOString()} item xs={12}>
+                <Card variant="outlined" sx={{ backgroundColor: h.color }}>
                   <CardContent
                     sx={{
                       alignItems: "center",

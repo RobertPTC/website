@@ -1,7 +1,7 @@
 "use client";
 import type {} from "@mui/x-date-pickers/themeAugmentation";
 
-import { outlinedInputClasses } from "@mui/material";
+import { inputLabelClasses, outlinedInputClasses } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { Roboto } from "next/font/google";
 
@@ -33,6 +33,16 @@ const theme = createTheme({
         },
       },
     },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          color: "white",
+          [`&.Mui-focused.${inputLabelClasses.root}`]: {
+            color: "white",
+          },
+        },
+      },
+    },
     MuiOutlinedInput: {
       styleOverrides: {
         notchedOutline: {
@@ -49,7 +59,15 @@ const theme = createTheme({
         },
       },
     },
+    MuiTextField: {
+      defaultProps: {
+        InputLabelProps: {
+          shrink: true,
+        },
+      },
+    },
   },
+
   typography: {
     fontFamily: roboto.style.fontFamily,
   },
