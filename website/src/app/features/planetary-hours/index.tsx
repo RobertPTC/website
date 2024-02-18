@@ -24,6 +24,7 @@ import useGetPlanetaryHours from "./use-get-planetary-hours";
 export default function PlanetaryHours() {
   const [pos] = usePosition();
   const [date] = useDate();
+  console.log("pos ", pos);
   const planetaryHours = useGetPlanetaryHours(pos, date);
   // useEffect(() => {
   //   fetch(
@@ -66,29 +67,27 @@ export default function PlanetaryHours() {
       </Grid>
       {planetaryHours && (
         <Grid container spacing={2}>
-          {planetaryHours.hours.map((h) => {
-            return (
-              <Grid key={h.hourStart.toISOString()} item xs={12}>
-                <Card variant="outlined" sx={{ backgroundColor: h.color }}>
-                  <CardContent
-                    sx={{
-                      alignItems: "center",
-                      display: "flex",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <Box sx={{ mb: 1 }}>{h.Icon()}</Box>
-                    <Box>
-                      <Typography>
-                        {h.hourStart.format(hourFormat)} –{" "}
-                        {h.hourEnd.format(hourFormat)}
-                      </Typography>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-            );
-          })}
+          {planetaryHours.hours.map((h) => (
+            <Grid key={h.hourStart.toISOString()} item xs={12}>
+              <Card variant="outlined" sx={{ backgroundColor: h.color }}>
+                <CardContent
+                  sx={{
+                    alignItems: "center",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <Box sx={{ mb: 1 }}>{h.Icon()}</Box>
+                  <Box>
+                    <Typography>
+                      {h.hourStart.format(hourFormat)} –{" "}
+                      {h.hourEnd.format(hourFormat)}
+                    </Typography>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
         </Grid>
       )}
     </Box>
