@@ -12,3 +12,7 @@ export type HourMetadata = {
   Icon: () => JSX.Element;
   action: string;
 };
+
+export type City = {
+  name: string;
+};

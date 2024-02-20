@@ -19,6 +19,7 @@ import useDate from "app/features/planetary-hours/use-date";
 import usePosition from "app/features/planetary-hours/use-position";
 
 import { hourFormat } from "./constants";
+import useGetClosestCity from "./use-get-closest-city";
 import useGetPlanetaryHours from "./use-get-planetary-hours";
 
 export default function PlanetaryHours() {
@@ -26,15 +27,7 @@ export default function PlanetaryHours() {
   const [date] = useDate();
   console.log("pos ", pos);
   const planetaryHours = useGetPlanetaryHours(pos, date);
-  // useEffect(() => {
-  //   fetch(
-  //     "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/geonames-all-cities-with-a-population-1000/records?select=name&where=name%20like%20%22ruiz%22&limit=20&refine=cou_name_en%3A%22Argentina%22"
-  //   ).then((res) => {
-  //     res.json().then((j) => {
-  //       console.log("j ", j);
-  //     });
-  //   });
-  // }, []);
+  const closestCity = useGetClosestCity(pos?.latitude, pos?.longitude);
   return (
     <Box>
       <Box mb={2}>
