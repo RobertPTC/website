@@ -38,16 +38,6 @@ export default function Trie() {
     return n;
   }
 
-  function _buildWord(n: Node): string {
-    let currentNode: Node | null = n;
-    const letters = [];
-    while (currentNode) {
-      letters.unshift(n.letter);
-      currentNode = n.parentNode;
-    }
-    return letters.join("");
-  }
-
   function addWord(word: string) {
     let c: Node = rootNode;
     const letters = word.split("");
@@ -91,12 +81,13 @@ export default function Trie() {
     findWords: (s: string) => {
       searchResults = [];
       let children = rootNode.children;
-      s.split("").forEach((l, i) => {
+      const normalized = s.toLowerCase();
+      normalized.split("").forEach((l, i) => {
         if (children[l] && i !== s.length - 1) {
           children = children[l].children;
         }
       });
-      findWords(s[s.length - 1], children);
+      findWords(normalized[normalized.length - 1], children);
       return searchResults;
     },
   };
