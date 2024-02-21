@@ -1,3 +1,5 @@
+import { Dayjs } from "dayjs";
+
 export type Position = {
   latitude: number;
   longitude: number;
@@ -14,5 +16,11 @@ export type HourMetadata = {
 };
 
 export type City = {
-  name: string;
+  city: string;
 };
+
+export interface PlanetaryHour extends HourMetadata {
+  hourStart: Dayjs;
+  hourEnd: Dayjs;
+  isCurrent: boolean;
+}

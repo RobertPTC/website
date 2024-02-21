@@ -1,7 +1,7 @@
 interface Node {
   children: { [key: string]: Node };
   parentNode: null | Node;
-  capitalizedLetters: string[];
+  capitalizedLetters?: number[];
   letter: string;
   wordEnd: boolean;
 }
@@ -25,7 +25,7 @@ export default function Trie() {
     parentNode: Node,
     letter: string,
     wordEnd: boolean,
-    capitalizedLetters: string[]
+    capitalizedLetters?: number[]
   ) {
     const n: Node = {
       capitalizedLetters,
@@ -41,18 +41,18 @@ export default function Trie() {
   function addWord(word: string) {
     let c: Node = rootNode;
     const letters = word.split("");
-    const capitalizedLetters: string[] = [];
+    const capitalizedLetters: number[] = [];
     letters.forEach((l, i) => {
       const lowerCaseLetter = l.toLowerCase();
       const child = c.children[lowerCaseLetter];
       if (_isCapitalLetter(l)) {
-        capitalizedLetters.push(l);
+        capitalizedLetters.push(i);
       }
       if (typeof child === "undefined") {
         if (i === letters.length - 1) {
           return _createNewNode(c, lowerCaseLetter, true, capitalizedLetters);
         }
-        c = _createNewNode(c, lowerCaseLetter, false, capitalizedLetters);
+        c = _createNewNode(c, lowerCaseLetter, false);
       } else {
         c = child;
       }
@@ -69,7 +69,13 @@ export default function Trie() {
         letters.unshift(p.letter);
         p = p.parentNode;
       }
-      searchResults.push(letters.join(""));
+      const capitalizedResult = letters.map((l, i) => {
+        if (n.capitalizedLetters && n.capitalizedLetters.includes(i)) {
+          return l.toUpperCase();
+        }
+        return l;
+      });
+      searchResults.push(capitalizedResult.join(""));
     }
     for (let child in n.children) {
       findWords(child, n.children);

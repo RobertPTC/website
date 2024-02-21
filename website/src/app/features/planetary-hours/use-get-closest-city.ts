@@ -9,7 +9,6 @@ export default function useGetClosestCity(lat?: number, lng?: number) {
       fetch(`/api/locate-closest-city?lat=${lat}&lng=${lng}`).then(
         async (res) => {
           const json = await res.json();
-          console.log("json ", json);
           setCity(json);
           return json;
         }
