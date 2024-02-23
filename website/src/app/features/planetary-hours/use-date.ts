@@ -1,7 +1,12 @@
 import { Dispatch, SetStateAction, useState } from "react";
 
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 
-export default function useDate(): [Dayjs, Dispatch<SetStateAction<Dayjs>>] {
-  return useState(dayjs());
+import { DateInput } from "./types";
+
+export default function useDate(): [
+  DateInput,
+  Dispatch<SetStateAction<DateInput>>
+] {
+  return useState<DateInput>({ date: dayjs(), isCurrent: true });
 }

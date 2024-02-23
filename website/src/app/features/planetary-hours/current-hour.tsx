@@ -9,7 +9,7 @@ export default function CurrentHour({ hours }: { hours?: PlanetaryHour[] }) {
     <Box sx={{ textAlign: "center" }}>
       <Typography variant="h2">{currentHour?.ruler}</Typography>
       <Typography variant="h2" sx={{ fontSize: "16px" }}>
-        is the ruler of this planetary hour
+        rules this planetary hour
       </Typography>
     </Box>
   );

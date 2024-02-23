@@ -2,16 +2,12 @@ import Trie from "./index";
 describe("trie", () => {
   it("finds words", () => {
     const t = Trie();
-    t.addWord("apple");
-    t.addWord("ash");
-    t.addWord("Ashley");
-    t.addWord("bear");
-    t.addWord("abracadbra");
-    t.addWord("Rio de Janeiro");
-    // console.log("test ", t.findWords("a"));
-    console.log("test2", t.findWords("ash"));
-    // console.log("test3", t.findWords("beryllium"));
-    // console.log("test4", t.findWords("ashl"));
-    console.log("test 5", t.findWords("R"));
+    t.addWord("apple", { name: "apple" });
+    t.addWord("ash", { name: "ash" });
+    t.addWord("Ashley", { name: "Ashley" });
+    t.addWord("bear", { name: "bear" });
+    t.addWord("abracadbra", { name: "abracadabra" });
+    t.addWord("Rio de Janeiro", { name: "Rio de Janeiro" });
+    console.log("ash ", t.findWords("ash"));
   });
 });

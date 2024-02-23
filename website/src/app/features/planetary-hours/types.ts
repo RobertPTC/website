@@ -24,3 +24,8 @@ export interface PlanetaryHour extends HourMetadata {
   hourEnd: Dayjs;
   isCurrent: boolean;
 }
+
+export interface DateInput {
+  date: Dayjs;
+  isCurrent: boolean;
+}

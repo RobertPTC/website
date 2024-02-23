@@ -15,8 +15,8 @@ import useGetPlanetaryHours from "./use-get-planetary-hours";
 
 export default function PlanetaryHours() {
   const [pos] = usePosition();
-  const [date] = useDate();
-  const planetaryHours = useGetPlanetaryHours(pos, date);
+  const [dateInput, setDate] = useDate();
+  const planetaryHours = useGetPlanetaryHours(pos, dateInput);
 
   return (
     <Box>
@@ -26,15 +26,20 @@ export default function PlanetaryHours() {
         </Typography>
       </Box>
       <Box mb={2}>
-        <CurrentHour hours={planetaryHours?.hours} />
+        {dateInput.isCurrent && <CurrentHour hours={planetaryHours?.hours} />}
       </Box>
       <Grid container spacing={2} mb={5}>
         <Grid item xs={12}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
               label="Date"
-              value={date}
+              value={dateInput.date}
               slotProps={{ textField: { fullWidth: true } }}
+              onChange={(d) => {
+                if (d) {
+                  setDate({ date: d, isCurrent: false });
+                }
+              }}
             />
           </LocalizationProvider>
         </Grid>

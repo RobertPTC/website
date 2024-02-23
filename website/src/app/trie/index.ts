@@ -4,14 +4,16 @@ interface Node {
   capitalizedLetters?: number[];
   letter: string;
   wordEnd: boolean;
+  data: undefined | { [key: string]: any };
 }
 
 export default function Trie() {
-  let searchResults: string[] = [];
+  let searchResults: { value: string; data: { [key: string]: any } }[] = [];
 
   const rootNode: Node = {
     capitalizedLetters: [],
     children: {},
+    data: undefined,
     letter: "",
     parentNode: null,
     wordEnd: false,
@@ -25,11 +27,13 @@ export default function Trie() {
     parentNode: Node,
     letter: string,
     wordEnd: boolean,
+    data?: { [key: string]: any },
     capitalizedLetters?: number[]
   ) {
     const n: Node = {
       capitalizedLetters,
       children: {},
+      data,
       letter,
       parentNode,
       wordEnd,
@@ -38,7 +42,7 @@ export default function Trie() {
     return n;
   }
 
-  function addWord(word: string) {
+  function addWord(word: string, node: { [key: string]: any }) {
     let c: Node = rootNode;
     const letters = word.split("");
     const capitalizedLetters: number[] = [];
@@ -50,7 +54,13 @@ export default function Trie() {
       }
       if (typeof child === "undefined") {
         if (i === letters.length - 1) {
-          return _createNewNode(c, lowerCaseLetter, true, capitalizedLetters);
+          return _createNewNode(
+            c,
+            lowerCaseLetter,
+            true,
+            node,
+            capitalizedLetters
+          );
         }
         c = _createNewNode(c, lowerCaseLetter, false);
       } else {
@@ -63,7 +73,7 @@ export default function Trie() {
     const n = c[s];
     if (!n || !Object.keys(n.children)) return;
     if (n.wordEnd) {
-      const letters = [];
+      const letters: string[] = [];
       let p: Node = n;
       while (p.parentNode) {
         letters.unshift(p.letter);
@@ -75,7 +85,9 @@ export default function Trie() {
         }
         return l;
       });
-      searchResults.push(capitalizedResult.join(""));
+      if (n.data) {
+        searchResults.push({ data: n.data, value: capitalizedResult.join("") });
+      }
     }
     for (let child in n.children) {
       findWords(child, n.children);
