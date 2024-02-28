@@ -94,9 +94,10 @@ export default function useGetPlanetaryHours(
       hours: nightHours.concat(dayHours).filter((d) => d.hourEnd.isAfter(date)),
     };
   }
-  const sunrise = getSunrise(pos.latitude, pos.longitude, date.toDate());
-  if (date.isBefore(sunrise)) {
-    const yesterday = date.subtract(1, "day");
+  const now = dayjs();
+  const sunrise = getSunrise(pos.latitude, pos.longitude, now.toDate());
+  if (now.isBefore(sunrise)) {
+    const yesterday = now.subtract(1, "day");
     const yesterdaySunset = getSunset(
       pos.latitude,
       pos.longitude,
@@ -110,14 +111,14 @@ export default function useGetPlanetaryHours(
     const nightHours = hours.night.map((h, i) => {
       return buildHour(yesterdaySunset, nightHourLength, h, i);
     });
-    const sunset = getSunset(pos.latitude, pos.longitude, date.toDate());
+    const sunset = getSunset(pos.latitude, pos.longitude, now.toDate());
     const dayHourLength = calculatePlanetaryHourLength(sunset, sunrise);
-    const todayHours = planetaryHoursMap[date.day() as Days];
+    const todayHours = planetaryHoursMap[now.day() as Days];
     const dayHours = todayHours.day.map((h, i) => {
       return buildHour(sunrise, dayHourLength, h, i);
     });
     return {
-      hours: nightHours.concat(dayHours).filter((d) => d.hourEnd.isAfter(date)),
+      hours: nightHours.concat(dayHours).filter((d) => d.hourEnd.isAfter(now)),
     };
   }
   const dayHourLength = calculatePlanetaryHourLength(sunset, sunrise);

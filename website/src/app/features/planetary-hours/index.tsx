@@ -17,7 +17,7 @@ export default function PlanetaryHours() {
   const [pos] = usePosition();
   const [dateInput, setDate] = useDate();
   const planetaryHours = useGetPlanetaryHours(pos, dateInput);
-
+  console.log("dateInput ", dateInput);
   return (
     <Box>
       <Box mb={2}>
