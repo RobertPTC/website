@@ -20,7 +20,10 @@ export function GET(request: NextRequest) {
       );
       return distance < 1;
     });
-    return Response.json(closestCity, { status: 200 });
+    return Response.json(
+      { data: closestCity, value: closestCity?.city },
+      { status: 200 }
+    );
   }
   return new Response("", { status: 500 });
 }

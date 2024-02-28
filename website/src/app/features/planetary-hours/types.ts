@@ -39,3 +39,8 @@ export interface DateInput {
   date: Dayjs;
   isCurrent: boolean;
 }
+
+export type LocationAutocompleteOption = {
+  value: string;
+  data?: City;
+};

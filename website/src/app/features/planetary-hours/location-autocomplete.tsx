@@ -2,16 +2,16 @@ import { useEffect, useState } from "react";
 
 import { Autocomplete, TextField } from "@mui/material";
 
-import { Position } from "./types";
+import { LocationAutocompleteOption, Position } from "./types";
 import useGetClosestCity from "./use-get-closest-city";
 import { debounce } from "./utils";
 
 export default function LocationAutocomplete({ pos }: { pos: Position }) {
-  const [options, setOptions] = useState<string[]>([]);
+  const [options, setOptions] = useState<LocationAutocompleteOption[]>([]);
   const closestCity = useGetClosestCity(pos?.latitude, pos?.longitude);
   useEffect(() => {
     if (closestCity) {
-      setOptions([closestCity.city]);
+      setOptions([closestCity]);
     }
   }, [closestCity]);
 
@@ -19,14 +19,20 @@ export default function LocationAutocomplete({ pos }: { pos: Position }) {
     console.log("v ", v);
     fetch(`/api/search-cities?q=${v}`).then(async (r) => {
       const json = await r.json();
-      console.log("json ", json);
+      setOptions(json.cities);
+      return;
     });
   }, 1000);
   return (
     <Autocomplete
       freeSolo
+      sx={{ maxWidth: { md: "500px" } }}
       options={options}
-      value={closestCity?.city || ""}
+      getOptionLabel={(o) => {
+        if (typeof o === "string") return o;
+        return (o as LocationAutocompleteOption).value;
+      }}
+      value={closestCity ? closestCity.value : ""}
       renderInput={(params) => (
         <TextField
           {...params}

@@ -197,7 +197,7 @@ export const Saturn = () => (
       version="1.1"
       style={{
         fill: "none",
-        stroke: "black",
+        stroke: "white",
         strokeLinecap: "round",
         strokeLinejoin: "round",
         strokeWidth: "0.6",
