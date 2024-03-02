@@ -19,7 +19,7 @@ const theme = createTheme({
           openPickerIcon: {
             sx: {
               path: {
-                stroke: "white",
+                stroke: "var(--foreground-rgb)",
               },
             },
           },
@@ -29,16 +29,16 @@ const theme = createTheme({
     MuiFormLabel: {
       styleOverrides: {
         root: {
-          color: "white",
+          color: "var(--foreground-rgb)",
         },
       },
     },
     MuiInputLabel: {
       styleOverrides: {
         root: {
-          color: "white",
+          color: "var(--foreground-rgb)",
           [`&.Mui-focused.${inputLabelClasses.root}`]: {
-            color: "white",
+            color: "var(--foreground-rgb)",
           },
         },
       },
@@ -46,15 +46,15 @@ const theme = createTheme({
     MuiOutlinedInput: {
       styleOverrides: {
         notchedOutline: {
-          borderColor: "white",
+          borderColor: "var(--foreground-rgb)",
         },
         root: {
-          color: "white",
+          color: "var(--foreground-rgb)",
           [`&:hover .${outlinedInputClasses.notchedOutline}`]: {
-            borderColor: "white",
+            borderColor: "var(--foreground-rgb)",
           },
           [`&.Mui-focused .${outlinedInputClasses.notchedOutline}`]: {
-            borderColor: "white",
+            borderColor: "var(--foreground-rgb)",
           },
         },
       },

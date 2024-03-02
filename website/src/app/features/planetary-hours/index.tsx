@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Card, CardContent, Grid, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -8,17 +8,18 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import useDate from "app/features/planetary-hours/use-date";
 import usePosition from "app/features/planetary-hours/use-position";
 
-import { hourFormat } from "./constants";
 import CurrentHour from "./current-hour";
 import LocationAutocomplete from "./location-autocomplete";
 import PlanetaryHourCard from "./planetary-hour-card";
+import { Position } from "./types";
 import useGetPlanetaryHours from "./use-get-planetary-hours";
 
 export default function PlanetaryHours() {
-  const [pos] = usePosition();
+  const [pos, setPos] = usePosition();
   const [dateInput, setDate] = useDate();
   const planetaryHours = useGetPlanetaryHours(pos, dateInput);
-
+  const onOptionSelect = (pos: Position) => setPos(pos);
+  console.log("pos ", pos);
   return (
     <Box p={3}>
       <Box mb={2}>
@@ -50,7 +51,9 @@ export default function PlanetaryHours() {
           </LocalizationProvider>
         </Grid>
         <Grid item xs={12} md={6}>
-          {pos && <LocationAutocomplete pos={pos} />}
+          {pos && (
+            <LocationAutocomplete pos={pos} onOptionSelect={onOptionSelect} />
+          )}
         </Grid>
       </Grid>
       {planetaryHours && (
