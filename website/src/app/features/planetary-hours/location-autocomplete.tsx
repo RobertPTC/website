@@ -7,11 +7,13 @@ import useGetClosestCity from "./use-get-closest-city";
 import { debounce } from "./utils";
 
 export default function LocationAutocomplete({
+  searchParam,
   pos,
   onOptionSelect,
 }: {
-  pos: Position;
-  onOptionSelect: (pos: Position) => void;
+  pos?: Position;
+  searchParam: string | null;
+  onOptionSelect: (o: LocationAutocompleteOption | null) => void;
 }) {
   const [options, setOptions] = useState<LocationAutocompleteOption[]>([]);
   const [selectedOption, setSelectedOption] = useState("");
@@ -22,6 +24,24 @@ export default function LocationAutocomplete({
       setSelectedOption(closestCity.value);
     }
   }, [closestCity]);
+
+  useEffect(() => {
+    if (searchParam) {
+      fetch(`/api/search-cities?q=${searchParam}`).then(async (r) => {
+        const json = await r.json();
+        const c = (json.cities as LocationAutocompleteOption[]).find(
+          (c) => c.value === searchParam
+        );
+        if (c) {
+          setSelectedOption(c.value);
+          setOptions(json.cities);
+          onOptionSelect(c);
+        }
+        return;
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParam]);
 
   const onInputChange = debounce((v: string) => {
     fetch(`/api/search-cities?q=${v}`).then(async (r) => {
@@ -37,11 +57,11 @@ export default function LocationAutocomplete({
   ) => {
     if (typeof v === "object" && v !== null && v.data) {
       setSelectedOption(v.value);
-      onOptionSelect({
-        latitude: Number(v.data.lat),
-        longitude: Number(v.data.lng),
-        state: "success",
-      });
+      onOptionSelect(v);
+      return;
+    }
+    if (v === null) {
+      onOptionSelect(v);
     }
   };
   return (

@@ -11,15 +11,28 @@ import usePosition from "app/features/planetary-hours/use-position";
 import CurrentHour from "./current-hour";
 import LocationAutocomplete from "./location-autocomplete";
 import PlanetaryHourCard from "./planetary-hour-card";
-import { Position } from "./types";
+import { LocationAutocompleteOption, SearchParams } from "./types";
 import useGetPlanetaryHours from "./use-get-planetary-hours";
+import useSearchParams from "./use-search-params";
 
 export default function PlanetaryHours() {
-  const [pos, setPos] = usePosition();
+  const searchParams = useSearchParams();
+  const [pos, setPos] = usePosition(searchParams.location);
   const [dateInput, setDate] = useDate();
   const planetaryHours = useGetPlanetaryHours(pos, dateInput);
-  const onOptionSelect = (pos: Position) => setPos(pos);
-  console.log("pos ", pos);
+  const onOptionSelect = (o: LocationAutocompleteOption | null) => {
+    if (o && o.data) {
+      setPos({
+        latitude: Number(o.data.lat),
+        longitude: Number(o.data.lng),
+        state: "success",
+      });
+      searchParams.set(SearchParams.LOCATION, o.data.city);
+      return;
+    }
+    searchParams.delete(SearchParams.LOCATION);
+  };
+
   return (
     <Box p={3}>
       <Box mb={2}>
@@ -51,9 +64,11 @@ export default function PlanetaryHours() {
           </LocalizationProvider>
         </Grid>
         <Grid item xs={12} md={6}>
-          {pos && (
-            <LocationAutocomplete pos={pos} onOptionSelect={onOptionSelect} />
-          )}
+          <LocationAutocomplete
+            pos={pos}
+            onOptionSelect={onOptionSelect}
+            searchParam={searchParams.location}
+          />
         </Grid>
       </Grid>
       {planetaryHours && (

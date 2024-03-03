@@ -44,3 +44,8 @@ export type LocationAutocompleteOption = {
   value: string;
   data?: City;
 };
+
+export enum SearchParams {
+  DATE = "date",
+  LOCATION = "location",
+}

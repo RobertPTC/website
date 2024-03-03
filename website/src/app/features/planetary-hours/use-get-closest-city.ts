@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { City, LocationAutocompleteOption } from "./types";
+import { LocationAutocompleteOption } from "./types";
 
 export default function useGetClosestCity(lat?: number, lng?: number) {
   const [city, setCity] = useState<LocationAutocompleteOption | undefined>();
