@@ -35,9 +35,10 @@ function buildHour(
 
 export default function useGetPlanetaryHours(
   pos: Position | undefined,
-  { date, isCurrent }: DateInput
+  d: DateInput | undefined
 ): PlanetaryHours | undefined {
-  if (!pos) return;
+  if (!pos || !d) return;
+  const { isCurrent, date } = d;
   if (!isCurrent) {
     const sunrise = getSunrise(pos.latitude, pos.longitude, date.toDate());
     const sunset = getSunset(pos.latitude, pos.longitude, date.toDate());

@@ -4,6 +4,7 @@ import { Box, Grid, Typography } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 
 import useDate from "app/features/planetary-hours/use-date";
 import usePosition from "app/features/planetary-hours/use-position";
@@ -18,7 +19,7 @@ import useSearchParams from "./use-search-params";
 export default function PlanetaryHours() {
   const searchParams = useSearchParams();
   const [pos, setPos] = usePosition(searchParams.location);
-  const [dateInput, setDate] = useDate();
+  const [dateInput, setDate] = useDate(searchParams.date);
   const planetaryHours = useGetPlanetaryHours(pos, dateInput);
   const onOptionSelect = (o: LocationAutocompleteOption | null) => {
     if (o && o.data) {
@@ -32,6 +33,14 @@ export default function PlanetaryHours() {
     }
     searchParams.delete(SearchParams.LOCATION);
   };
+  const onDateChange = (d: dayjs.Dayjs | null) => {
+    if (d) {
+      setDate({ date: d, isCurrent: false });
+      searchParams.set(SearchParams.DATE, d.toString());
+      return;
+    }
+    searchParams.delete(SearchParams.DATE);
+  };
 
   return (
     <Box p={3}>
@@ -41,27 +50,27 @@ export default function PlanetaryHours() {
         </Typography>
       </Box>
       <Box mb={3}>
-        {dateInput.isCurrent && <CurrentHour hours={planetaryHours?.hours} />}
+        {dateInput && dateInput.isCurrent && (
+          <CurrentHour hours={planetaryHours?.hours} />
+        )}
       </Box>
       <Grid container spacing={2} mb={5}>
         <Grid item xs={12} md={6} display="flex" justifyContent="flex-end">
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label="Date"
-              value={dateInput.date}
-              slotProps={{
-                textField: {
-                  fullWidth: true,
-                  sx: { maxWidth: { md: "500px" } },
-                },
-              }}
-              onChange={(d) => {
-                if (d) {
-                  setDate({ date: d, isCurrent: false });
-                }
-              }}
-            />
-          </LocalizationProvider>
+          {dateInput?.date && (
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Date"
+                value={dateInput?.date}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    sx: { maxWidth: { md: "500px" } },
+                  },
+                }}
+                onChange={onDateChange}
+              />
+            </LocalizationProvider>
+          )}
         </Grid>
         <Grid item xs={12} md={6}>
           <LocationAutocomplete
