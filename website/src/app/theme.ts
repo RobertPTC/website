@@ -19,7 +19,7 @@ const theme = createTheme({
           openPickerIcon: {
             sx: {
               path: {
-                stroke: "var(--foreground-rgb)",
+                stroke: "rgb(var(--foreground-rgb))",
               },
             },
           },
@@ -29,16 +29,16 @@ const theme = createTheme({
     MuiFormLabel: {
       styleOverrides: {
         root: {
-          color: "var(--foreground-rgb)",
+          color: "rgb(var(--foreground-rgb))",
         },
       },
     },
     MuiInputLabel: {
       styleOverrides: {
         root: {
-          color: "var(--foreground-rgb)",
+          color: "rgb(var(--foreground-rgb))",
           [`&.Mui-focused.${inputLabelClasses.root}`]: {
-            color: "var(--foreground-rgb)",
+            color: "rgb(var(--foreground-rgb))",
           },
         },
       },
@@ -46,15 +46,15 @@ const theme = createTheme({
     MuiOutlinedInput: {
       styleOverrides: {
         notchedOutline: {
-          borderColor: "var(--foreground-rgb)",
+          borderColor: "rgb(var(--foreground-rgb))",
         },
         root: {
-          color: "var(--foreground-rgb)",
+          color: "rgb(var(--foreground-rgb))",
           [`&:hover .${outlinedInputClasses.notchedOutline}`]: {
-            borderColor: "var(--foreground-rgb)",
+            borderColor: "rgb(var(--foreground-rgb))",
           },
           [`&.Mui-focused .${outlinedInputClasses.notchedOutline}`]: {
-            borderColor: "var(--foreground-rgb)",
+            borderColor: "rgb(var(--foreground-rgb))",
           },
         },
       },

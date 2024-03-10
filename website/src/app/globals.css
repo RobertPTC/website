@@ -40,6 +40,8 @@
   --card-border-rgb: 131, 134, 135;
 
   --highlight: 255, 222, 100;
+
+  --elapsed-time-rgb: 255, 255, 255;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -72,6 +74,8 @@
     --callout-border-rgb: 108, 108, 108;
     --card-rgb: 100, 100, 100;
     --card-border-rgb: 200, 200, 200;
+
+    --elapsed-time-rgb: 255, 255, 255;
   }
 }
 

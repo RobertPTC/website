@@ -9,6 +9,7 @@ import dayjs from "dayjs";
 import useDate from "app/features/planetary-hours/use-date";
 import usePosition from "app/features/planetary-hours/use-position";
 
+import Countdown from "./countdown";
 import CurrentHour from "./current-hour";
 import LocationAutocomplete from "./location-autocomplete";
 import PlanetaryHourCard from "./planetary-hour-card";
@@ -49,11 +50,14 @@ export default function PlanetaryHours() {
           Planetary Hours Calculator
         </Typography>
       </Box>
-      <Box mb={3}>
-        {dateInput && dateInput.isCurrent && (
+      {dateInput && dateInput.isCurrent && (
+        <Box mb={3}>
           <CurrentHour hours={planetaryHours?.hours} />
-        )}
-      </Box>
+          <Box display="flex" justifyContent="center">
+            <Countdown />
+          </Box>
+        </Box>
+      )}
       <Grid container spacing={2} mb={5}>
         <Grid item xs={12} md={6} display="flex" justifyContent="flex-end">
           {dateInput?.date && (
