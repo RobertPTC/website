@@ -4,13 +4,13 @@ import { hourFormat } from "./constants";
 import { PlanetaryHour } from "./types";
 
 export default function PlanetaryHourCard({ h }: { h: PlanetaryHour }) {
-  const isSaturn = h.ruler === "Saturn";
+  const useWhite = h.ruler === "Saturn" || h.ruler === "Mars";
   return (
     <Card
       variant="outlined"
       sx={{
         backgroundColor: h.color,
-        color: isSaturn ? "white" : "black",
+        color: useWhite ? "white" : "black",
         height: "100%",
       }}
     >

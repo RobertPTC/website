@@ -42,7 +42,8 @@ export default function PlanetaryHours() {
     }
     searchParams.delete(SearchParams.DATE);
   };
-
+  if (!planetaryHours) return <></>;
+  const currentHour = planetaryHours.hours.find((h) => h.isCurrent);
   return (
     <Box p={3}>
       <Box mb={2}>
@@ -50,19 +51,16 @@ export default function PlanetaryHours() {
           Planetary Hours Calculator
         </Typography>
       </Box>
-      {dateInput &&
-        dateInput.isCurrent &&
-        planetaryHours &&
-        planetaryHours.hours && (
+      {dateInput && dateInput.isCurrent && currentHour && (
+        <Box mb={3}>
           <Box mb={3}>
-            <Box mb={3}>
-              <CurrentHour hours={planetaryHours.hours} />
-            </Box>
-            <Box display="flex" justifyContent="center">
-              <Countdown hours={planetaryHours.hours} />
-            </Box>
+            <CurrentHour hours={planetaryHours.hours} />
           </Box>
-        )}
+          <Box display="flex" justifyContent="center">
+            <Countdown hour={currentHour} />
+          </Box>
+        </Box>
+      )}
       <Grid container spacing={2} mb={5}>
         <Grid item xs={12} md={6} display="flex" justifyContent="flex-end">
           {dateInput?.date && (

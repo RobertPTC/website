@@ -1,23 +1,37 @@
+import { useEffect, useState } from "react";
+
 import { Box } from "@mui/material";
 
 import { PlanetaryHour } from "./types";
 
 const circularPath = "M 50, 50 m -45, 0 a 45,45 0 1,0 90,0 a 45,45 0 1,0 -90,0";
 
-export default function Countdown({ hours }: { hours: PlanetaryHour[] }) {
-  const currentHour = hours.find((h) => h.isCurrent);
-  if (!currentHour) return <></>;
+export default function Countdown({ hour }: { hour: PlanetaryHour }) {
+  const [minuteArc, setMinuteArc] = useState<number>();
+  const [startDash, setStartDash] = useState<number>();
+  const [animationDuration, setAnimationDuration] = useState<number>();
+  const [hourLength, setHourLength] = useState<number>();
+  useEffect(() => {
+    if (hour) {
+      const hourEnd = hour.hourEnd.valueOf();
+      const hourStart = hour.hourStart.valueOf();
+      const elapsed = +new Date() - hourStart.valueOf();
+      const hourLength = hourEnd - hourStart;
+      const ratio = elapsed / hourLength;
+      const startDash = 283 * ratio;
+      const animationDuration = hourLength - elapsed;
+      const minuteArc = 360 * ratio;
+      setMinuteArc(minuteArc);
+      setStartDash(startDash);
+      setAnimationDuration(animationDuration);
+      setHourLength(hourLength);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hour.ruler]);
 
-  const hourEnd = currentHour.hourEnd.valueOf();
-  const hourStart = currentHour.hourStart.valueOf();
-  const elapsed = +new Date() - hourStart.valueOf();
-  const hourLength = hourEnd - hourStart;
-  const ratio = elapsed / hourLength;
-  const startDash = 283 - 283 * ratio;
-  const animationDuration = hourLength - elapsed;
-  console.log("animationDuration ", animationDuration);
-  console.log("startDash ", startDash);
-  console.log("second ", hourLength / 1000 / 60);
+  if (!minuteArc || !startDash || !animationDuration || !hour || !hourLength)
+    return <></>;
+  console.log("arc ", minuteArc);
   return (
     <Box>
       <Box component="svg" sx={{ height: "100px", width: "100px" }}>
@@ -29,22 +43,23 @@ export default function Countdown({ hours }: { hours: PlanetaryHour[] }) {
             r="45"
             sx={{ stroke: "rgb(var(--elapsed-time-rgb))", strokeWidth: "7px" }}
           />
+
           <Box
             component="path"
             sx={{
-              "@keyframes elapsed-time": {
-                "0%": {
-                  strokeDasharray: `${startDash} 283`,
-                },
+              "@keyframes elapse": {
                 "100%": {
-                  strokeDasharray: "0 283",
+                  strokeDashoffset: "283",
                 },
               },
-              animation: `elapsed-time ${animationDuration}ms linear`,
-              stroke: currentHour.color,
-              strokeWidth: "6px",
+              animation: `elapse ${animationDuration}ms linear`,
             }}
+            strokeWidth="6px"
+            strokeDashoffset={startDash}
+            strokeDasharray="283"
+            stroke={hour.color}
             d={circularPath}
+            id="hour-arc"
           />
           <Box
             component="line"
@@ -64,26 +79,24 @@ export default function Countdown({ hours }: { hours: PlanetaryHour[] }) {
           />
           <Box
             component="line"
-            id="iconic-anim-clock-minute-hand"
-            stroke="red"
-            x1="50"
-            y1="0"
+            id="minute-hand"
+            stroke={hour.color}
+            x1="9"
+            y1="50"
             x2="50"
             y2="50"
+            strokeWidth="4px"
+            transform={`rotate(${minuteArc},50,50)`}
           />
           <Box
             component="animateTransform"
             type="rotate"
             fill="remove"
-            restart="always"
-            calcMode="discrete"
             accumulate="none"
             additive="sum"
-            xlinkHref="#iconic-anim-clock-minute-hand"
-            repeatCount="indefinite"
-            dur="3600s"
-            to="360 192 192"
-            from="0 192 192"
+            xlinkHref="#minute-hand"
+            dur={animationDuration / 1000}
+            to="360 50 50"
             attributeName="transform"
             attributeType="xml"
           />
@@ -91,9 +104,9 @@ export default function Countdown({ hours }: { hours: PlanetaryHour[] }) {
             component="line"
             id="second-hand-e"
             fill="none"
-            stroke={currentHour.color}
+            stroke={hour.color}
             strokeWidth="2px"
-            x1="0"
+            x1="9"
             y1="50"
             x2="50"
             y2="50"
@@ -102,9 +115,9 @@ export default function Countdown({ hours }: { hours: PlanetaryHour[] }) {
             component="line"
             id="second-hand-c"
             fill="none"
-            stroke="yellow"
+            stroke="white"
             strokeWidth="2px"
-            x1="0"
+            x1="9"
             y1="50"
             x2="50"
             y2="50"

@@ -241,7 +241,7 @@ export const Mars = () => (
     version="1.1"
     style={{
       fill: "none",
-      stroke: "#000",
+      stroke: "white",
       strokeLinecap: "round",
       strokeLinejoin: "round",
       strokeWidth: "0.6",
