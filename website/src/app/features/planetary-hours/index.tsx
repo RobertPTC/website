@@ -50,14 +50,19 @@ export default function PlanetaryHours() {
           Planetary Hours Calculator
         </Typography>
       </Box>
-      {dateInput && dateInput.isCurrent && (
-        <Box mb={3}>
-          <CurrentHour hours={planetaryHours?.hours} />
-          <Box display="flex" justifyContent="center">
-            <Countdown />
+      {dateInput &&
+        dateInput.isCurrent &&
+        planetaryHours &&
+        planetaryHours.hours && (
+          <Box mb={3}>
+            <Box mb={3}>
+              <CurrentHour hours={planetaryHours.hours} />
+            </Box>
+            <Box display="flex" justifyContent="center">
+              <Countdown hours={planetaryHours.hours} />
+            </Box>
           </Box>
-        </Box>
-      )}
+        )}
       <Grid container spacing={2} mb={5}>
         <Grid item xs={12} md={6} display="flex" justifyContent="flex-end">
           {dateInput?.date && (
