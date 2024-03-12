@@ -31,7 +31,7 @@ export default function Countdown({ hour }: { hour: PlanetaryHour }) {
 
   if (!minuteArc || !startDash || !animationDuration || !hour || !hourLength)
     return <></>;
-  console.log("arc ", minuteArc);
+
   return (
     <Box>
       <Box component="svg" sx={{ height: "100px", width: "100px" }}>
@@ -86,7 +86,6 @@ export default function Countdown({ hour }: { hour: PlanetaryHour }) {
             x2="50"
             y2="50"
             strokeWidth="4px"
-            // transform={`rotate(${minuteArc},50,50)`}
             sx={{
               "@keyframes minute": {
                 "100%": {
@@ -98,18 +97,6 @@ export default function Countdown({ hour }: { hour: PlanetaryHour }) {
               transformOrigin: "50px 50px",
             }}
           />
-          {/* <Box
-            component="animateTransform"
-            type="rotate"
-            accumulate="none"
-            additive="sum"
-            xlinkHref="#minute-hand"
-            dur={animationDuration / 1000}
-            from={`${minuteArc} 50 50`}
-            to="360 50 50"
-            attributeName="transform"
-            attributeType="xml"
-          /> */}
           <Box
             component="line"
             id="second-hand-e"
