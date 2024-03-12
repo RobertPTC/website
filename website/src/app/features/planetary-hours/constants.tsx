@@ -157,9 +157,6 @@ export const planetaryHoursMap: Record<Days, PlanetaryHoursConfig> = {
       TheMoon,
     ],
     night: [
-      Venus,
-      Mercury,
-      TheMoon,
       Saturn,
       Jupiter,
       Mars,
@@ -169,6 +166,9 @@ export const planetaryHoursMap: Record<Days, PlanetaryHoursConfig> = {
       TheMoon,
       Saturn,
       Jupiter,
+      Mars,
+      TheSun,
+      Venus,
     ],
   },
   3: {

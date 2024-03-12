@@ -81,25 +81,35 @@ export default function Countdown({ hour }: { hour: PlanetaryHour }) {
             component="line"
             id="minute-hand"
             stroke={hour.color}
-            x1="9"
+            x1="8"
             y1="50"
             x2="50"
             y2="50"
             strokeWidth="4px"
-            transform={`rotate(${minuteArc},50,50)`}
+            // transform={`rotate(${minuteArc},50,50)`}
+            sx={{
+              "@keyframes minute": {
+                "100%": {
+                  transform: "rotate(0deg)",
+                },
+              },
+              animation: `minute ${animationDuration}ms linear`,
+              transform: `rotate(${minuteArc}deg)`,
+              transformOrigin: "50px 50px",
+            }}
           />
-          <Box
+          {/* <Box
             component="animateTransform"
             type="rotate"
-            fill="remove"
             accumulate="none"
             additive="sum"
             xlinkHref="#minute-hand"
             dur={animationDuration / 1000}
+            from={`${minuteArc} 50 50`}
             to="360 50 50"
             attributeName="transform"
             attributeType="xml"
-          />
+          /> */}
           <Box
             component="line"
             id="second-hand-e"
