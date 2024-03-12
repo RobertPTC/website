@@ -88,12 +88,14 @@ export default function Countdown({ hour }: { hour: PlanetaryHour }) {
             strokeWidth="4px"
             sx={{
               "@keyframes minute": {
+                "0%": {
+                  transform: `rotate(${minuteArc}deg)`,
+                },
                 "100%": {
-                  transform: "rotate(0deg)",
+                  transform: "rotate(360deg)",
                 },
               },
-              animation: `minute ${animationDuration}ms linear`,
-              transform: `rotate(${minuteArc}deg)`,
+              animation: `minute ${animationDuration}ms linear infinite`,
               transformOrigin: "50px 50px",
             }}
           />
