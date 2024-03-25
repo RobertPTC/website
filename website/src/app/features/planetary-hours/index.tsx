@@ -45,9 +45,9 @@ export default function PlanetaryHours() {
   if (!planetaryHours) return <></>;
   const currentHour = planetaryHours.hours.find((h) => h.isCurrent);
   return (
-    <Box p={3}>
+    <Box>
       <Box mb={2}>
-        <Typography variant="h1" sx={{ fontSize: "36px", textAlign: "center" }}>
+        <Typography variant="h1" sx={{ fontSize: "2rem", textAlign: "center" }}>
           Planetary Hours Calculator
         </Typography>
       </Box>

@@ -1,7 +1,8 @@
-import { ThemeProvider } from "@mui/material";
+import { Box, ThemeProvider } from "@mui/material";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 
 import "./globals.css";
+import { Nav } from "./components/nav";
 import theme from "./theme";
 
 export default function RootLayout({
@@ -13,7 +14,12 @@ export default function RootLayout({
     <html lang="en">
       <AppRouterCacheProvider>
         <ThemeProvider theme={theme}>
-          <body>{children}</body>
+          <Box sx={{ p: 2 }} component="body">
+            <Box mb={2}>
+              <Nav />
+            </Box>
+            {children}
+          </Box>
         </ThemeProvider>
       </AppRouterCacheProvider>
     </html>

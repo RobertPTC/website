@@ -10,6 +10,10 @@ export type Days = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 export const hourFormat = "h:mm:ss A";
 
+export enum SessionStorageKeys {
+  POSITION = "position",
+}
+
 const TheSun: HourMetadata = {
   Icon: Icons.Sun,
   action:
