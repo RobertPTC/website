@@ -95,7 +95,7 @@ export default function Countdown({ hour }: { hour: PlanetaryHour }) {
                   transform: "rotate(360deg)",
                 },
               },
-              animation: `minute ${animationDuration}ms linear infinite`,
+              animation: `minute ${animationDuration}ms linear`,
               transformOrigin: "50px 50px",
             }}
           />
