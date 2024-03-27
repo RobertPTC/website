@@ -14,7 +14,7 @@ export default function RootLayout({
     <html lang="en">
       <AppRouterCacheProvider>
         <ThemeProvider theme={theme}>
-          <Box sx={{ p: 2 }} component="body">
+          <Box sx={{ pt: 2, px: 2 }} component="body">
             <Box mb={2}>
               <Nav />
             </Box>

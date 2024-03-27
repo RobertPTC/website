@@ -10,7 +10,7 @@ export default function Home() {
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
-          height: "calc(100vh - 110px)",
+          height: "calc(100vh - 90px)",
           left: "50%",
           marginLeft: "-50vw",
           marginRight: "-50vw",
