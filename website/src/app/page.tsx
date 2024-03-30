@@ -1,5 +1,7 @@
 import { Box, Typography } from "@mui/material";
 
+import { GhostWriter } from "./features/main/ghost-writer";
+
 export default function Home() {
   return (
     <Box component="main">
@@ -26,17 +28,12 @@ export default function Home() {
           Robert P Cunningham
         </Typography>
         <Typography
-          variant="body2"
+          variant="body1"
           sx={{ color: "white", fontSize: "2.5rem", px: 3 }}
         >
           is
         </Typography>
-        <Typography
-          variant="body1"
-          sx={{ color: "white", fontSize: "2.5rem", px: 3 }}
-        >
-          reading.
-        </Typography>
+        <GhostWriter />
       </Box>
     </Box>
   );

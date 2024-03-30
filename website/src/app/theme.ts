@@ -69,6 +69,9 @@ const theme = createTheme({
   },
 
   typography: {
+    body1: {
+      fontWeight: 300,
+    },
     fontFamily: roboto.style.fontFamily,
   },
 });
