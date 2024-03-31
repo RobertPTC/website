@@ -18,6 +18,7 @@ const actions = [
   "napping",
   "painting",
   "praying",
+  "programming",
   "reading",
   "trolling",
   "writing",
