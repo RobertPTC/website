@@ -14,7 +14,6 @@
         "newlines-between": "always"
       }
     ],
-    "sort-keys": ["error"],
     "prefer-arrow-callback": ["error"]
   }
 }

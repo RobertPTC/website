@@ -4,6 +4,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
+  Grid,
   SxProps,
   Typography,
 } from "@mui/material";
@@ -45,14 +46,46 @@ export function Nav() {
         </Accordion>
       </Box>
       <Box component="nav" sx={{ display: ["none", "none", "block", "block"] }}>
-        <Link href="/">
-          <Typography variant="body1" sx={linkStyles}>
-            Robert P Cunningham
-          </Typography>
-        </Link>
-        <Link href="/planetary-hours-calculator">
-          <Typography variant="body1">Planetary Hours Calculator</Typography>
-        </Link>
+        <Grid container>
+          <Grid item xs={8} display="flex" alignItems="center">
+            <Link href="/" style={{ marginRight: "16px" }}>
+              <Typography variant="body1" sx={linkStyles}>
+                Robert P Cunningham
+              </Typography>
+            </Link>
+            <Box
+              component="a"
+              href="https://www.instagram.com/a_heavy_heaven/"
+              target="_blank"
+              sx={{ mr: 2 }}
+            >
+              <Box
+                component="img"
+                src="https://i.ibb.co/g6McB2g/Instagram-icon.png"
+                width="36px"
+              />
+            </Box>
+            <Box
+              component="a"
+              href="https://thecurioustimes.substack.com"
+              sx={{ cursor: "pointer" }}
+              target="_blank"
+            >
+              <Box
+                component="img"
+                src="https://i.ibb.co/qYsTVW4/substack-wordmark.png"
+                width="100px"
+              />
+            </Box>
+          </Grid>
+          <Grid item display="flex" alignItems="center">
+            <Link href="/planetary-hours-calculator">
+              <Typography variant="body1">
+                Planetary Hours Calculator
+              </Typography>
+            </Link>
+          </Grid>
+        </Grid>
       </Box>
     </>
   );
