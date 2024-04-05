@@ -97,6 +97,7 @@ body {
 
 a {
   color: inherit;
+  
 }
 
 @media (prefers-color-scheme: dark) {

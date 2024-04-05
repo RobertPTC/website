@@ -4,6 +4,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
+  Divider,
   Grid,
   SxProps,
   Typography,
@@ -32,7 +33,7 @@ export function Nav() {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Box component="nav">
+            <Box component="nav" mb={1}>
               <Link href="/">
                 <Typography variant="body1">Home</Typography>
               </Link>
@@ -41,6 +42,33 @@ export function Nav() {
                   Planetary Hours Calculator
                 </Typography>
               </Link>
+            </Box>
+            <Divider sx={{ mb: 1 }} />
+            <Box display="flex" alignItems="center">
+              <Box
+                component="a"
+                href="https://www.instagram.com/a_heavy_heaven/"
+                target="_blank"
+                sx={{ mr: 2 }}
+              >
+                <Box
+                  component="img"
+                  src="https://i.ibb.co/g6McB2g/Instagram-icon.png"
+                  width="24px"
+                />
+              </Box>
+              <Box
+                component="a"
+                href="https://thecurioustimes.substack.com"
+                sx={{ cursor: "pointer" }}
+                target="_blank"
+              >
+                <Box
+                  component="img"
+                  src="https://i.ibb.co/qYsTVW4/substack-wordmark.png"
+                  width="100px"
+                />
+              </Box>
             </Box>
           </AccordionDetails>
         </Accordion>

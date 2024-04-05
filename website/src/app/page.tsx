@@ -34,6 +34,11 @@ export default function Home() {
           is
         </Typography>
         <GhostWriter />
+        <Typography>
+          <Box component="a" href="rptc3000@gmail.com" sx={{ px: 3 }}>
+            rptc3000@gmail.com
+          </Box>
+        </Typography>
       </Box>
     </Box>
   );
