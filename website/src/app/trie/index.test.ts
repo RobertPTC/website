@@ -8,6 +8,5 @@ describe("trie", () => {
     t.addWord("bear", { name: "bear" });
     t.addWord("abracadbra", { name: "abracadabra" });
     t.addWord("Rio de Janeiro", { name: "Rio de Janeiro" });
-    console.log("ash ", t.findWords("ash"));
   });
 });
