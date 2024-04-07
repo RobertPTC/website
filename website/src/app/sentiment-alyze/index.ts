@@ -1,4 +1,4 @@
-export default function TFIDF() {
+export default function SentimentAlyze() {
   function _termFrequency(d: string) {
     const terms = d
       .replace(/[.,?!-]+/g, "")
@@ -27,13 +27,12 @@ export default function TFIDF() {
         .split(" ");
       const seen: { [t: string]: boolean } = {};
       for (const t of terms) {
-        if (!df[t]) {
-          df[t] = 1;
-          seen[t] = true;
-          continue;
-        }
         if (df[t] && !seen[t]) {
           df[t] = df[t] + 1;
+        }
+        if (!df[t]) {
+          df[t] = 1;
+          continue;
         }
         seen[t] = true;
       }
