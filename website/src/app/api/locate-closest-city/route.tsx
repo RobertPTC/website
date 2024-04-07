@@ -18,12 +18,15 @@ export function GET(request: NextRequest) {
         lat2,
         lng2
       );
-      return distance < 1;
+      return distance < 2;
     });
-    return Response.json(
-      { data: closestCity, value: closestCity?.city },
-      { status: 200 }
-    );
+    if (closestCity) {
+      return Response.json(
+        { data: closestCity, value: closestCity.city },
+        { status: 200 }
+      );
+    }
+    return new Response("", { status: 404 });
   }
   return new Response("", { status: 500 });
 }
