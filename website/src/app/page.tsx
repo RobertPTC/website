@@ -12,7 +12,7 @@ export default function Home() {
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
-          height: "calc(100vh - 90px)",
+          height: "calc(100vh - 70px)",
           left: "50%",
           marginLeft: "-50vw",
           marginRight: "-50vw",
@@ -35,7 +35,11 @@ export default function Home() {
         </Typography>
         <GhostWriter />
         <Typography>
-          <Box component="a" href="rptc3000@gmail.com" sx={{ px: 3 }}>
+          <Box
+            component="a"
+            href="rptc3000@gmail.com"
+            sx={{ px: 3, color: "white" }}
+          >
             rptc3000@gmail.com
           </Box>
         </Typography>

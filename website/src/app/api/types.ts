@@ -11,3 +11,12 @@ export type City = {
   population: string;
   id: string;
 };
+
+export type Moment = {
+  moment: string;
+  date_string: string;
+  journalist_id: string;
+  month: number;
+  year: number;
+  date: number;
+};

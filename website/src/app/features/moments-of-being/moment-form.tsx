@@ -10,15 +10,55 @@ export default function MomentForm() {
     e.preventDefault();
     if (formRef.current) {
       const formValues = new FormData(formRef.current);
-      for (const entry of formValues.entries()) {
-        console.log("entry ", entry);
+      const date = new Date();
+      let values: { [key: string]: FormDataEntryValue } = {
+        date_string: date.toLocaleDateString(),
+        month: `${date.getMonth()}`,
+        year: `${date.getFullYear()}`,
+        date: `${date.getDate()}`,
+        journalist_id: "2f69320f-63c2-491d-81bc-3326080a27ae",
+      };
+      for (const [key, value] of formValues.entries()) {
+        values[key] = value;
       }
+      fetch("/api/create-moment", {
+        method: "POST",
+        body: JSON.stringify(values),
+      });
     }
   }
   return (
     <Box component="form" onSubmit={onSubmit} ref={formRef}>
-      <TextField label="Moment" name="moment" fullWidth multiline minRows={3} />
-      <Button type="submit" variant="outlined" fullWidth>
+      <TextField
+        label="Moment"
+        name="moment"
+        fullWidth
+        multiline
+        minRows={3}
+        sx={{
+          "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+              borderColor: "var(--moments-accent-hex)",
+            },
+            "&:hover fieldset": {
+              borderColor: "var(--moments-accent-hex)",
+            },
+            "&.Mui-focused fieldset": {
+              borderColor: "var(--moments-accent-hex)",
+            },
+          },
+          marginBottom: 2,
+        }}
+      />
+      <Button
+        type="submit"
+        variant="outlined"
+        fullWidth
+        sx={{
+          borderColor: "var(--moments-accent-hex)",
+          "&:hover": { borderColor: "var(--moments-accent-hex)" },
+        }}
+      >
         Submit
       </Button>
     </Box>
