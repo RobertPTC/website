@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@auth0/nextjs-auth0": "^3.5.0",
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
@@ -22,6 +23,7 @@
     "postgres": "^3.4.4",
     "react": "^18",
     "react-dom": "^18",
+    "sentiment": "^5.0.2",
     "suncalc": "^1.9.0"
   },
   "devDependencies": {
@@ -31,6 +33,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/sentiment": "^5.0.4",
     "@types/suncalc": "^1.9.2",
     "eslint": "^8",
     "eslint-config-next": "14.1.0",

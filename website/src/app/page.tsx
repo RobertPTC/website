@@ -43,6 +43,30 @@ export default function Home() {
             rptc3000@gmail.com
           </Box>
         </Typography>
+        <Typography
+          variant="h2"
+          sx={{ color: "white", fontSize: "1.5rem", p: 3, mt: 1 }}
+        >
+          Publications
+        </Typography>
+        <Typography sx={{ mb: 0.5 }}>
+          <Box
+            component="a"
+            href="https://www.subnivean.org/post/robert-cunningham"
+            sx={{ color: "white", px: 3 }}
+          >
+            Subnivean - Poetry
+          </Box>
+        </Typography>
+        <Typography>
+          <Box
+            component="a"
+            href="https://www.levelerpoetry.com/my-real-friend-prospero/"
+            sx={{ color: "white", px: 3 }}
+          >
+            LEVELER - Poetry
+          </Box>
+        </Typography>
       </Box>
     </Box>
   );

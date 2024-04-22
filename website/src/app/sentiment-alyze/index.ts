@@ -1,4 +1,6 @@
+import Sentiment from "sentiment";
 export default function SentimentAlyze() {
+  const sentiment = new Sentiment();
   function _termFrequency(d: string) {
     const terms = d
       .replace(/[.,?!-]+/g, "")
@@ -62,5 +64,6 @@ export default function SentimentAlyze() {
     termFrequency: _termFrequency,
     idf: _idf,
     tfidf: _tfidf,
+    analyze: sentiment.analyze,
   };
 }
