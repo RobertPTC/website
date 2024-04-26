@@ -16,7 +16,7 @@ export default function MomentForm() {
         month: `${date.getMonth()}`,
         year: `${date.getFullYear()}`,
         date: `${date.getDate()}`,
-        journalist_id: "2f69320f-63c2-491d-81bc-3326080a27ae",
+        journalist_id: "c3e3bc64-e05e-439a-9159-24f8bf06bd3a",
       };
       for (const [key, value] of formValues.entries()) {
         values[key] = value;

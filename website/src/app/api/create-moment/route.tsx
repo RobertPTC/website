@@ -17,7 +17,7 @@ export function POST(request: NextRequest) {
       const sA = SentimentAlyze();
       const values = { ...json, score: sA.analyze(json.moment).comparative };
       await sql`
-            insert into moment ${sql(values)}
+            INSERT INTO moment ${sql(values)}
         `;
     } catch (e) {}
     sql.end();

@@ -1,3 +1,4 @@
+import { UserProvider } from "@auth0/nextjs-auth0/client";
 import { Box, ThemeProvider } from "@mui/material";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 
@@ -14,12 +15,14 @@ export default function RootLayout({
     <html lang="en">
       <AppRouterCacheProvider>
         <ThemeProvider theme={theme}>
-          <Box sx={{ pt: 2, px: 2 }} component="body">
-            <Box mb={2}>
-              <Nav />
+          <UserProvider>
+            <Box sx={{ pt: 2, px: 2 }} component="body">
+              <Box mb={2}>
+                <Nav />
+              </Box>
+              {children}
             </Box>
-            {children}
-          </Box>
+          </UserProvider>
         </ThemeProvider>
       </AppRouterCacheProvider>
     </html>

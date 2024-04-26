@@ -70,6 +70,15 @@ export function Nav() {
                 />
               </Box>
             </Box>
+            <Divider sx={{ mb: 1 }} />
+            <Box display="flex">
+              <Box component="a" href="/api/auth/login" sx={{ mr: 1 }}>
+                <Typography>Login</Typography>
+              </Box>
+              <Box component="a" href="/api/auth/logout">
+                <Typography>Logout</Typography>
+              </Box>
+            </Box>
           </AccordionDetails>
         </Accordion>
       </Box>

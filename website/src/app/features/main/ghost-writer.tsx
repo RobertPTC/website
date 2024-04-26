@@ -29,13 +29,9 @@ export function GhostWriter() {
   useEffect(() => {
     clearInterval(interval);
     interval = setInterval(() => {
-      if (counter < actions[actionsCounter].length && !goBack) {
-        counter += 1;
-        setC(counter);
-        return;
-      }
       if (!goBack && counter < actions[actionsCounter].length + 5) {
         counter += 1;
+        setC(counter);
         return;
       }
       if (counter > 0) {
