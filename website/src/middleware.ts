@@ -1,14 +1,11 @@
-import { getSession } from "@auth0/nextjs-auth0/edge"; // Note the /edge import
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { withMiddlewareAuthRequired } from "@auth0/nextjs-auth0/edge";
 
-// This function can be marked `async` if using `await` inside
-export async function middleware(request: NextRequest) {
-  const session = await getSession();
-  console.log("session ", session);
-}
+export default withMiddlewareAuthRequired({
+  returnTo(req) {
+    return req.nextUrl.pathname;
+  },
+});
 
-// See "Matching Paths" below to learn more
 export const config = {
   matcher: "/moments-of-being/:path*",
 };

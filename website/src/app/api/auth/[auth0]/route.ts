@@ -1,10 +1,4 @@
-import {
-  Session,
-  handleAuth,
-  handleCallback,
-  handleLogin,
-} from "@auth0/nextjs-auth0";
-import { NextApiRequest } from "next";
+import { Session, handleAuth, handleCallback } from "@auth0/nextjs-auth0";
 import { NextRequest } from "next/server";
 import postgres from "postgres";
 
@@ -28,18 +22,6 @@ async function afterCallback(
   return session;
 }
 
-function loginCallback(req: NextRequest | NextApiRequest) {
-  console.log("req headers", req.headers);
-  let referer: string;
-  if (req.headers instanceof Headers) {
-    console.log("get referer ", req.headers.get("referer"));
-  } else {
-    console.log("mapped referer ", req.headers["referer"]);
-  }
-  return {};
-}
-
 export const GET = handleAuth({
-  login: handleLogin(loginCallback),
   callback: handleCallback({ afterCallback }),
 });
