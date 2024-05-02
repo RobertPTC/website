@@ -1,14 +1,16 @@
 import { ReactNode } from "react";
 
-import { Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 
-import NavAccordion from "app/features/moments-of-being/nav-accordion";
-import { NavDrawer } from "app/features/moments-of-being/nav-drawer";
+import NavDrawer from "app/features/moments-of-being/nav-drawer";
+import NavLinks from "app/features/moments-of-being/nav-links";
 
 export default function MOBLayout({ children }: { children: ReactNode }) {
   return (
     <>
-      <NavAccordion />
+      <Box mb={2}>
+        <NavLinks />
+      </Box>
       <Grid container columnSpacing={1}>
         <Grid item xs={3} display={["none", "block"]}>
           <NavDrawer />

@@ -15,8 +15,18 @@ export type City = {
 export type Moment = {
   moment: string;
   date_string: string;
-  journalist_id: string;
   month: number;
   year: number;
   date: number;
+  score: number;
+};
+
+export type MomentNav = number[];
+
+export type Moments = {
+  [key: string]: {
+    moments: { [key: string]: Moment[] | undefined };
+    minScore: number;
+    maxScore: number;
+  };
 };

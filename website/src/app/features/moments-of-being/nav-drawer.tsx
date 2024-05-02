@@ -1,11 +1,13 @@
 import { Box } from "@mui/material";
 
-export function NavDrawer() {
+import NavLinks from "./nav-links";
+
+export default function NavDrawer() {
   return (
     <Box
       sx={{ height: "calc(100vh - 70px)", background: "red", width: "100%" }}
     >
-      Hello
+      <NavLinks />
     </Box>
   );
 }
