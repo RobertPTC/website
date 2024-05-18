@@ -29,7 +29,6 @@ export default function MomentsCalendar({ year }: { year: string }) {
       {entries.map(([k, v]) => {
         const days = daysArray(daysInMonth(Number(k) + 1, Number(year)));
         const firstDay = new Date(Number(year), Number(k)).getDay();
-        console.log("firstDay ", firstDay);
         const daysGrid: Array<Array<number | undefined>> = [];
         let weekCounter = 0;
         for (let index = 0; index < days.length + firstDay; index++) {
@@ -49,7 +48,6 @@ export default function MomentsCalendar({ year }: { year: string }) {
             weekCounter += 1;
           }
         }
-        console.log("daysGrid ", daysGrid);
         const moments = v.moments;
         return (
           <Box key={k}>

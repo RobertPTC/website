@@ -49,7 +49,7 @@ export function Nav() {
                 component="a"
                 href="https://www.instagram.com/a_heavy_heaven/"
                 target="_blank"
-                sx={{ mr: 2 }}
+                sx={{ display: "flex", mr: 2 }}
               >
                 <Box
                   component="img"
@@ -60,7 +60,7 @@ export function Nav() {
               <Box
                 component="a"
                 href="https://thecurioustimes.substack.com"
-                sx={{ cursor: "pointer" }}
+                sx={{ display: "flex" }}
                 target="_blank"
               >
                 <Box
@@ -94,7 +94,7 @@ export function Nav() {
               component="a"
               href="https://www.instagram.com/a_heavy_heaven/"
               target="_blank"
-              sx={{ mr: 2 }}
+              sx={{ display: "flex", mr: 2 }}
             >
               <Box
                 component="img"
@@ -105,7 +105,7 @@ export function Nav() {
             <Box
               component="a"
               href="https://thecurioustimes.substack.com"
-              sx={{ cursor: "pointer" }}
+              sx={{ display: "flex" }}
               target="_blank"
             >
               <Box
