@@ -1,4 +1,6 @@
 import dayjs, { Dayjs } from "dayjs";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import suncalc from "suncalc";
 
 import {
@@ -11,12 +13,15 @@ import { calculatePlanetaryHourLength } from "app/features/planetary-hours/utils
 
 import { Days, planetaryHoursMap } from "./constants";
 
+dayjs.extend(timezone);
+dayjs.extend(utc);
+
 type PlanetaryHours = {
   hours: PlanetaryHour[];
 };
 
 function buildHour(
-  start: Date,
+  start: Date | Dayjs,
   hourLength: number,
   h: HourMetadata,
   i: number,
@@ -30,6 +35,18 @@ function buildHour(
     hourEnd,
     hourStart,
     isCurrent,
+  };
+}
+
+function getSuncalcTimes(d: DateInput, p: Position) {
+  const { sunrise, sunset } = suncalc.getTimes(
+    d.date.toDate(),
+    p.latitude,
+    p.longitude
+  );
+  return {
+    sunrise: dayjs(sunrise).tz(d.tz),
+    sunset: dayjs(sunset).tz(d.tz),
   };
 }
 
@@ -96,12 +113,8 @@ export default function useGetPlanetaryHours(
       hours: nightHours.concat(dayHours).filter((d) => d.hourEnd.isAfter(date)),
     };
   }
-  const { sunrise } = suncalc.getTimes(
-    date.toDate(),
-    pos.latitude,
-    pos.longitude
-  );
-  console.log("sunrise ", sunrise);
+  const { sunrise } = getSuncalcTimes(d, pos);
+
   if (date.isBefore(sunrise)) {
     const yesterday = date.subtract(1, "day");
     const { sunset: yesterdaySunset } = suncalc.getTimes(
@@ -133,6 +146,7 @@ export default function useGetPlanetaryHours(
   }
   const dayHourLength = calculatePlanetaryHourLength(sunset, sunrise);
   const hours = planetaryHoursMap[date.day() as Days];
+
   const dayHours = hours.day.map((h, i) => {
     return buildHour(sunrise, dayHourLength, h, i, date);
   });
