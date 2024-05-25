@@ -38,6 +38,7 @@ export interface PlanetaryHour extends HourMetadata {
 export interface DateInput {
   date: Dayjs;
   isCurrent: boolean;
+  tz?: string;
 }
 
 export type LocationAutocompleteOption = {

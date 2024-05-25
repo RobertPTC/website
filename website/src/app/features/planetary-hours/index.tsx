@@ -20,7 +20,7 @@ import useSearchParams from "./use-search-params";
 export default function PlanetaryHours() {
   const searchParams = useSearchParams();
   const [pos, setPos] = usePosition(searchParams.location);
-  const [dateInput, setDate] = useDate(searchParams.date);
+  const [dateInput, setDate] = useDate(searchParams.date, pos);
   const planetaryHours = useGetPlanetaryHours(pos, dateInput);
   const onOptionSelect = (o: LocationAutocompleteOption | null) => {
     if (o && o.data) {

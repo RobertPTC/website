@@ -19,11 +19,11 @@ export default function LocationAutocomplete({
   const [selectedOption, setSelectedOption] = useState("");
   const closestCity = useGetClosestCity(pos?.latitude, pos?.longitude);
   useEffect(() => {
-    if (closestCity) {
+    if (closestCity && !selectedOption && !searchParam) {
       setOptions([closestCity]);
       setSelectedOption(closestCity.value);
     }
-  }, [closestCity]);
+  }, [closestCity, selectedOption, searchParam]);
 
   useEffect(() => {
     if (searchParam) {
