@@ -1,6 +1,6 @@
 "use client";
 
-import { Box } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import { scaleSequential } from "d3-scale";
 import { interpolateBlues } from "d3-scale-chromatic";
 
@@ -25,7 +25,7 @@ export default function MomentsCalendar({ year }: { year: string }) {
   if (!moments) return <></>;
   const entries = Object.entries(moments);
   return (
-    <>
+    <Grid container>
       {entries.map(([k, v]) => {
         const days = daysArray(daysInMonth(Number(k) + 1, Number(year)));
         const firstDay = new Date(Number(year), Number(k)).getDay();
@@ -52,28 +52,30 @@ export default function MomentsCalendar({ year }: { year: string }) {
         return (
           <Box key={k}>
             Month: {k}{" "}
-            {days.map((d) => {
-              const momentsForDate = moments[d];
-              if (momentsForDate) {
-                const score = momentsForDate.reduce((p, c, i, a) => {
-                  return p + Number(a[i].score);
-                }, 0);
-                const color = colorInterpolator(score);
+            <Grid item container columns={7}>
+              {days.map((d) => {
+                const momentsForDate = moments[d];
+                if (momentsForDate) {
+                  const score = momentsForDate.reduce((p, c, i, a) => {
+                    return p + Number(a[i].score);
+                  }, 0);
+                  const color = colorInterpolator(score);
+                  return (
+                    <Grid item key={d} xs={1} sx={{ backgroundColor: color }}>
+                      {d}
+                    </Grid>
+                  );
+                }
                 return (
-                  <Box key={d}>
-                    {momentsForDate.map((m) => (
-                      <Box key={m.moment} sx={{ backgroundColor: color }}>
-                        {m.moment}
-                      </Box>
-                    ))}
-                  </Box>
+                  <Grid item key={d} xs={1}>
+                    {d}
+                  </Grid>
                 );
-              }
-              return <Box key={d}>{d}</Box>;
-            })}
+              })}
+            </Grid>
           </Box>
         );
       })}
-    </>
+    </Grid>
   );
 }
