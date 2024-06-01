@@ -7,7 +7,6 @@ export default function useMoments({ year }: { year: string }) {
   useEffect(() => {
     fetch(`/api/moments-of-being-moments?year=${year}`).then(async (res) => {
       const json = await res.json();
-      console.log("json ", json);
       setMoments(json);
       return;
     });
