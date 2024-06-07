@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 
-import HistoryEduIcon from "@mui/icons-material/HistoryEdu";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import { Box, Drawer, IconButton, Typography } from "@mui/material";
-import Link from "next/link";
 
+import Actions from "./actions";
 import NavLinks from "./nav-links";
 
 export default function ActionsDrawer() {
@@ -43,14 +42,7 @@ export default function ActionsDrawer() {
           <Typography mb={1}>Years</Typography>
           <NavLinks />
         </Box>
-        <Link href="/moments-of-being/create-moment">
-          <Box display="flex">
-            <Box mr={1}>
-              <HistoryEduIcon />
-            </Box>
-            <Typography>Create Moment</Typography>
-          </Box>
-        </Link>
+        <Actions />
       </Drawer>
     </>
   );

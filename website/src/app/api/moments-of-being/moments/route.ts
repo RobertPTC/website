@@ -2,7 +2,7 @@ import { getSession, withApiAuthRequired } from "@auth0/nextjs-auth0";
 import { NextRequest } from "next/server";
 import postgres, { Row } from "postgres";
 
-import SentimentAlyze, { stopwordsRegex } from "app/sentiment-alyze";
+import SentimentAlyze from "app/sentiment-alyze";
 
 import { Moments } from "../../types";
 
@@ -50,22 +50,14 @@ export const GET = withApiAuthRequired(async (request: NextRequest) => {
   let results: Moments = {};
   data.forEach((v: Row) => {
     if (!results[v.month]) {
-      const tfidf = sA.tfidf([v.moment]);
-      console.log("tfidf", tfidf);
+      const tfidf = sA.termFrequency(v.moment);
       const mostImportantWords = Object.entries(tfidf)
-        .map(([word, vectors]) => {
-          return {
-            word,
-            score: vectors.reduce((p, c) => p + c, 0),
-          };
-        })
         .sort((a, b) => {
-          if (a.score >= b.score) {
-            return a.score;
-          }
-          return b.score;
+          if (a[1] < b[1]) return 1;
+          if (a[1] === b[1]) return 0;
+          return -1;
         })
-        .map(({ word }) => word)
+        .map(([term]) => term)
         .slice(0, 5);
       results[v.month] = {
         minScore: v.score,
@@ -83,7 +75,6 @@ export const GET = withApiAuthRequired(async (request: NextRequest) => {
             },
           ],
         },
-        mostFrequentlyUsedWords: [],
         mostImportantWords,
       };
       return;
@@ -102,6 +93,21 @@ export const GET = withApiAuthRequired(async (request: NextRequest) => {
       };
       const allMoments = [...moments.all, v.moment];
       const tfidf = sA.tfidf(allMoments);
+      const mostImportantWords = Object.entries(tfidf)
+        .map(([word, vectors]) => {
+          return {
+            word,
+            score: vectors.reduce((p, c) => p + c, 0),
+          };
+        })
+        .sort((a, b) => {
+          if (a.score >= b.score) {
+            return a.score;
+          }
+          return b.score;
+        })
+        .map(({ word }) => word)
+        .slice(0, 5);
       results[v.month] = {
         minScore: month.minScore < v.score ? month.minScore : v.score,
         maxScore: month.maxScore > v.score ? month.maxScore : v.score,
@@ -110,8 +116,7 @@ export const GET = withApiAuthRequired(async (request: NextRequest) => {
           all: allMoments,
           [v.date]: momentsForDate ? [...momentsForDate, moment] : [moment],
         },
-        mostFrequentlyUsedWords: [],
-        mostImportantWords: [],
+        mostImportantWords,
       };
     }
   });

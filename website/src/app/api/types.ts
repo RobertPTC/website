@@ -32,7 +32,6 @@ export type Moments = {
   [key: string]: {
     moments: { all: string[]; [key: number]: Moment[] | undefined };
     mostImportantWords: string[];
-    mostFrequentlyUsedWords: string[];
     minScore: number;
     maxScore: number;
   };

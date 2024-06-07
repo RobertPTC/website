@@ -69,19 +69,72 @@ export default function MomentsCalendar({ year }: { year: string }) {
                 Month:{" "}
                 {timeFormat.format(new Date(Number(year), Number(month)))}
               </Typography>
-              <Grid item container>
+              <Grid item container columns={7}>
+                {["S", "M", "T", "W", "T", "F", "S"].map((day, i) => {
+                  return (
+                    <Grid item key={`${day}${i}`} xs={1}>
+                      <Typography
+                        sx={{
+                          textAlign: "center",
+                          fontWeight: "300",
+                          color: "var(--moments-accent-hex)",
+                        }}
+                      >
+                        {day}
+                      </Typography>
+                    </Grid>
+                  );
+                })}
+              </Grid>
+              <Grid item container mb={1}>
                 {daysGrid.map((w, i) => {
                   return (
-                    <Grid item container key={i} columns={7}>
-                      {w.map((d, i) => {
-                        if (!d)
-                          return <Grid item xs={1} key={`${Date.now()}${i}`} />;
-                        const momentsForDate = moments[d];
-                        if (momentsForDate) {
-                          const score = momentsForDate.reduce((p, c, i, a) => {
-                            return p + Number(a[i].score);
-                          }, 0);
-                          const color = colorInterpolator(score);
+                    <>
+                      <Grid item container key={i} columns={7}>
+                        {w.map((d, i) => {
+                          if (!d)
+                            return (
+                              <Grid item xs={1} key={`${Date.now()}${i}`} />
+                            );
+                          const momentsForDate = moments[d];
+                          if (momentsForDate) {
+                            const score = momentsForDate.reduce(
+                              (p, c, i, a) => {
+                                return p + Number(a[i].score);
+                              },
+                              0
+                            );
+                            const color = colorInterpolator(score);
+                            return (
+                              <Grid
+                                item
+                                key={d}
+                                xs={1}
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <Link
+                                  href={`/moments-of-being/moments/${year}/${month}/${d}`}
+                                >
+                                  <Box
+                                    sx={{
+                                      backgroundColor: color,
+                                      height: "30px",
+                                      width: "30px",
+                                      display: "flex",
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      borderRadius: "15px",
+                                    }}
+                                  >
+                                    <Typography>{d}</Typography>
+                                  </Box>
+                                </Link>
+                              </Grid>
+                            );
+                          }
                           return (
                             <Grid
                               item
@@ -89,52 +142,30 @@ export default function MomentsCalendar({ year }: { year: string }) {
                               xs={1}
                               sx={{ display: "flex", justifyContent: "center" }}
                             >
-                              <Link
-                                href={`/moments-of-being/moments/${year}/${month}/${d}`}
+                              <Box
+                                sx={{
+                                  height: "30px",
+                                  width: "30px",
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  borderRadius: "15px",
+                                }}
                               >
-                                <Box
-                                  sx={{
-                                    backgroundColor: color,
-                                    height: "30px",
-                                    width: "30px",
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    borderRadius: "15px",
-                                  }}
-                                >
-                                  <Typography>{d}</Typography>
-                                </Box>
-                              </Link>
+                                <Typography>{d}</Typography>
+                              </Box>
                             </Grid>
                           );
-                        }
-                        return (
-                          <Grid
-                            item
-                            key={d}
-                            xs={1}
-                            sx={{ display: "flex", justifyContent: "center" }}
-                          >
-                            <Box
-                              sx={{
-                                height: "30px",
-                                width: "30px",
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                borderRadius: "15px",
-                              }}
-                            >
-                              <Typography>{d}</Typography>
-                            </Box>
-                          </Grid>
-                        );
-                      })}
-                    </Grid>
+                        })}
+                      </Grid>
+                    </>
                   );
                 })}
               </Grid>
+
+              <Typography sx={{ color: "var(--moments-accent-hex)" }}>
+                Keywords: {v.mostImportantWords.join(", ")}
+              </Typography>
             </Box>
           );
         })}

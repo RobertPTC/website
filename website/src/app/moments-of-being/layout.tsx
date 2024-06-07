@@ -16,7 +16,7 @@ export default function MOBLayout({ children }: { children: ReactNode }) {
           Moments of Being
         </Typography>
       </Box>
-      <Grid container columnSpacing={1}>
+      <Grid container columnSpacing={3}>
         <Grid item xs={3} display={["none", "block"]}>
           <ActionsMenu />
         </Grid>
