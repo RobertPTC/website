@@ -1,4 +1,8 @@
 import Sentiment from "sentiment";
+// export const stopwordsRegex =
+//   /i|me|my|myself|we|our|ours|ourselves|you|your|yours|yourself|yourselves|he|him|his|himself|she|her|hers|herself|it|its|itself|they|them|their|theirs|themselves|what|which|who|whom|this|that|these|those|am|is|are|was|were|be|been|being|have|has|had|having|do|does|did|doing|a|an|the|and|but|if|or|because|as|until|while|of|at|by|for|with|about|against|between|into|through|during|before|after|above|below|to|from|up|down|in|out|on|off|over|under|again|further|then|once|here|there|when|where|why|how|all|any|both|each|few|more|most|other|some|such|no|nor|not|only|own|same|so|than|too|very|s|t|can|will|just|don|should|now/gi;
+export const stopwordsRegex =
+  /\b(i|me|my|myself|we|our|ours|ourselves|you|your|yours|yourself|yourselves|he|him|his|himself|she|her|hers|herself|it|its|itself|they|them|their|theirs|themselves|what|which|who|whom|this|that|these|those|am|is|are|was|were|be|been|being|have|has|had|having|do|does|did|doing|a|an|the|and|but|if|or|because|as|until|while|of|at|by|for|with|about|against|between|into|through|during|before|after|above|below|to|from|up|down|in|out|on|off|over|under|again|further|then|once|here|there|when|where|why|how|all|any|both|each|few|more|most|other|some|such|no|nor|not|only|own|same|so|than|too|very|s|t|can|will|just|don|should|now)\b/i;
 export default function SentimentAlyze() {
   const sentiment = new Sentiment();
   function _termFrequency(d: string) {
@@ -9,6 +13,9 @@ export default function SentimentAlyze() {
     let count: { [t: string]: number } = {};
     let tf: { [t: string]: number } = {};
     for (const t of terms) {
+      if (stopwordsRegex.test(t)) {
+        continue;
+      }
       if (!count[t]) {
         count[t] = 1;
         continue;
@@ -22,13 +29,16 @@ export default function SentimentAlyze() {
   }
   function _idf(d: string[]) {
     let df: { [t: string]: number } = {};
-    d.forEach((d, i) => {
+    d.forEach((d) => {
       const terms = d
         .replace(/[.,?!-]+/g, "")
         .toLowerCase()
         .split(" ");
       const seen: { [t: string]: boolean } = {};
       for (const t of terms) {
+        if (stopwordsRegex.test(t)) {
+          continue;
+        }
         if (df[t] && !seen[t]) {
           df[t] = df[t] + 1;
         }
@@ -53,7 +63,7 @@ export default function SentimentAlyze() {
       const tf = _termFrequency(d);
       Object.entries(idf).forEach(([t, f]) => {
         let vector = tfIDF[t] || [];
-        vector.push(f * tf[t] || 0);
+        vector.push(Number((f * tf[t]).toFixed(3)) || 0);
         tfIDF[t] = vector;
       });
     });

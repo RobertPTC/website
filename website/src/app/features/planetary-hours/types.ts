@@ -1,10 +1,18 @@
 import { Dayjs } from "dayjs";
 
-export type Position = {
+export type PositionSuccess = {
+  state: "success";
   latitude: number;
   longitude: number;
-  state: "success" | "error";
 };
+
+type PositionError = {
+  state: "error";
+  message: string;
+  code: number;
+};
+
+export type Position = PositionSuccess | PositionError;
 
 export type HourMetadata = {
   angel: string;
@@ -35,11 +43,11 @@ export interface PlanetaryHour extends HourMetadata {
   isCurrent: boolean;
 }
 
-export interface DateInput {
+export type DateInput = {
   date: Dayjs;
   isCurrent: boolean;
   tz?: string;
-}
+};
 
 export type LocationAutocompleteOption = {
   value: string;

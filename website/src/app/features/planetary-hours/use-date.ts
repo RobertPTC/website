@@ -15,7 +15,7 @@ export default function useDate(
 ): [DateInput | undefined, Dispatch<SetStateAction<DateInput | undefined>>] {
   const [date, setDate] = useState<DateInput | undefined>();
   useEffect(() => {
-    if (pos) {
+    if (pos && pos.state === "success") {
       fetch(
         `/api/timezone-from-pos?lat=${pos.latitude}&lng=${pos.longitude}`
       ).then(async (r) => {

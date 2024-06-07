@@ -8,6 +8,7 @@ import {
   Position,
   PlanetaryHour,
   DateInput,
+  PositionSuccess,
 } from "app/features/planetary-hours/types";
 import { calculatePlanetaryHourLength } from "app/features/planetary-hours/utils";
 
@@ -38,7 +39,7 @@ function buildHour(
   };
 }
 
-function getSuncalcTimes(d: DateInput, p: Position) {
+function getSuncalcTimes(d: DateInput, p: PositionSuccess) {
   const { sunrise, sunset } = suncalc.getTimes(
     d.date.toDate(),
     p.latitude,
@@ -54,7 +55,7 @@ export default function useGetPlanetaryHours(
   pos: Position | undefined,
   d: DateInput | undefined
 ): PlanetaryHours | undefined {
-  if (!pos || !d) return;
+  if (!pos || !d || pos.state === "error") return;
   const { isCurrent, date } = d;
   if (!isCurrent) {
     const { sunrise, sunset } = suncalc.getTimes(

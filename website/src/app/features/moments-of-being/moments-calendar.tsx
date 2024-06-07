@@ -3,6 +3,7 @@
 import { Box, Grid, Typography } from "@mui/material";
 import { scaleSequential } from "d3-scale";
 import { interpolateBlues } from "d3-scale-chromatic";
+import Link from "next/link";
 
 import useMoments from "./use-moments";
 
@@ -24,56 +25,90 @@ export default function MomentsCalendar({ year }: { year: string }) {
   const moments = useMoments({ year });
   if (!moments) return <></>;
   const entries = Object.entries(moments);
+  const timeFormat = Intl.DateTimeFormat("en", { month: "long" });
   return (
-    <Grid container>
-      {entries.map(([k, v]) => {
-        const days = daysArray(daysInMonth(Number(k) + 1, Number(year)));
-        const firstDay = new Date(Number(year), Number(k)).getDay();
-        const daysGrid: Array<Array<number | undefined>> = [];
-        let weekCounter = 0;
-        for (let index = 0; index < days.length + firstDay; index++) {
-          let week = daysGrid[weekCounter] || [];
-          if (index < firstDay) {
-            daysGrid[weekCounter] = [...week, undefined];
-            continue;
-          }
-          week = [...week, index - firstDay + 1];
-          if (index === days.length + firstDay - 1) {
-            for (let j = week.length; j < 7; j++) {
-              week = [...week, undefined];
+    <>
+      <Typography sx={{ fontSize: "24px", mb: 2 }}>{year}</Typography>
+      <Grid container>
+        {entries.map(([month, v]) => {
+          const days = daysArray(daysInMonth(Number(month) + 1, Number(year)));
+          const firstDay = new Date(Number(year), Number(month)).getDay();
+          const daysGrid: Array<Array<number | undefined>> = [];
+          let weekCounter = 0;
+          for (let index = 0; index < days.length + firstDay; index++) {
+            let week = daysGrid[weekCounter] || [];
+            if (index < firstDay) {
+              daysGrid[weekCounter] = [...week, undefined];
+              continue;
+            }
+            week = [...week, index - firstDay + 1];
+            if (index === days.length + firstDay - 1) {
+              for (let j = week.length; j < 7; j++) {
+                week = [...week, undefined];
+              }
+            }
+            daysGrid[weekCounter] = week;
+            if (week.length === 7) {
+              weekCounter += 1;
             }
           }
-          daysGrid[weekCounter] = week;
-          if (week.length === 7) {
-            weekCounter += 1;
-          }
-        }
-        const moments = v.moments;
-        return (
-          <Box
-            key={k}
-            sx={{
-              maxWidth: "calc(50% - 8px)",
-              border: "1px solid red",
-              p: 2,
-              ml: 1,
-              ":first-child": { ml: 0 },
-            }}
-          >
-            <Typography>Month: {k}</Typography>
-            <Grid item container>
-              {daysGrid.map((w, i) => {
-                return (
-                  <Grid item container key={i} columns={7}>
-                    {w.map((d, i) => {
-                      if (!d)
-                        return <Grid item xs={1} key={`${Date.now()}${i}`} />;
-                      const momentsForDate = moments[d];
-                      if (momentsForDate) {
-                        const score = momentsForDate.reduce((p, c, i, a) => {
-                          return p + Number(a[i].score);
-                        }, 0);
-                        const color = colorInterpolator(score);
+          const moments = v.moments;
+          return (
+            <Box
+              key={month}
+              sx={{
+                maxWidth: ["100%", "calc(50% - 8px)"],
+                border: "1px solid red",
+                p: 2,
+                ml: [0, 1],
+                mb: [1, 1],
+                ":nth-of-type(2n + 1)": { ml: 0 },
+              }}
+            >
+              <Typography>
+                Month:{" "}
+                {timeFormat.format(new Date(Number(year), Number(month)))}
+              </Typography>
+              <Grid item container>
+                {daysGrid.map((w, i) => {
+                  return (
+                    <Grid item container key={i} columns={7}>
+                      {w.map((d, i) => {
+                        if (!d)
+                          return <Grid item xs={1} key={`${Date.now()}${i}`} />;
+                        const momentsForDate = moments[d];
+                        if (momentsForDate) {
+                          const score = momentsForDate.reduce((p, c, i, a) => {
+                            return p + Number(a[i].score);
+                          }, 0);
+                          const color = colorInterpolator(score);
+                          return (
+                            <Grid
+                              item
+                              key={d}
+                              xs={1}
+                              sx={{ display: "flex", justifyContent: "center" }}
+                            >
+                              <Link
+                                href={`/moments-of-being/moments/${year}/${month}/${d}`}
+                              >
+                                <Box
+                                  sx={{
+                                    backgroundColor: color,
+                                    height: "30px",
+                                    width: "30px",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    borderRadius: "15px",
+                                  }}
+                                >
+                                  <Typography>{d}</Typography>
+                                </Box>
+                              </Link>
+                            </Grid>
+                          );
+                        }
                         return (
                           <Grid
                             item
@@ -83,7 +118,6 @@ export default function MomentsCalendar({ year }: { year: string }) {
                           >
                             <Box
                               sx={{
-                                backgroundColor: color,
                                 height: "30px",
                                 width: "30px",
                                 display: "flex",
@@ -96,36 +130,15 @@ export default function MomentsCalendar({ year }: { year: string }) {
                             </Box>
                           </Grid>
                         );
-                      }
-                      return (
-                        <Grid
-                          item
-                          key={d}
-                          xs={1}
-                          sx={{ display: "flex", justifyContent: "center" }}
-                        >
-                          <Box
-                            sx={{
-                              height: "30px",
-                              width: "30px",
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              borderRadius: "15px",
-                            }}
-                          >
-                            <Typography>{d}</Typography>
-                          </Box>
-                        </Grid>
-                      );
-                    })}
-                  </Grid>
-                );
-              })}
-            </Grid>
-          </Box>
-        );
-      })}
-    </Grid>
+                      })}
+                    </Grid>
+                  );
+                })}
+              </Grid>
+            </Box>
+          );
+        })}
+      </Grid>
+    </>
   );
 }

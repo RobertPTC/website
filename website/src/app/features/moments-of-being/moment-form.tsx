@@ -1,12 +1,43 @@
 "use client";
 
-import { FormEvent, useRef } from "react";
+import { Dispatch, FormEvent, SetStateAction, useRef, useState } from "react";
 
-import { Box, Button, TextField } from "@mui/material";
+import { Box, Button, TextField, Snackbar, Alert } from "@mui/material";
+
+type SnackbarMetadata = {
+  message: string;
+  severity: "success" | "error";
+} | null;
+
+function SB({
+  snackbarMeta,
+  handleSnackbarClose,
+}: {
+  snackbarMeta: SnackbarMetadata;
+  handleSnackbarClose: (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => void;
+}) {
+  if (!snackbarMeta) return <></>;
+  return (
+    <Snackbar
+      open={!!snackbarMeta}
+      autoHideDuration={6000}
+      onClose={handleSnackbarClose}
+    >
+      <Alert severity={snackbarMeta.severity} variant="filled">
+        {snackbarMeta.message}
+      </Alert>
+    </Snackbar>
+  );
+}
 
 export default function MomentForm() {
   const formRef = useRef<HTMLFormElement>(null);
-  function onSubmit(e: FormEvent) {
+  const momentID = useRef<string | null>(null);
+  const [snackbarMeta, setSnackbarMeta] = useState<SnackbarMetadata>(null);
+  async function onSubmit(e: FormEvent) {
     e.preventDefault();
     if (formRef.current) {
       const formValues = new FormData(formRef.current);
@@ -21,11 +52,54 @@ export default function MomentForm() {
       for (const [key, value] of formValues.entries()) {
         values[key] = value;
       }
-      fetch("/api/create-moment", {
-        method: "POST",
-        body: JSON.stringify(values),
-      });
+      if (!momentID.current) {
+        try {
+          const res = await fetch("/api/moments-of-being/create-moment", {
+            method: "POST",
+            body: JSON.stringify(values),
+          });
+          if (!res.ok) {
+            throw new Error(res.statusText);
+          }
+          const json = await res.json();
+          setSnackbarMeta({
+            message: "Your moment was saved successfully",
+            severity: "success",
+          });
+          momentID.current = json.id;
+        } catch (e) {
+          setSnackbarMeta({
+            message: "Something went wrong saving your moment",
+            severity: "error",
+          });
+        }
+        return;
+      }
+      try {
+        const res = await fetch("/api/moments-of-being/update-moment", {
+          method: "PUT",
+          body: JSON.stringify({ id: momentID.current, moment: values.moment }),
+        });
+        if (!res.ok) {
+          throw new Error(res.statusText);
+        }
+        setSnackbarMeta({
+          message: "Your moment was updated successfully",
+          severity: "success",
+        });
+      } catch (error) {
+        setSnackbarMeta({
+          message: "Something went wrong saving your moment",
+          severity: "error",
+        });
+      }
     }
+  }
+  function handleSnackbarClose(
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) {
+    setSnackbarMeta(null);
   }
   return (
     <Box component="form" onSubmit={onSubmit} ref={formRef}>
@@ -59,8 +133,12 @@ export default function MomentForm() {
           "&:hover": { borderColor: "var(--moments-accent-hex)" },
         }}
       >
-        Submit
+        {momentID.current ? "Update" : "Submit"}
       </Button>
+      <SB
+        snackbarMeta={snackbarMeta}
+        handleSnackbarClose={handleSnackbarClose}
+      />
     </Box>
   );
 }

@@ -18,14 +18,21 @@ export type Moment = {
   month: number;
   year: number;
   date: number;
-  score: number;
+  score?: number;
+};
+
+export type UpdateMoment = {
+  moment: string;
+  id: string;
 };
 
 export type MomentNav = number[];
 
 export type Moments = {
   [key: string]: {
-    moments: { [key: string]: Moment[] | undefined };
+    moments: { all: string[]; [key: number]: Moment[] | undefined };
+    mostImportantWords: string[];
+    mostFrequentlyUsedWords: string[];
     minScore: number;
     maxScore: number;
   };

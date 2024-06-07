@@ -21,21 +21,24 @@ export default function usePosition(
 ): [Position | undefined, Dispatch<SetStateAction<Position | undefined>>] {
   const [pos, setPos] = useState<Position>();
   if (typeof window !== "undefined") {
-    navigator.geolocation.watchPosition((pos) => {
-      if (location) return;
-      setSessionStorage(
-        SessionStorageKeys.POSITION,
-        JSON.stringify({
+    navigator.geolocation.watchPosition(
+      (pos) => {
+        if (location) return;
+        setSessionStorage(
+          SessionStorageKeys.POSITION,
+          JSON.stringify({
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+          })
+        );
+        setPos({
           latitude: pos.coords.latitude,
           longitude: pos.coords.longitude,
-        })
-      );
-      setPos({
-        latitude: pos.coords.latitude,
-        longitude: pos.coords.longitude,
-        state: "success",
-      });
-    });
+          state: "success",
+        });
+      },
+      () => {}
+    );
   }
   useEffect(() => {
     if (typeof window !== "undefined") {

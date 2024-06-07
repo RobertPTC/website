@@ -44,7 +44,7 @@ export function Nav() {
               </Link>
             </Box>
             <Divider sx={{ mb: 1 }} />
-            <Box display="flex" alignItems="center">
+            <Box display="flex" alignItems="center" mb={1}>
               <Box
                 component="a"
                 href="https://www.instagram.com/a_heavy_heaven/"
