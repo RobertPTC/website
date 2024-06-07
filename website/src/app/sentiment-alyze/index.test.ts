@@ -7,8 +7,6 @@ const document2 =
 const document3 =
   "The air quality in Singapore is monitored through a network of air monitoring stations located in different parts of the island";
 const document4 = "The air quality in Singapore got worse on Wednesday.";
-const document5 =
-  "i love this moment in which i decide to love God with all my fiber.";
 
 describe("TFIDF", () => {
   it("determines term frequency", () => {
@@ -35,9 +33,8 @@ describe("TFIDF", () => {
     expect(tfidf["improved"]).toStrictEqual([0.06, 0, 0, 0]);
     expect(tfidf["singapore"]).toStrictEqual([0, 0.008, 0.006, 0.014]);
   });
-  it("edge case 1", () => {
+  it("throws error on only 1 document", () => {
     const t = TFIDF();
-    const tfidf = t.tfidf([document5]);
-    expect(tfidf["love"]).toStrictEqual([0.08]);
+    expect(t.tfidf).toThrow();
   });
 });

@@ -1,6 +1,5 @@
 import Sentiment from "sentiment";
-// export const stopwordsRegex =
-//   /i|me|my|myself|we|our|ours|ourselves|you|your|yours|yourself|yourselves|he|him|his|himself|she|her|hers|herself|it|its|itself|they|them|their|theirs|themselves|what|which|who|whom|this|that|these|those|am|is|are|was|were|be|been|being|have|has|had|having|do|does|did|doing|a|an|the|and|but|if|or|because|as|until|while|of|at|by|for|with|about|against|between|into|through|during|before|after|above|below|to|from|up|down|in|out|on|off|over|under|again|further|then|once|here|there|when|where|why|how|all|any|both|each|few|more|most|other|some|such|no|nor|not|only|own|same|so|than|too|very|s|t|can|will|just|don|should|now/gi;
+
 export const stopwordsRegex =
   /\b(i|me|my|myself|we|our|ours|ourselves|you|your|yours|yourself|yourselves|he|him|his|himself|she|her|hers|herself|it|its|itself|they|them|their|theirs|themselves|what|which|who|whom|this|that|these|those|am|is|are|was|were|be|been|being|have|has|had|having|do|does|did|doing|a|an|the|and|but|if|or|because|as|until|while|of|at|by|for|with|about|against|between|into|through|during|before|after|above|below|to|from|up|down|in|out|on|off|over|under|again|further|then|once|here|there|when|where|why|how|all|any|both|each|few|more|most|other|some|such|no|nor|not|only|own|same|so|than|too|very|s|t|can|will|just|don|should|now)\b/i;
 export default function SentimentAlyze() {
@@ -28,6 +27,9 @@ export default function SentimentAlyze() {
     return tf;
   }
   function _idf(d: string[]) {
+    if (d.length <= 1) {
+      throw new Error("idf requires more than 1 document");
+    }
     let df: { [t: string]: number } = {};
     d.forEach((d) => {
       const terms = d
@@ -49,7 +51,6 @@ export default function SentimentAlyze() {
         seen[t] = true;
       }
     });
-
     let idf: { [t: string]: number } = {};
     Object.entries(df).forEach((v) => {
       idf[v[0]] = Number(Math.log10(d.length / v[1]).toFixed(3));
@@ -57,6 +58,9 @@ export default function SentimentAlyze() {
     return idf;
   }
   function _tfidf(d: string[]) {
+    if (d.length <= 1) {
+      throw new Error("tfidf requires more than 1 document");
+    }
     let tfIDF: { [t: string]: number[] } = {};
     const idf = _idf(d);
     d.forEach((d) => {
