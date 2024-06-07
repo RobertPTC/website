@@ -2,7 +2,7 @@ import { SyntheticEvent, useEffect, useState } from "react";
 
 import { Autocomplete, TextField } from "@mui/material";
 
-import { LocationAutocompleteOption, Position } from "./types";
+import { LocationAutocompleteOption, Position, PositionSuccess } from "./types";
 import useGetClosestCity from "./use-get-closest-city";
 import { debounce } from "./utils";
 
@@ -11,7 +11,7 @@ export default function LocationAutocomplete({
   pos,
   onOptionSelect,
 }: {
-  pos?: Position;
+  pos?: PositionSuccess;
   searchParam: string | null;
   onOptionSelect: (o: LocationAutocompleteOption | null) => void;
 }) {

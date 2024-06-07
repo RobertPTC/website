@@ -43,6 +43,7 @@ export default function PlanetaryHours() {
     searchParams.delete(SearchParams.DATE);
   };
   if (!planetaryHours) return <></>;
+  if (pos && pos.state !== "success") return <>No Position</>;
   const currentHour = planetaryHours.hours.find((h) => h.isCurrent);
   return (
     <Box>
