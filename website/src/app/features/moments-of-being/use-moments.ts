@@ -22,6 +22,6 @@ export default function useMoments({
       setMoments(res);
       return;
     });
-  }, [year]);
+  }, [year, month, date]);
   return moments;
 }

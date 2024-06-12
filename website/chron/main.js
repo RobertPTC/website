@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 export async function main() {
-    console.log('working')
+  console.log("process.env ", process.env);
 }
