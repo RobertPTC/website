@@ -43,12 +43,10 @@ export const GET = withApiAuthRequired(async (request: NextRequest) => {
   let results: Moments = {};
   data.forEach((v: Row) => {
     if (!results[v.month]) {
-      const tfidf = sA.termFrequency(v.moment);
-      const mostImportantWords = Object.entries(tfidf)
+      const termFrequency = sA.termFrequency(v.moment);
+      const mostImportantWords = Object.entries(termFrequency)
         .sort((a, b) => {
-          if (a[1] < b[1]) return 1;
-          if (a[1] === b[1]) return 0;
-          return -1;
+          return b[1] - a[1];
         })
         .map(([term]) => term)
         .slice(0, 5);
@@ -94,10 +92,7 @@ export const GET = withApiAuthRequired(async (request: NextRequest) => {
           };
         })
         .sort((a, b) => {
-          if (a.score >= b.score) {
-            return a.score;
-          }
-          return b.score;
+          return b.score - a.score;
         })
         .map(({ word }) => word)
         .slice(0, 5);
