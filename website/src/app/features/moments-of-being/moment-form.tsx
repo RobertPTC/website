@@ -1,8 +1,9 @@
 "use client";
 
-import { Dispatch, FormEvent, SetStateAction, useRef, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 
 import { Box, Button, TextField, Snackbar, Alert } from "@mui/material";
+import { clearCache } from "app/ferry";
 
 type SnackbarMetadata = {
   message: string;
@@ -67,6 +68,7 @@ export default function MomentForm() {
             severity: "success",
           });
           momentID.current = json.id;
+          clearCache();
         } catch (e) {
           setSnackbarMeta({
             message: "Something went wrong saving your moment",
@@ -87,6 +89,7 @@ export default function MomentForm() {
           message: "Your moment was updated successfully",
           severity: "success",
         });
+        clearCache();
       } catch (error) {
         setSnackbarMeta({
           message: "Something went wrong saving your moment",

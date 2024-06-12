@@ -20,13 +20,6 @@ async function getData(
       rejectUnauthorized: false,
     },
   });
-  let additionalParams = "ORDER BY month ASC";
-  if (month) {
-    additionalParams = `AND month = ${month} ${additionalParams}`;
-  }
-  if (date) {
-    additionalParams = `AND date = ${date} ${additionalParams}`;
-  }
   const data =
     await sql`SELECT * FROM moment WHERE journalist_id IN (SELECT journalist_id FROM journalist WHERE email = ${email}) AND year = ${year} ${
       month ? sql`AND month = ${month}` : sql``

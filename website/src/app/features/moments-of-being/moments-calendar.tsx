@@ -22,7 +22,7 @@ function daysArray(daysInMonth: number) {
 const colorInterpolator = scaleSequential([-5, 5], interpolateBlues);
 
 export default function MomentsCalendar({ year }: { year: string }) {
-  const moments = useMoments({ year });
+  const moments = useMoments({ year, month: undefined, date: undefined });
   if (!moments) return <></>;
   const entries = Object.entries(moments);
   const timeFormat = Intl.DateTimeFormat("en", { month: "long" });
@@ -58,7 +58,8 @@ export default function MomentsCalendar({ year }: { year: string }) {
               key={month}
               sx={{
                 maxWidth: ["100%", "calc(50% - 8px)"],
-                border: "1px solid red",
+                border: "1px solid",
+                borderColor: "var(--moments-accent-hex)",
                 p: 2,
                 ml: [0, 1],
                 mb: [1, 1],

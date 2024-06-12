@@ -1,4 +1,4 @@
-const cache: { [key: string]: any } = {};
+let cache: { [key: string]: any } = {};
 
 export default async function ferry<T>(
   uri: string,
@@ -14,4 +14,12 @@ export default async function ferry<T>(
   const json = await res.json();
   cache[uri] = json;
   return Promise.resolve(json);
+}
+
+export function clearCache(uri?: string) {
+  if (!uri) {
+    cache = {};
+    return;
+  }
+  cache[uri] = null;
 }
