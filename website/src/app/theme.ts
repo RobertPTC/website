@@ -69,7 +69,7 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         outlined: {
-          color: "var(--moments-accent-hex)",
+          color: "var(--accent)",
         },
       },
     },

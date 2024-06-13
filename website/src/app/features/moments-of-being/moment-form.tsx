@@ -116,13 +116,13 @@ export default function MomentForm() {
         sx={{
           "& .MuiOutlinedInput-root": {
             "& fieldset": {
-              borderColor: "var(--moments-accent-hex)",
+              borderColor: "var(--accent)",
             },
             "&:hover fieldset": {
-              borderColor: "var(--moments-accent-hex)",
+              borderColor: "var(--accent)",
             },
             "&.Mui-focused fieldset": {
-              borderColor: "var(--moments-accent-hex)",
+              borderColor: "var(--accent)",
             },
           },
           marginBottom: 2,
@@ -133,8 +133,8 @@ export default function MomentForm() {
         variant="outlined"
         fullWidth
         sx={{
-          borderColor: "var(--moments-accent-hex)",
-          "&:hover": { borderColor: "var(--moments-accent-hex)" },
+          borderColor: "var(--accent)",
+          "&:hover": { borderColor: "var(--accent)" },
         }}
       >
         {momentID.current ? "Update" : "Submit"}

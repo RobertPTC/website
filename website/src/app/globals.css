@@ -42,7 +42,7 @@
   --highlight: 255, 222, 100;
 
   --elapsed-time-rgb: 94, 92, 84;
-  --moments-accent-hex: #002395;  
+  --accent: #002395;  
 }
 
 @media (prefers-color-scheme: dark) {
@@ -76,7 +76,7 @@
     --card-border-rgb: 200, 200, 200;
 
     --elapsed-time-rgb: 255, 255, 255;
-    --moments-accent-hex: goldenrod;
+    --accent: goldenrod;
   }
 }
 

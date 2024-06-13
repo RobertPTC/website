@@ -59,7 +59,7 @@ export default function MomentsCalendar({ year }: { year: string }) {
               sx={{
                 maxWidth: ["100%", "calc(50% - 8px)"],
                 border: "1px solid",
-                borderColor: "var(--moments-accent-hex)",
+                borderColor: "var(--accent)",
                 p: 2,
                 ml: [0, 1],
                 mb: [1, 1],
@@ -78,7 +78,7 @@ export default function MomentsCalendar({ year }: { year: string }) {
                         sx={{
                           textAlign: "center",
                           fontWeight: "300",
-                          color: "var(--moments-accent-hex)",
+                          color: "var(--accent)",
                         }}
                       >
                         {day}
@@ -164,7 +164,7 @@ export default function MomentsCalendar({ year }: { year: string }) {
                 })}
               </Grid>
 
-              <Typography sx={{ color: "var(--moments-accent-hex)" }}>
+              <Typography sx={{ color: "var(--accent)" }}>
                 Keywords: {v.mostImportantWords.join(", ")}
               </Typography>
             </Box>

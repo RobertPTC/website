@@ -10,7 +10,7 @@ export default function ActionsMenu() {
         p={1}
         sx={{
           borderBottom: "1px solid",
-          borderColor: "var(--moments-accent-hex)",
+          borderColor: "var(--accent)",
         }}
       >
         <NavLinks />

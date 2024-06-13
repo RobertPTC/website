@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, CircularProgress, Grid, Typography } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -42,7 +42,25 @@ export default function PlanetaryHours() {
     }
     searchParams.delete(SearchParams.DATE);
   };
-  if (!planetaryHours) return <></>;
+  if (!planetaryHours)
+    return (
+      <Box
+        sx={{
+          height: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Box>
+          <Typography sx={{ fontSize: "18px" }}>Loading</Typography>
+          <CircularProgress
+            size={40}
+            sx={{ ".MuiCircularProgress-circle": { stroke: "var(--accent)" } }}
+          />
+        </Box>
+      </Box>
+    );
   if (pos && pos.state !== "success") return <>No Position</>;
   const currentHour = planetaryHours.hours.find((h) => h.isCurrent);
   return (

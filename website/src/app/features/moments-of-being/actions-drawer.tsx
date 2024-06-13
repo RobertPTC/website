@@ -36,7 +36,7 @@ export default function ActionsDrawer() {
           mb={2}
           sx={{
             borderBottom: "1px solid",
-            borderColor: "var(--moments-accent-hex)",
+            borderColor: "var(--accent)",
           }}
         >
           <Typography mb={1}>Years</Typography>
