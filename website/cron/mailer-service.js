@@ -1,7 +1,9 @@
-const dayjs = require("dayjs");
-const timezone = require("dayjs/plugin/timezone");
-const utc = require("dayjs/plugin/utc");
-const nodemailer = require("nodemailer");
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone.js";
+import utc from "dayjs/plugin/utc.js";
+import nodemailer from "nodemailer";
+
+import { getDB, getMoments } from "./db.js";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -23,26 +25,46 @@ const mailOptions = {
     address: process.env.EMAIL_ADDRESS,
   },
   to: ["rptc3000@gmail.com"],
-  subject: "TEST",
-  text: "MOB test :)",
 };
 
 const scheduledHour = 8;
 const tz = "America/New_York";
-
 /**
- *@function
- *@param {Date} now
+ *
+ * @param {import("./db").Moment} moment
  */
-async function sendMail(now) {
-  console.log("now ", dayjs(now).tz(tz).hour());
-  // try {
-  //   await transporter.sendMail(mailOptions);
-  // } catch (e) {
-  //   console.error(e);
-  // }
+function createSubjectLine({ year, month, date }) {
+  const timeFormat = Intl.DateTimeFormat("en", { month: "long" });
+  return `On ${timeFormat.format(
+    new Date(Number(year), Number(month))
+  )} ${date}, ${year} you wrote...`;
 }
 
-module.exports = {
-  sendMail,
-};
+/**
+ * Send a moment via email to a journalist
+ *@function sendMail
+ *@param {Date} now
+ */
+export async function sendMail(now) {
+  if (dayjs(now).tz(tz).hour() !== scheduledHour) {
+    return;
+  }
+  const db = getDB();
+  const moments = await getMoments(db, "rptc3000@gmail.com");
+  if (!moments.length) {
+    return;
+  }
+  const randomIndex = Math.floor(Math.random() * moments.length);
+  const moment = moments[randomIndex];
+  const options = {
+    ...mailOptions,
+    subject: `${createSubjectLine(moment)}`,
+    html: `<div style="white-space: pre-wrap;">${moment.moment}</div>`,
+    text: moment.moment,
+  };
+  try {
+    await transporter.sendMail(options);
+  } catch (e) {
+    console.error(e);
+  }
+}

@@ -1,14 +1,16 @@
-const nodeCron = require("node-cron");
+import dotenv from "dotenv";
+import nodeCron from "node-cron";
 
-require("dotenv").config();
-const mailService = require("./mailer-service");
+dotenv.config();
 
-const cronExpression = "* * * * *";
+import { sendMail } from "./mailer-service.js";
+
+const cronExpression = "0 * * * *";
 
 async function main() {
   nodeCron.schedule(cronExpression, (now) => {
     if (typeof now === "object") {
-      mailService.sendMail(now);
+      sendMail(now);
     }
   });
 }
