@@ -1,5 +1,6 @@
 {
-  "extends": "next/core-web-vitals",
+  "extends": ["next/core-web-vitals"],
+  "plugins": ["react"],
   "rules": {
     "import/order": [
       "error",
@@ -14,6 +15,7 @@
         "newlines-between": "always"
       }
     ],
-    "prefer-arrow-callback": ["error"]
+    "prefer-arrow-callback": ["error"],
+    "react/jsx-key": ["error"]
   }
 }

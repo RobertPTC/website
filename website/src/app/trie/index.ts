@@ -7,7 +7,17 @@ interface Node {
   data: undefined | { [key: string]: any };
 }
 
-export default function Trie() {
+export type Trie = {
+  addWord(word: string, node: { [key: string]: any }): void;
+  findWords(s: string): {
+    value: string;
+    data: {
+      [key: string]: any;
+    };
+  }[];
+};
+
+export default function TrieFactory(): Trie {
   let searchResults: { value: string; data: { [key: string]: any } }[] = [];
 
   const rootNode: Node = {

@@ -28,11 +28,15 @@ export type UpdateMoment = {
 
 export type MomentNav = number[];
 
-export type Moments = {
-  [key: string]: {
-    moments: { all: string[]; [key: number]: Moment[] | undefined };
-    mostImportantWords: string[];
-    minScore: number;
-    maxScore: number;
-  };
+export type MonthMoment = {
+  moments: { all: string[]; [key: number]: Moment[] | undefined };
+  mostImportantWords: string[];
+  minScore: number;
+  maxScore: number;
 };
+
+export type Moments = {
+  [key: string]: MonthMoment;
+};
+
+export type MomentEntries = [string, MonthMoment][];
