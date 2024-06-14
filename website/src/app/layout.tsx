@@ -27,7 +27,7 @@ export default function RootLayout({
               >
                 <Nav />
               </Box>
-              <Box sx={{ px: 2 }}>{children}</Box>
+              <Box>{children}</Box>
             </Box>
           </UserProvider>
         </ThemeProvider>

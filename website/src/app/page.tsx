@@ -18,12 +18,6 @@ export default function Home() {
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
           height: "calc(100vh - 70px)",
-          left: "50%",
-          marginLeft: "-50vw",
-          marginRight: "-50vw",
-          position: "relative",
-          right: "50%",
-          width: "100vw",
         }}
       >
         <Typography

@@ -90,6 +90,7 @@ export function Nav() {
         component="nav"
         sx={{
           display: ["none", "none", "block", "block"],
+          // width: "100px",
         }}
       >
         <Grid container>
@@ -124,7 +125,7 @@ export function Nav() {
               />
             </Box>
           </Grid>
-          <Grid item display="flex" alignItems="center">
+          <Grid item display="flex" alignItems="center" xs={4}>
             <Link href="/planetary-hours-calculator">
               <Typography variant="body1">
                 Planetary Hours Calculator
