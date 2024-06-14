@@ -35,6 +35,7 @@ export default function PlanetaryHours() {
     searchParams.delete(SearchParams.LOCATION);
   };
   const onDateChange = (d: dayjs.Dayjs | null) => {
+    if (!d?.isValid()) return;
     if (d) {
       setDate({ date: d, isCurrent: false });
       searchParams.set(SearchParams.DATE, d.toString());
