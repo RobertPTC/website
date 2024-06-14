@@ -42,7 +42,7 @@
   --highlight: 255, 222, 100;
 
   --elapsed-time-rgb: 94, 92, 84;
-  --accent: #002395;  
+  --accent: #002395;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -94,6 +94,7 @@ body {
 body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-start-rgb));
+  overflow-x: hidden;
 }
 
 a {
