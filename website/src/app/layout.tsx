@@ -16,11 +16,18 @@ export default function RootLayout({
       <AppRouterCacheProvider>
         <ThemeProvider theme={theme}>
           <UserProvider>
-            <Box sx={{ pt: 2, px: 2 }} component="body">
-              <Box mb={2}>
+            <Box component="body">
+              <Box
+                sx={{
+                  position: "sticky",
+                  top: 0,
+                  background: "rgb(var(--background-start-rgb))",
+                  p: 2,
+                }}
+              >
                 <Nav />
               </Box>
-              {children}
+              <Box sx={{ px: 2 }}>{children}</Box>
             </Box>
           </UserProvider>
         </ThemeProvider>

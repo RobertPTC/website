@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function PlanetaryHoursCalculator() {
   return (
-    <Box component="main">
+    <Box component="main" sx={{ pt: 2 }}>
       <PlanetaryHours />
     </Box>
   );

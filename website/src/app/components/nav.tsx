@@ -18,7 +18,11 @@ const linkStyles: SxProps = {
 export function Nav() {
   return (
     <>
-      <Box sx={{ display: ["block", "block", "none", "none"] }}>
+      <Box
+        sx={{
+          display: ["block", "block", "none", "none"],
+        }}
+      >
         <Accordion>
           <AccordionSummary
             expandIcon={<ExpandMore />}
@@ -82,7 +86,12 @@ export function Nav() {
           </AccordionDetails>
         </Accordion>
       </Box>
-      <Box component="nav" sx={{ display: ["none", "none", "block", "block"] }}>
+      <Box
+        component="nav"
+        sx={{
+          display: ["none", "none", "block", "block"],
+        }}
+      >
         <Grid container>
           <Grid item xs={8} display="flex" alignItems="center">
             <Link href="/" style={{ marginRight: "16px" }}>
