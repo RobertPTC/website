@@ -41,7 +41,6 @@ export const GET = withApiAuthRequired(async (request: NextRequest) => {
   }
   const data = await getData(session.user.email, year, month, date);
   let results: Moments = {};
-  console.log("data ", data);
   data.forEach((v: Row) => {
     if (!results[v.month]) {
       const termFrequency = sA.termFrequency(v.moment);

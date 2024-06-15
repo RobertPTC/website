@@ -33,6 +33,8 @@ function daysArray(daysInMonth: number) {
 
 const colorInterpolator = scaleSequential([-5, 5], interpolateBlues);
 
+const sentenceRegex = /[\w\s;\-–,]+[\?!\.]/gim;
+
 function createMomentSearchTrie(
   moments: [string, MonthMoment][]
 ): Trie<MomentOption> | null {
@@ -46,8 +48,9 @@ function createMomentSearchTrie(
           if (momentsTrie) {
             momentsTrie.addWord(s, {
               label: v.date_string,
-              url: "",
-              momentPreviewText: "",
+              url: `/moments-of-being/moment/${v.id}`,
+              momentPreviewText:
+                v.moment.match(sentenceRegex)?.slice(0, 2).join(" ") || "",
               id: v.id,
             });
           }
@@ -61,19 +64,20 @@ function createMomentSearchTrie(
 
 export default function MomentsCalendar({ year }: { year: string }) {
   const moments = useMoments({ year, month: undefined, date: undefined });
-  const [searchOptions, setSearchOptions] = useState([]);
+  const [searchOptions, setSearchOptions] = useState<MomentOption[]>([]);
   if (!moments)
     return (
-      <Box
-        sx={{
-          height: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Box>
-          <Typography sx={{ fontSize: "18px" }}>
+      <Box>
+        <Box
+          sx={{
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
+          }}
+        >
+          <Typography sx={{ fontSize: "18px", textAlign: "center" }}>
             Loading moments calendar
           </Typography>
           <CircularProgress
@@ -99,12 +103,10 @@ export default function MomentsCalendar({ year }: { year: string }) {
             size="small"
             onInputChange={(_, v) => {
               if (momentsSearchTrie) {
-                console.log("moments search ", momentsSearchTrie.findWords(v));
                 const options = momentsSearchTrie
                   .findWords(v)
-                  .map(({ value, data }) => {
-                    return {};
-                  });
+                  .map((v) => v.data);
+                console.log("options ", options);
               }
             }}
             renderInput={(params) => <TextField {...params} />}

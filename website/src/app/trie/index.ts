@@ -12,14 +12,12 @@ export type Trie<T> = {
   findWords(s: string): {
     value: string;
     data: {
-      [key: string]: any;
+      [key: string]: T;
     };
   }[];
 };
 
 export default function TrieFactory<T>(): Trie<T> {
-  let searchResults: { value: string; data: { [key: string]: any } }[] = [];
-
   const rootNode: Node<T> = {
     capitalizedLetters: [],
     children: {},
@@ -52,7 +50,7 @@ export default function TrieFactory<T>(): Trie<T> {
     return n;
   }
 
-  function addWord(word: string, node: T) {
+  function _addWord(word: string, node: T) {
     let c: Node<T> = rootNode;
     const letters = word.split("");
     const capitalizedLetters: number[] = [];
@@ -79,35 +77,47 @@ export default function TrieFactory<T>(): Trie<T> {
     });
   }
 
-  function findWords(s: string, c: { [key: string]: Node<T> }) {
-    const n = c[s];
-    if (!n || !Object.keys(n.children)) return;
-    if (n.wordEnd) {
-      const letters: string[] = [];
-      let p: Node<T> = n;
-      while (p.parentNode) {
-        letters.unshift(p.letter);
-        p = p.parentNode;
-      }
-      const capitalizedResult = letters.map((l, i) => {
-        if (n.capitalizedLetters && n.capitalizedLetters.includes(i)) {
-          return l.toUpperCase();
+  function _memoizedFindWords(
+    searchResults: {
+      value: string;
+      data: {
+        [key: string]: T;
+      };
+    }[]
+  ) {
+    return function findWords(s: string, c: { [key: string]: Node<T> }) {
+      const n = c[s];
+      if (!n || !Object.keys(n.children)) return searchResults;
+      if (n.wordEnd) {
+        const letters: string[] = [];
+        let p: Node<T> = n;
+        while (p.parentNode) {
+          letters.unshift(p.letter);
+          p = p.parentNode;
         }
-        return l;
-      });
-      if (n.data) {
-        searchResults.push({ data: n.data, value: capitalizedResult.join("") });
+        const capitalizedResult = letters.map((l, i) => {
+          if (n.capitalizedLetters && n.capitalizedLetters.includes(i)) {
+            return l.toUpperCase();
+          }
+          return l;
+        });
+        if (n.data) {
+          searchResults = [
+            ...searchResults,
+            { data: n.data, value: capitalizedResult.join("") },
+          ];
+        }
       }
-    }
-    for (let child in n.children) {
-      findWords(child, n.children);
-    }
+      for (let child in n.children) {
+        findWords(child, n.children);
+      }
+      return searchResults;
+    };
   }
 
   return {
-    addWord,
+    addWord: _addWord,
     findWords: (s: string) => {
-      searchResults = [];
       let children = rootNode.children;
       const normalized = s.toLowerCase();
       normalized.split("").forEach((l, i) => {
@@ -115,8 +125,10 @@ export default function TrieFactory<T>(): Trie<T> {
           children = children[l].children;
         }
       });
-      findWords(normalized[normalized.length - 1], children);
-      return searchResults;
+      return _memoizedFindWords([])(
+        normalized[normalized.length - 1],
+        children
+      );
     },
   };
 }
