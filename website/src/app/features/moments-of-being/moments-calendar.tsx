@@ -3,10 +3,10 @@
 import { useState } from "react";
 
 import {
-  Autocomplete,
   Box,
   CircularProgress,
   Grid,
+  Popper,
   TextField,
   Typography,
 } from "@mui/material";
@@ -33,7 +33,7 @@ function daysArray(daysInMonth: number) {
 
 const colorInterpolator = scaleSequential([-5, 5], interpolateBlues);
 
-const sentenceRegex = /[\w\s;\-–,]+[\?!\.]/gim;
+const sentenceRegex = /[\w\s;\-–,"]+[\?!\.]/gim;
 
 function createMomentSearchTrie(
   moments: [string, MonthMoment][]
@@ -64,7 +64,11 @@ function createMomentSearchTrie(
 
 export default function MomentsCalendar({ year }: { year: string }) {
   const moments = useMoments({ year, month: undefined, date: undefined });
-  const [searchOptions, setSearchOptions] = useState<MomentOption[]>([]);
+  const [searchOptions, setSearchOptions] = useState<MomentOption[]>([
+    { label: "hello world", id: "1", momentPreviewText: "", url: "" },
+  ]);
+  const [searchAnchorElement, setSearchAnchorElement] =
+    useState<HTMLElement | null>(null);
   if (!moments)
     return (
       <Box>
@@ -90,28 +94,64 @@ export default function MomentsCalendar({ year }: { year: string }) {
   const entries = Object.entries(moments);
   const momentsSearchTrie = createMomentSearchTrie(entries);
   const timeFormat = Intl.DateTimeFormat("en", { month: "long" });
+
   return (
     <>
       <Box sx={{ maxWidth: "calc(50% - 8px)", display: "flex" }}>
         <Box sx={{ width: "20%" }}>
           <Typography sx={{ fontSize: "24px", mb: 2 }}>{year}</Typography>
         </Box>
-        <Box sx={{ width: "80%" }}>
-          <Autocomplete
-            freeSolo
+        <Box sx={{ width: "80%", position: "relative" }}>
+          <TextField
             fullWidth
             size="small"
-            onInputChange={(_, v) => {
+            onChange={(e) => {
               if (momentsSearchTrie) {
+                let seenMomentIDs: { [key: string]: string } = {};
                 const options = momentsSearchTrie
-                  .findWords(v)
-                  .map((v) => v.data);
-                console.log("options ", options);
+                  .findWords(e.currentTarget.value)
+                  .map((v) => v.data)
+                  .filter((v) => {
+                    if (seenMomentIDs[v.id]) return false;
+                    seenMomentIDs[v.id] = v.id;
+                    return true;
+                  });
+                setSearchOptions(options);
+                setSearchAnchorElement(e.currentTarget);
               }
             }}
-            renderInput={(params) => <TextField {...params} />}
-            options={searchOptions}
           />
+          <Popper
+            open={!!searchAnchorElement}
+            anchorEl={searchAnchorElement}
+            placement="bottom-start"
+            disablePortal
+          >
+            <Box
+              sx={{
+                border: 1,
+                borderColor: "var(--accent)",
+                bgcolor: "rgb(var(--background-start-rgb))",
+                width: "100%",
+                p: 2,
+                maxHeight: "200px",
+                overflowY: "scroll",
+              }}
+            >
+              {searchOptions.map((o) => {
+                return (
+                  <Box key={o.id} sx={{ mb: 2 }}>
+                    <Link href={o.url}>
+                      <Typography sx={{ mb: 1 }}>{o.label}</Typography>
+                    </Link>
+                    <Typography sx={{ whiteSpace: "pre-line" }}>
+                      {o.momentPreviewText}
+                    </Typography>
+                  </Box>
+                );
+              })}
+            </Box>
+          </Popper>
         </Box>
       </Box>
       <Grid container>

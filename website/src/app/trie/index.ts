@@ -11,9 +11,7 @@ export type Trie<T> = {
   addWord(word: string, node: T): void;
   findWords(s: string): {
     value: string;
-    data: {
-      [key: string]: T;
-    };
+    data: T;
   }[];
 };
 
@@ -80,9 +78,7 @@ export default function TrieFactory<T>(): Trie<T> {
   function _memoizedFindWords(
     searchResults: {
       value: string;
-      data: {
-        [key: string]: T;
-      };
+      data: T;
     }[]
   ) {
     return function findWords(s: string, c: { [key: string]: Node<T> }) {
