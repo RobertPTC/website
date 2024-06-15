@@ -1,6 +1,15 @@
 "use client";
 
-import { Autocomplete, Box, Grid, TextField, Typography } from "@mui/material";
+import { useState } from "react";
+
+import {
+  Autocomplete,
+  Box,
+  CircularProgress,
+  Grid,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { scaleSequential } from "d3-scale";
 import { interpolateBlues } from "d3-scale-chromatic";
 import Link from "next/link";
@@ -45,7 +54,28 @@ function createMomentSearchTrie(moments: [string, MonthMoment][]): Trie | null {
 
 export default function MomentsCalendar({ year }: { year: string }) {
   const moments = useMoments({ year, month: undefined, date: undefined });
-  if (!moments) return <></>;
+  const [searchOptions, setSearchOptions] = useState([]);
+  if (!moments)
+    return (
+      <Box
+        sx={{
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Box>
+          <Typography sx={{ fontSize: "18px" }}>
+            Loading moments calendar
+          </Typography>
+          <CircularProgress
+            size={40}
+            sx={{ ".MuiCircularProgress-circle": { stroke: "var(--accent)" } }}
+          />
+        </Box>
+      </Box>
+    );
   const entries = Object.entries(moments);
   const momentsSearchTrie = createMomentSearchTrie(entries);
   const timeFormat = Intl.DateTimeFormat("en", { month: "long" });
@@ -63,10 +93,15 @@ export default function MomentsCalendar({ year }: { year: string }) {
             onInputChange={(_, v) => {
               if (momentsSearchTrie) {
                 console.log("moments search ", momentsSearchTrie.findWords(v));
+                const options = momentsSearchTrie
+                  .findWords(v)
+                  .map(({ value, data }) => {
+                    return {};
+                  });
               }
             }}
             renderInput={(params) => <TextField {...params} />}
-            options={[]}
+            options={searchOptions}
           />
         </Box>
       </Box>
@@ -107,7 +142,7 @@ export default function MomentsCalendar({ year }: { year: string }) {
                 ":nth-of-type(2n + 1)": { ml: 0 },
               }}
             >
-              <Typography>
+              <Typography sx={{ mb: 1 }}>
                 Month:{" "}
                 {timeFormat.format(new Date(Number(year), Number(month)))}
               </Typography>
@@ -157,8 +192,8 @@ export default function MomentsCalendar({ year }: { year: string }) {
                                 <Box
                                   sx={{
                                     backgroundColor: color,
-                                    height: "30px",
-                                    width: "30px",
+                                    height: "25px",
+                                    width: "25px",
                                     display: "flex",
                                     justifyContent: "center",
                                     alignItems: "center",

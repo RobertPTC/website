@@ -7,7 +7,7 @@ import ActionsMenu from "app/features/moments-of-being/actions-menu";
 
 export default function MOBLayout({ children }: { children: ReactNode }) {
   return (
-    <>
+    <Box component="main" sx={{ p: 2 }}>
       <Box display="flex" mb={1}>
         <Box sx={{ display: ["block", "none"] }}>
           <ActionsDrawer />
@@ -24,6 +24,6 @@ export default function MOBLayout({ children }: { children: ReactNode }) {
           {children}
         </Grid>
       </Grid>
-    </>
+    </Box>
   );
 }
