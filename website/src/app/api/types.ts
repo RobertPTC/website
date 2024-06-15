@@ -19,6 +19,7 @@ export type Moment = {
   year: number;
   date: number;
   score?: number;
+  id: string;
 };
 
 export type UpdateMoment = {
@@ -29,10 +30,20 @@ export type UpdateMoment = {
 export type MomentNav = number[];
 
 export type MonthMoment = {
-  moments: { all: string[]; [key: number]: Moment[] | undefined };
+  moments: {
+    all: Pick<Moment, "id" | "moment" | "date_string">[];
+    [key: number]: Moment[] | undefined;
+  };
   mostImportantWords: string[];
   minScore: number;
   maxScore: number;
+};
+
+export type MomentOption = {
+  label: string;
+  momentPreviewText: string;
+  url: string;
+  id: string;
 };
 
 export type Moments = {

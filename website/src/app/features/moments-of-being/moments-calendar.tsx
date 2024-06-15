@@ -14,7 +14,7 @@ import { scaleSequential } from "d3-scale";
 import { interpolateBlues } from "d3-scale-chromatic";
 import Link from "next/link";
 
-import { MonthMoment } from "app/api/types";
+import { MomentOption, MonthMoment } from "app/api/types";
 import TrieFactory, { Trie } from "app/trie";
 
 import useMoments from "./use-moments";
@@ -33,16 +33,23 @@ function daysArray(daysInMonth: number) {
 
 const colorInterpolator = scaleSequential([-5, 5], interpolateBlues);
 
-function createMomentSearchTrie(moments: [string, MonthMoment][]): Trie | null {
-  let momentsTrie: Trie | null = null;
+function createMomentSearchTrie(
+  moments: [string, MonthMoment][]
+): Trie<MomentOption> | null {
+  let momentsTrie: Trie<MomentOption> | null = null;
   if (momentsTrie) return momentsTrie;
   const addWords = () => {
     momentsTrie = TrieFactory();
     moments.forEach(([_, moment]) => {
       moment.moments.all.forEach((v) => {
-        v.split(" ").forEach((s) => {
+        v.moment.split(" ").forEach((s) => {
           if (momentsTrie) {
-            momentsTrie.addWord(s, { moment: v });
+            momentsTrie.addWord(s, {
+              label: v.date_string,
+              url: "",
+              momentPreviewText: "",
+              id: v.id,
+            });
           }
         });
       });

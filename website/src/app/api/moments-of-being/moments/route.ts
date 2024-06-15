@@ -4,7 +4,7 @@ import postgres, { Row } from "postgres";
 
 import SentimentAlyze from "app/sentiment-alyze";
 
-import { Moments } from "../../types";
+import { Moment, Moments } from "../../types";
 
 const sA = SentimentAlyze();
 
@@ -41,6 +41,7 @@ export const GET = withApiAuthRequired(async (request: NextRequest) => {
   }
   const data = await getData(session.user.email, year, month, date);
   let results: Moments = {};
+  console.log("data ", data);
   data.forEach((v: Row) => {
     if (!results[v.month]) {
       const termFrequency = sA.termFrequency(v.moment);
@@ -54,7 +55,9 @@ export const GET = withApiAuthRequired(async (request: NextRequest) => {
         minScore: v.score,
         maxScore: v.score,
         moments: {
-          all: [v.moment],
+          all: [
+            { moment: v.moment, id: v.moment_id, date_string: v.date_string },
+          ],
           [v.date]: [
             {
               moment: v.moment,
@@ -63,6 +66,7 @@ export const GET = withApiAuthRequired(async (request: NextRequest) => {
               year: v.year,
               month: v.month,
               score: v.score,
+              id: v.moment_id,
             },
           ],
         },
@@ -74,16 +78,20 @@ export const GET = withApiAuthRequired(async (request: NextRequest) => {
       const moments = results[v.month]["moments"];
       const momentsForDate = moments[v.date];
       const month = results[v.month];
-      const moment = {
+      const moment: Moment = {
         moment: v.moment,
         date: v.date,
         date_string: v.date_string,
         year: v.year,
         month: v.month,
         score: v.score,
+        id: v.moment_id,
       };
-      const allMoments = [...moments.all, v.moment];
-      const tfidf = sA.tfidf(allMoments);
+      const allMoments = [
+        ...moments.all,
+        { moment: v.moment, id: v.moment_id, date_string: v.date_string },
+      ];
+      const tfidf = sA.tfidf(allMoments.map((m) => m.moment));
       const mostImportantWords = Object.entries(tfidf)
         .map(([word, vectors]) => {
           return {
