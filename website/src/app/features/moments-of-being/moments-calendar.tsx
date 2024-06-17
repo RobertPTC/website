@@ -31,8 +31,6 @@ function daysArray(daysInMonth: number) {
   return days;
 }
 
-const colorInterpolator = scaleSequential([-1, 1], interpolateBlues);
-
 const sentenceRegex = /[\w\s;\-–,"]+[\?!\.]/gim;
 
 function createMomentSearchTrie(
@@ -178,6 +176,10 @@ export default function MomentsCalendar({ year }: { year: string }) {
             }
           }
           const moments = v.moments;
+          const colorInterpolator = scaleSequential(
+            [v.maxScore, v.minScore],
+            interpolateBlues
+          );
           return (
             <Box
               key={month}
@@ -224,6 +226,7 @@ export default function MomentsCalendar({ year }: { year: string }) {
                           const score = momentsForDate.reduce((p, c, i, a) => {
                             return p + Number(a[i].score);
                           }, 0);
+
                           const color = colorInterpolator(score);
                           return (
                             <Grid

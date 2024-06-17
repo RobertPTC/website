@@ -52,6 +52,7 @@ export function Nav() {
               <Box
                 component="a"
                 href="https://www.instagram.com/a_heavy_heaven/"
+                aria-label="instagram"
                 target="_blank"
                 sx={{ display: "flex", mr: 2 }}
               >
@@ -63,6 +64,7 @@ export function Nav() {
               </Box>
               <Box
                 component="a"
+                aria-label="substack"
                 href="https://thecurioustimes.substack.com"
                 sx={{ display: "flex" }}
                 target="_blank"
@@ -90,7 +92,6 @@ export function Nav() {
         component="nav"
         sx={{
           display: ["none", "none", "block", "block"],
-          // width: "100px",
         }}
       >
         <Grid container>
@@ -103,6 +104,7 @@ export function Nav() {
             <Box
               component="a"
               href="https://www.instagram.com/a_heavy_heaven/"
+              aria-label="instagram"
               target="_blank"
               sx={{ display: "flex", mr: 2 }}
             >
@@ -115,6 +117,7 @@ export function Nav() {
             <Box
               component="a"
               href="https://thecurioustimes.substack.com"
+              aria-label="substack"
               sx={{ display: "flex" }}
               target="_blank"
             >
