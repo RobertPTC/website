@@ -31,7 +31,7 @@ function daysArray(daysInMonth: number) {
   return days;
 }
 
-const colorInterpolator = scaleSequential([-5, 5], interpolateBlues);
+const colorInterpolator = scaleSequential([-1, 1], interpolateBlues);
 
 const sentenceRegex = /[\w\s;\-–,"]+[\?!\.]/gim;
 
