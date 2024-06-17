@@ -4,7 +4,9 @@ import { Metadata } from "next";
 import { GhostWriter } from "./features/main/ghost-writer";
 
 export const metadata: Metadata = {
-  title: "Robert P Cunningham is an author and programmer, professionally.",
+  title: "Robert P Cunningham",
+  description:
+    "Robert P Cunningham is an author and programmer, professionally.",
 };
 
 export default function Home() {
