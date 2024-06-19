@@ -11,10 +11,11 @@ import {
   Typography,
 } from "@mui/material";
 import { scaleSequential } from "d3-scale";
-import { interpolateBlues } from "d3-scale-chromatic";
+import { interpolateBlues, interpolateInferno } from "d3-scale-chromatic";
 import Link from "next/link";
 
 import { MomentOption, MonthMoment } from "app/api/types";
+import { Loading } from "app/components/loading";
 import TrieFactory, { Trie } from "app/trie";
 
 import useMoments from "./use-moments";
@@ -67,28 +68,7 @@ export default function MomentsCalendar({ year }: { year: string }) {
   ]);
   const [searchAnchorElement, setSearchAnchorElement] =
     useState<HTMLElement | null>(null);
-  if (!moments)
-    return (
-      <Box>
-        <Box
-          sx={{
-            height: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            flexDirection: "column",
-          }}
-        >
-          <Typography sx={{ fontSize: "18px", textAlign: "center" }}>
-            Loading moments calendar
-          </Typography>
-          <CircularProgress
-            size={40}
-            sx={{ ".MuiCircularProgress-circle": { stroke: "var(--accent)" } }}
-          />
-        </Box>
-      </Box>
-    );
+  if (!moments) return <Loading loadingText="Loading moments" />;
   const entries = Object.entries(moments);
   const momentsSearchTrie = createMomentSearchTrie(entries);
   const timeFormat = Intl.DateTimeFormat("en", { month: "long" });
@@ -176,9 +156,13 @@ export default function MomentsCalendar({ year }: { year: string }) {
             }
           }
           const moments = v.moments;
-          const colorInterpolator = scaleSequential(
-            [v.maxScore, v.minScore],
+          const dateColorInterpolator = scaleSequential(
+            [v.minScore, v.maxScore],
             interpolateBlues
+          );
+          const dateTextColorInterpolator = scaleSequential(
+            [v.minScore, v.maxScore],
+            interpolateInferno
           );
           return (
             <Box
@@ -227,7 +211,8 @@ export default function MomentsCalendar({ year }: { year: string }) {
                             return p + Number(a[i].score);
                           }, 0);
 
-                          const color = colorInterpolator(score);
+                          const color = dateColorInterpolator(score);
+                          const textColor = dateTextColorInterpolator(score);
                           return (
                             <Grid
                               item
@@ -252,7 +237,9 @@ export default function MomentsCalendar({ year }: { year: string }) {
                                     borderRadius: "15px",
                                   }}
                                 >
-                                  <Typography>{d}</Typography>
+                                  <Typography sx={{ color: textColor }}>
+                                    {d}
+                                  </Typography>
                                 </Box>
                               </Link>
                             </Grid>

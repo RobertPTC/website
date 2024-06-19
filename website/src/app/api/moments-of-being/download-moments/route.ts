@@ -5,6 +5,6 @@ import MomentsOfBeing from "..";
 
 const mob = MomentsOfBeing();
 
-export const GET = withApiAuthRequired(async (request: NextRequest) => {
-  return mob.GetNav(request);
+export const POST = withApiAuthRequired(async (request: NextRequest) => {
+  return mob.DownloadMoments(request);
 });

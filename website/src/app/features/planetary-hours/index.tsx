@@ -6,6 +6,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 
+import { Loading } from "app/components/loading";
 import useDate from "app/features/planetary-hours/use-date";
 import usePosition from "app/features/planetary-hours/use-position";
 
@@ -43,25 +44,7 @@ export default function PlanetaryHours() {
     }
     searchParams.delete(SearchParams.DATE);
   };
-  if (!planetaryHours)
-    return (
-      <Box
-        sx={{
-          height: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Box>
-          <Typography sx={{ fontSize: "18px" }}>Loading</Typography>
-          <CircularProgress
-            size={40}
-            sx={{ ".MuiCircularProgress-circle": { stroke: "var(--accent)" } }}
-          />
-        </Box>
-      </Box>
-    );
+  if (!planetaryHours) return <Loading loadingText="Loading Planetary Hours" />;
   if (pos && pos.state !== "success") return <>No Position</>;
   const currentHour = planetaryHours.hours.find((h) => h.isCurrent);
   return (
