@@ -59,15 +59,6 @@ export default function Home() {
             Subnivean - Poetry
           </Box>
         </Typography>
-        <Typography>
-          <Box
-            component="a"
-            href="https://www.levelerpoetry.com/my-real-friend-prospero/"
-            sx={{ color: "white", px: 3 }}
-          >
-            LEVELER - Poetry
-          </Box>
-        </Typography>
       </Box>
     </Box>
   );
