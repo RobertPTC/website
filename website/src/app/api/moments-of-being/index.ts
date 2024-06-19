@@ -7,6 +7,7 @@ import postgres, { Row } from "postgres";
 
 import SentimentAlyze from "app/sentiment-alyze";
 
+import sql from "./db";
 import getMoments from "./get-moments";
 
 import { Moment, Moments, UpdateMoment } from "../types";
@@ -19,19 +20,18 @@ interface MomentsOfBeing {
   GetNav(req: NextRequest): Promise<Response>;
 }
 
-const sql = postgres(process.env.DB_URI || "", {
-  password: process.env.DB_PASSWORD,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
-
 const sA = SentimentAlyze();
 
-export default function MomentsOfBeing(): MomentsOfBeing {
+function MomentsOfBeing(): MomentsOfBeing {
   return {
     CreateMoment(req) {
       return req.json().then(async (json: Moment) => {
+        if (!sql) {
+          return Response.json(
+            {},
+            { status: 500, statusText: "SQL not instantiated" }
+          );
+        }
         try {
           const sA = SentimentAlyze();
           const values = {
@@ -41,10 +41,9 @@ export default function MomentsOfBeing(): MomentsOfBeing {
           const res = await sql`
                     INSERT INTO moment ${sql(values)} RETURNING moment_id;
                 `;
-          sql.end();
+
           return Response.json({ id: res[0].moment_id }, { status: 200 });
         } catch (e) {
-          sql.end();
           return Response.json({}, { status: 500 });
         }
       });
@@ -52,7 +51,7 @@ export default function MomentsOfBeing(): MomentsOfBeing {
     async DownloadMoments(req) {
       return new Promise(async (resolve, reject) => {
         const session = await getSession();
-        if (!session) {
+        if (!session || !sql) {
           return Response.json(
             {},
             { status: 500, statusText: "Session not included" }
@@ -104,7 +103,7 @@ export default function MomentsOfBeing(): MomentsOfBeing {
       const month = req.nextUrl.searchParams.get("month");
       const date = req.nextUrl.searchParams.get("date");
       const session = await getSession();
-      if (!year || !session) {
+      if (!year || !session || !sql) {
         return Response.json(
           {},
           { status: 500, statusText: "Year or session not included" }
@@ -194,6 +193,12 @@ export default function MomentsOfBeing(): MomentsOfBeing {
     },
     UpdateMoment(req) {
       return req.json().then(async (json: UpdateMoment) => {
+        if (!sql) {
+          return Response.json(
+            {},
+            { status: 500, statusText: "SQL not instantiated" }
+          );
+        }
         try {
           const sA = SentimentAlyze();
           const values = {
@@ -205,7 +210,6 @@ export default function MomentsOfBeing(): MomentsOfBeing {
             json.id
           };
                   `;
-          sql.end();
           return Response.json({}, { status: 200 });
         } catch (e) {
           return Response.json({}, { status: 500 });
@@ -214,17 +218,14 @@ export default function MomentsOfBeing(): MomentsOfBeing {
     },
     async GetNav(req) {
       const session = await getSession();
-      const sql = postgres(process.env.DB_URI || "", {
-        password: process.env.DB_PASSWORD,
-        ssl: {
-          rejectUnauthorized: false,
-        },
-      });
       const data =
         await sql`SELECT DISTINCT year FROM moment WHERE journalist_id IN (SELECT journalist_id FROM journalist WHERE email = ${session?.user.email}) ORDER BY year DESC`;
-      sql.end();
       const result = data.map((v) => v.year);
       return Response.json(result, { status: 200 });
     },
   };
 }
+
+const requestHandlers = MomentsOfBeing();
+
+export default requestHandlers;

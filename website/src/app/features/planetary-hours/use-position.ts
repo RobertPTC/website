@@ -37,7 +37,7 @@ export default function usePosition(
           state: "success",
         });
       },
-      () => {}
+      (e) => {}
     );
   }
   useEffect(() => {
