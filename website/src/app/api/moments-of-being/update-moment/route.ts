@@ -1,9 +1,7 @@
 import { NextRequest } from "next/server";
 
-import MomentsOfBeing from "..";
-
-const mob = MomentsOfBeing();
+import requestsHandler from "..";
 
 export function PUT(request: NextRequest) {
-  return mob.UpdateMoment(request);
+  return requestsHandler.UpdateMoment(request);
 }

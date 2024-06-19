@@ -1,9 +1,7 @@
 import { NextRequest } from "next/server";
 
-import MomentsOfBeing from "..";
-
-const mob = MomentsOfBeing();
+import requestsHandler from "..";
 
 export function POST(request: NextRequest) {
-  return mob.CreateMoment(request);
+  return requestsHandler.CreateMoment(request);
 }
