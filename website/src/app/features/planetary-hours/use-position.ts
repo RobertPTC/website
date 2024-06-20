@@ -37,7 +37,16 @@ export default function usePosition(
           state: "success",
         });
       },
-      (e) => {}
+      (e) => {
+        console.error("position error", e);
+        if (e.PERMISSION_DENIED) {
+          alert("Planetary Hours needs your location data to work.");
+          return;
+        }
+        if (e.POSITION_UNAVAILABLE || e.TIMEOUT) {
+          alert("Unable to get position data at this time.");
+        }
+      }
     );
   }
   useEffect(() => {

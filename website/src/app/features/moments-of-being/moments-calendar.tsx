@@ -221,6 +221,8 @@ export default function MomentsCalendar({ year }: { year: string }) {
                               sx={{
                                 display: "flex",
                                 justifyContent: "center",
+                                alignItems: "center",
+                                height: "30px",
                               }}
                             >
                               <Link

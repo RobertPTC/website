@@ -9,34 +9,31 @@ export default function Actions() {
   return (
     <>
       <Link href="/moments-of-being/create-moment">
-        <Box display="flex">
-          <Box mr={1} mb={1}>
-            <HistoryEduIcon />
+        <Box display="flex" p={1} alignItems="center">
+          <Box mr={1} ml="-4px">
+            <HistoryEduIcon fontSize="small" />
           </Box>
           <Typography>Create Moment</Typography>
         </Box>
       </Link>
 
-      <Box display="flex">
-        <Box mr={1}>
-          <DownloadIcon />
-        </Box>
-        <Button
-          onClick={async () => {
-            const res = await fetch("/api/moments-of-being/download-moments", {
-              method: "POST",
-              body: JSON.stringify({ ok: "hi" }),
-            });
-            const json = await res.json();
-            const a = document.createElement("a");
-            a.href = json.pdfDataURI;
-            a.download = "moments";
-            a.click();
-          }}
-        >
-          Download Button
-        </Button>
-      </Box>
+      <Button
+        startIcon={<DownloadIcon />}
+        sx={{ textTransform: "none", fontSize: "1rem" }}
+        onClick={async () => {
+          const res = await fetch("/api/moments-of-being/download-moments", {
+            method: "POST",
+            body: JSON.stringify({}),
+          });
+          const json = await res.json();
+          const a = document.createElement("a");
+          a.href = json.pdfDataURI;
+          a.download = "moments";
+          a.click();
+        }}
+      >
+        Download Moments
+      </Button>
     </>
   );
 }
