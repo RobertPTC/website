@@ -1,23 +1,13 @@
 "use client";
 
-import { useState } from "react";
-
-import {
-  Box,
-  CircularProgress,
-  Grid,
-  Popper,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import { scaleSequential } from "d3-scale";
 import { interpolateBlues, interpolateInferno } from "d3-scale-chromatic";
 import Link from "next/link";
 
-import { MomentOption, MonthMoment } from "app/api/types";
 import { Loading } from "app/components/loading";
-import TrieFactory, { Trie } from "app/trie";
 
+import MomentsSearch from "./moments-search";
 import useMoments from "./use-moments";
 
 function daysInMonth(month: number, year: number) {
@@ -32,45 +22,11 @@ function daysArray(daysInMonth: number) {
   return days;
 }
 
-const sentenceRegex = /[\w\s;\-–,"]+[\?!\.]/gim;
-
-function createMomentSearchTrie(
-  moments: [string, MonthMoment][]
-): Trie<MomentOption> | null {
-  let momentsTrie: Trie<MomentOption> | null = null;
-  if (momentsTrie) return momentsTrie;
-  const addWords = () => {
-    momentsTrie = TrieFactory();
-    moments.forEach(([_, moment]) => {
-      moment.moments.all.forEach((v) => {
-        v.moment.split(" ").forEach((s) => {
-          if (momentsTrie) {
-            momentsTrie.addWord(s, {
-              label: v.date_string,
-              url: `/moments-of-being/moment/${v.id}`,
-              momentPreviewText:
-                v.moment.match(sentenceRegex)?.slice(0, 2).join(" ") || "",
-              id: v.id,
-            });
-          }
-        });
-      });
-    });
-  };
-  addWords();
-  return momentsTrie;
-}
-
 export default function MomentsCalendar({ year }: { year: string }) {
   const moments = useMoments({ year, month: undefined, date: undefined });
-  const [searchOptions, setSearchOptions] = useState<MomentOption[]>([
-    { label: "hello world", id: "1", momentPreviewText: "", url: "" },
-  ]);
-  const [searchAnchorElement, setSearchAnchorElement] =
-    useState<HTMLElement | null>(null);
+
   if (!moments) return <Loading loadingText="Loading moments" />;
   const entries = Object.entries(moments);
-  const momentsSearchTrie = createMomentSearchTrie(entries);
   const timeFormat = Intl.DateTimeFormat("en", { month: "long" });
 
   return (
@@ -80,56 +36,7 @@ export default function MomentsCalendar({ year }: { year: string }) {
           <Typography sx={{ fontSize: "24px", mb: 2 }}>{year}</Typography>
         </Box>
         <Box sx={{ width: "80%", position: "relative" }}>
-          <TextField
-            fullWidth
-            size="small"
-            onChange={(e) => {
-              if (momentsSearchTrie) {
-                let seenMomentIDs: { [key: string]: string } = {};
-                const options = momentsSearchTrie
-                  .findWords(e.currentTarget.value)
-                  .map((v) => v.data)
-                  .filter((v) => {
-                    if (seenMomentIDs[v.id]) return false;
-                    seenMomentIDs[v.id] = v.id;
-                    return true;
-                  });
-                setSearchOptions(options);
-                setSearchAnchorElement(e.currentTarget);
-              }
-            }}
-          />
-          <Popper
-            open={!!searchAnchorElement}
-            anchorEl={searchAnchorElement}
-            placement="bottom-start"
-            disablePortal
-          >
-            <Box
-              sx={{
-                border: 1,
-                borderColor: "var(--accent)",
-                bgcolor: "rgb(var(--background-start-rgb))",
-                width: "100%",
-                p: 2,
-                maxHeight: "200px",
-                overflowY: "scroll",
-              }}
-            >
-              {searchOptions.map((o) => {
-                return (
-                  <Box key={o.id} sx={{ mb: 2 }}>
-                    <Link href={o.url}>
-                      <Typography sx={{ mb: 1 }}>{o.label}</Typography>
-                    </Link>
-                    <Typography sx={{ whiteSpace: "pre-line" }}>
-                      {o.momentPreviewText}
-                    </Typography>
-                  </Box>
-                );
-              })}
-            </Box>
-          </Popper>
+          <MomentsSearch moments={moments} />
         </Box>
       </Box>
       <Grid container>

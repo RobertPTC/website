@@ -3,7 +3,7 @@ import { spawn } from "node:child_process";
 
 import { getSession } from "@auth0/nextjs-auth0";
 import { NextRequest } from "next/server";
-import postgres, { Row } from "postgres";
+import { Row } from "postgres";
 
 import SentimentAlyze from "app/sentiment-alyze";
 

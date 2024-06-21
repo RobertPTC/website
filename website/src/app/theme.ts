@@ -68,9 +68,21 @@ const theme = createTheme({
     },
     MuiButton: {
       styleOverrides: {
+        text: {
+          textTransform: "none",
+          fontSize: "1rem",
+          color: "rgb(var(--foreground-rgb))",
+          fontWeight: 300,
+          "&:hover": {
+            background: "transparent",
+          },
+        },
         outlined: {
           color: "var(--accent)",
         },
+      },
+      defaultProps: {
+        disableRipple: true,
       },
     },
   },

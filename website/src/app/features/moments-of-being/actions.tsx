@@ -2,24 +2,21 @@
 
 import DownloadIcon from "@mui/icons-material/Download";
 import HistoryEduIcon from "@mui/icons-material/HistoryEdu";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import Link from "next/link";
 
 export default function Actions() {
   return (
-    <>
-      <Link href="/moments-of-being/create-moment">
-        <Box display="flex" p={1} alignItems="center">
-          <Box mr={1} ml="-4px">
-            <HistoryEduIcon fontSize="small" />
-          </Box>
-          <Typography>Create Moment</Typography>
-        </Box>
-      </Link>
-
+    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "start" }}>
+      <Button
+        startIcon={<HistoryEduIcon />}
+        LinkComponent={Link}
+        href="/moments-of-being/create-moment"
+      >
+        Create Moment
+      </Button>
       <Button
         startIcon={<DownloadIcon />}
-        sx={{ textTransform: "none", fontSize: "1rem" }}
         onClick={async () => {
           const res = await fetch("/api/moments-of-being/download-moments", {
             method: "POST",
@@ -34,6 +31,6 @@ export default function Actions() {
       >
         Download Moments
       </Button>
-    </>
+    </Box>
   );
 }
