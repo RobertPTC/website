@@ -1,8 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
-import { TextField, Popper, Box, Typography } from "@mui/material";
+import {
+  TextField,
+  Popper,
+  Box,
+  Typography,
+  ClickAwayListener,
+} from "@mui/material";
 import Link from "next/link";
 
 import { MomentOption, Moments, MonthMoment } from "app/api/types";
@@ -36,8 +42,12 @@ export default function MomentsSearch({ moments }: { moments: Moments }) {
   ]);
   const [searchAnchorElement, setSearchAnchorElement] =
     useState<HTMLElement | null>(null);
-  const entries = Object.entries(moments);
-  const momentsSearchTrie = createMomentSearchTrie(entries);
+  const momentsSearchTrie = useMemo(() => {
+    const entries = Object.entries(moments);
+    return createMomentSearchTrie(entries);
+  }, [moments]);
+  const onClickAway = () => setSearchAnchorElement(null);
+
   return (
     <>
       <TextField
@@ -54,40 +64,47 @@ export default function MomentsSearch({ moments }: { moments: Moments }) {
               return true;
             });
           setSearchOptions(options);
-          setSearchAnchorElement(e.currentTarget);
+          if (!searchAnchorElement) {
+            setSearchAnchorElement(e.currentTarget);
+          }
+          if (!options.length) {
+            setSearchAnchorElement(null);
+          }
         }}
       />
-      <Popper
-        open={!!searchAnchorElement}
-        anchorEl={searchAnchorElement}
-        placement="bottom-start"
-        disablePortal
-      >
-        <Box
-          sx={{
-            border: 1,
-            borderColor: "var(--accent)",
-            bgcolor: "rgb(var(--background-start-rgb))",
-            width: "100%",
-            p: 2,
-            maxHeight: "200px",
-            overflowY: "scroll",
-          }}
+      <ClickAwayListener onClickAway={onClickAway}>
+        <Popper
+          open={!!searchAnchorElement}
+          anchorEl={searchAnchorElement}
+          placement="bottom-start"
+          disablePortal
         >
-          {searchOptions.map((o) => {
-            return (
-              <Box key={o.id} sx={{ mb: 2 }}>
-                <Link href={o.url}>
-                  <Typography>{o.label}</Typography>
-                </Link>
-                <Typography sx={{ whiteSpace: "pre-line" }}>
-                  {o.momentPreviewText}
-                </Typography>
-              </Box>
-            );
-          })}
-        </Box>
-      </Popper>
+          <Box
+            sx={{
+              border: 1,
+              borderColor: "var(--accent)",
+              bgcolor: "rgb(var(--background-start-rgb))",
+              width: "100%",
+              p: 2,
+              maxHeight: "200px",
+              overflowY: "scroll",
+            }}
+          >
+            {searchOptions.map((o) => {
+              return (
+                <Box key={o.id} sx={{ mb: 2 }}>
+                  <Link href={o.url}>
+                    <Typography>{o.label}</Typography>
+                  </Link>
+                  <Typography sx={{ whiteSpace: "pre-line" }}>
+                    {o.momentPreviewText}
+                  </Typography>
+                </Box>
+              );
+            })}
+          </Box>
+        </Popper>
+      </ClickAwayListener>
     </>
   );
 }
