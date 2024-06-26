@@ -27,7 +27,7 @@ const mailOptions = {
   to: ["rptc3000@gmail.com"],
 };
 
-const scheduledHour = 8;
+const scheduledHour = 21;
 const tz = "America/New_York";
 /**
  *

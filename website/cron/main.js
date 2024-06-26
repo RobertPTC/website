@@ -9,7 +9,6 @@ const cronExpression = "0 * * * *";
 
 async function main() {
   nodeCron.schedule(cronExpression, (now) => {
-    console.log("now ", now);
     if (typeof now === "object") {
       sendMail(now);
     }
