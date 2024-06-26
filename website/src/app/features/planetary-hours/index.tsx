@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, CircularProgress, Grid, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
