@@ -1,14 +1,16 @@
 import { Box } from "@mui/material";
-import { rollup, max, InternMap, sum, min } from "d3-array";
+import { rollup, InternMap, sum, index, union } from "d3-array";
 import { scaleLinear, scaleOrdinal } from "d3-scale";
 import { schemeRdYlBu } from "d3-scale-chromatic";
+import { stack } from "d3-shape";
 
 const d = {
   9: [
-    { label: "website", seconds: 1920 },
-    { label: "website", seconds: 3840 },
-    { label: "learning", seconds: 960 },
-    { label: "substack", seconds: 400 },
+    { hour: 9, label: "website", seconds: 1920 },
+    { hour: 9, label: "website", seconds: 3840 },
+    { hour: 9, label: "learning", seconds: 960 },
+    { hour: 9, label: "substack", seconds: 400 },
+    { hour: 9, label: "running", seconds: 2500 },
   ],
   10: [
     { label: "website", seconds: 1600 },
@@ -30,15 +32,15 @@ const d = {
   ],
 };
 
-function mapRollup(r: InternMap<string, number>) {
+function mapRollup(r: InternMap<string, number>, hour: number) {
   const i = r.entries();
   let entry = i.next();
-  let rects = [];
+  let result = [];
   while (!entry.done) {
-    rects.push({ key: entry.value[0], value: entry.value[1] });
+    result.push({ label: entry.value[0], seconds: entry.value[1], hour });
     entry = i.next();
   }
-  return rects;
+  return result;
 }
 
 const r = rollup(
@@ -48,29 +50,42 @@ const r = rollup(
   },
   (d) => d.label
 );
-const rects = mapRollup(r);
+const rects = mapRollup(r, 9);
+const hourIndex = index(
+  rects,
+  (d) => d.hour,
+  (d) => d.label
+);
+const series = stack()
+  .keys(union(d["9"].map((d) => d.label)))
+  // @ts-ignore
+  .value(([, group], key) => group.get(key).seconds)(hourIndex);
 
 export default function StackedBarChart() {
   const sumSeconds = sum(r.values());
-  const minSeconds = min(r.values());
-  const maxSeconds = max(r.values());
-  if (!maxSeconds || !minSeconds) return <></>;
-  const y = scaleLinear().domain([0, sumSeconds]).range([0, 360]);
+  const y = scaleLinear().domain([0, sumSeconds]).rangeRound([0, 360]);
   const colorInterpolator = scaleOrdinal()
-    .domain(rects.map((r) => r.key))
+    .domain(rects.map((r) => r.label))
     .range(schemeRdYlBu[rects.length]);
   return (
-    <Box component="svg" id="stacked-bar-chart" width="100%" height="360px">
-      {rects.map((d, i) => {
+    <Box
+      component="svg"
+      id="stacked-bar-chart"
+      width="100%"
+      height="360px"
+      sx={{ border: "1px solid" }}
+    >
+      {series.map((d, i) => {
+        const element: any = d[0];
         return (
           <Box
             component="rect"
-            height={y(d.value)}
+            height={y(element[1]) - y(element[0])}
+            y={y(element[0])}
             width={5}
             id={d.key}
             key={d.key}
             fill={colorInterpolator(d.key) as string}
-            y={y(sumSeconds) - y(d.value)}
           />
         );
       })}
