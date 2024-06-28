@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 
 import { Box, TextField, Typography } from "@mui/material";
 
+import StackedBarChart from "./stacked-bar-chart";
 import Timer from "./timer";
 import TimerControls from "./timer-controls";
 import { TimerAction, TimerPrimaryButtonText } from "./types";
@@ -14,7 +15,7 @@ export default function DayView() {
   const [primaryButtonText, setPrimaryButtonText] =
     useState<TimerPrimaryButtonText>("Start");
   const countdownRef = useRef<null | NodeJS.Timeout>(null);
-  // Create pomodoro modal
+  // Create label modal
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -34,7 +35,7 @@ export default function DayView() {
     }
   }, [timerAction]);
   return (
-    <Box display="flex" flexDirection="column">
+    <Box display="flex" flexDirection="column" sx={{ p: 2 }}>
       {seconds}
       <Box>
         <Typography variant="h2" sx={{ fontSize: "16px" }}>
@@ -51,6 +52,7 @@ export default function DayView() {
           buttonText={primaryButtonText}
         />
       </Box>
+      <StackedBarChart />
     </Box>
   );
 }

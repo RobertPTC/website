@@ -1,5 +1,3 @@
-"use client";
-
 import { Dispatch, SetStateAction } from "react";
 
 import { Box, Button } from "@mui/material";
@@ -29,7 +27,9 @@ export default function TimerControls({
       >
         {buttonText}
       </Button>
-      <Button onClick={() => setTimerAction(0)}>Reset</Button>
+      <Button onClick={() => setTimerAction(0)} variant="outlined">
+        Reset
+      </Button>
     </Box>
   );
 }

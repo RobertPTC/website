@@ -1,13 +1,5 @@
-import { Grid } from "@mui/material";
-
-import DayView from "app/features/pomodoro";
+import DayView from "app/features/pomodoro/day-view";
 
 export default function Pomodoro() {
-  return (
-    <Grid container>
-      <Grid item xs={12}>
-        <DayView />
-      </Grid>
-    </Grid>
-  );
+  return <DayView />;
 }
