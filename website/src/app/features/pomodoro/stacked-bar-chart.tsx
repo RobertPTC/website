@@ -1,3 +1,14 @@
+import {
+  DOMElement,
+  ElementRef,
+  ReactElement,
+  ReactHTMLElement,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
 import { Box } from "@mui/material";
 import { index, union } from "d3-array";
 import { scaleLinear, scaleOrdinal } from "d3-scale";
@@ -6,7 +17,7 @@ import { stack } from "d3-shape";
 
 import { Pomodoro } from "./types";
 
-const d: { [key: number]: Pomodoro[] } = {
+const d: { [key: string]: Pomodoro[] } = {
   9: [
     { label: "website", seconds: 1920 },
     { label: "website", seconds: 3840 },
@@ -34,7 +45,7 @@ const d: { [key: number]: Pomodoro[] } = {
   ],
 };
 
-function rollup(pomodoros: Pomodoro[], hour: number) {
+function rollup(pomodoros: Pomodoro[], hour: string) {
   const labelsToSeconds: { [key: string]: number } = {};
   pomodoros.forEach((p) => {
     const currentSeconds = labelsToSeconds[p.label];
@@ -51,23 +62,21 @@ function rollup(pomodoros: Pomodoro[], hour: number) {
   }));
 }
 
-const rects = rollup(d["9"], 9);
-const hourIndex = index(
-  rects,
-  (d) => d.hour,
-  (d) => d.label
-);
-const series = stack()
-  .keys(union(d["9"].map((d) => d.label)))
-  // @ts-ignore
-  .value(([, group], key) => group.get(key).seconds)(hourIndex);
-
 export default function StackedBarChart() {
-  const sumSeconds = rects.reduce((p, c) => p + c.seconds, 0);
-  const y = scaleLinear().domain([0, sumSeconds]).rangeRound([0, 360]);
-  const colorInterpolator = scaleOrdinal()
-    .domain(rects.map((r) => r.label))
-    .range(schemeRdYlBu[rects.length]);
+  const svgRef = useRef<HTMLDivElement | null>(null);
+  const [svgWidth, setSVGWidth] = useState(0);
+  useEffect(() => {
+    function onWindowResize() {
+      if (svgRef.current) {
+        setSVGWidth(svgRef.current.getBoundingClientRect().width);
+      }
+    }
+    window.addEventListener("resize", onWindowResize);
+    onWindowResize();
+    return () => {
+      window.removeEventListener("resize", onWindowResize);
+    };
+  }, []);
   return (
     <Box
       component="svg"
@@ -75,19 +84,45 @@ export default function StackedBarChart() {
       width="100%"
       height="360px"
       sx={{ border: "1px solid" }}
+      ref={svgRef}
     >
-      {series.map((d, i) => {
-        const element = d[0];
+      {Object.entries(d).map(([hour, pomodoros], i) => {
+        const rects = rollup(pomodoros, hour);
+        const hourIndex = index(
+          rects,
+          (d) => d.hour,
+          (d) => d.label
+        );
+        const series = stack()
+          .keys(union(d[hour].map((d) => d.label)))
+          // @ts-ignore
+          .value(([, group], key) => group.get(key).seconds)(hourIndex);
+        const sumSeconds = rects.reduce((p, c) => p + c.seconds, 0);
+        const y = scaleLinear().domain([0, sumSeconds]).rangeRound([0, 360]);
+        const colorInterpolator = scaleOrdinal()
+          .domain(rects.map((r) => r.label))
+          .range(schemeRdYlBu[rects.length]);
         return (
           <Box
-            component="rect"
-            height={y(element[1]) - y(element[0])}
-            y={y(element[0])}
-            width={5}
-            id={d.key}
-            key={d.key}
-            fill={colorInterpolator(d.key) as string}
-          />
+            component="g"
+            key={hour}
+            transform={`translate(${i * (svgWidth / 24)}, 0)`}
+          >
+            {series.map((d, i) => {
+              const element = d[0];
+              return (
+                <Box
+                  component="rect"
+                  height={y(element[1]) - y(element[0])}
+                  y={y(element[0])}
+                  width={svgWidth / 24}
+                  id={d.key}
+                  key={d.key}
+                  fill={colorInterpolator(d.key) as string}
+                />
+              );
+            })}
+          </Box>
         );
       })}
     </Box>
