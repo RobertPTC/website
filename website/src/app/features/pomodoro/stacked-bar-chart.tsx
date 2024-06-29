@@ -1,16 +1,18 @@
 import { Box } from "@mui/material";
-import { rollup, InternMap, sum, index, union } from "d3-array";
+import { index, union } from "d3-array";
 import { scaleLinear, scaleOrdinal } from "d3-scale";
 import { schemeRdYlBu } from "d3-scale-chromatic";
 import { stack } from "d3-shape";
 
-const d = {
+import { Pomodoro } from "./types";
+
+const d: { [key: number]: Pomodoro[] } = {
   9: [
-    { hour: 9, label: "website", seconds: 1920 },
-    { hour: 9, label: "website", seconds: 3840 },
-    { hour: 9, label: "learning", seconds: 960 },
-    { hour: 9, label: "substack", seconds: 400 },
-    { hour: 9, label: "running", seconds: 2500 },
+    { label: "website", seconds: 1920 },
+    { label: "website", seconds: 3840 },
+    { label: "learning", seconds: 960 },
+    { label: "substack", seconds: 400 },
+    { label: "running", seconds: 2500 },
   ],
   10: [
     { label: "website", seconds: 1600 },
@@ -32,25 +34,24 @@ const d = {
   ],
 };
 
-function mapRollup(r: InternMap<string, number>, hour: number) {
-  const i = r.entries();
-  let entry = i.next();
-  let result = [];
-  while (!entry.done) {
-    result.push({ label: entry.value[0], seconds: entry.value[1], hour });
-    entry = i.next();
-  }
-  return result;
+function rollup(pomodoros: Pomodoro[], hour: number) {
+  const labelsToSeconds: { [key: string]: number } = {};
+  pomodoros.forEach((p) => {
+    const currentSeconds = labelsToSeconds[p.label];
+    if (currentSeconds) {
+      labelsToSeconds[p.label] += p.seconds;
+      return;
+    }
+    labelsToSeconds[p.label] = p.seconds;
+  });
+  return Object.entries(labelsToSeconds).map(([label, seconds]) => ({
+    label,
+    seconds,
+    hour,
+  }));
 }
 
-const r = rollup(
-  d["9"],
-  (d) => {
-    return d.reduce((p, c) => p + c.seconds, 0);
-  },
-  (d) => d.label
-);
-const rects = mapRollup(r, 9);
+const rects = rollup(d["9"], 9);
 const hourIndex = index(
   rects,
   (d) => d.hour,
@@ -62,7 +63,7 @@ const series = stack()
   .value(([, group], key) => group.get(key).seconds)(hourIndex);
 
 export default function StackedBarChart() {
-  const sumSeconds = sum(r.values());
+  const sumSeconds = rects.reduce((p, c) => p + c.seconds, 0);
   const y = scaleLinear().domain([0, sumSeconds]).rangeRound([0, 360]);
   const colorInterpolator = scaleOrdinal()
     .domain(rects.map((r) => r.label))
@@ -76,7 +77,7 @@ export default function StackedBarChart() {
       sx={{ border: "1px solid" }}
     >
       {series.map((d, i) => {
-        const element: any = d[0];
+        const element = d[0];
         return (
           <Box
             component="rect"
