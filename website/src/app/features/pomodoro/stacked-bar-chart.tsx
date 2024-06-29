@@ -1,13 +1,4 @@
-import {
-  DOMElement,
-  ElementRef,
-  ReactElement,
-  ReactHTMLElement,
-  ReactNode,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Box } from "@mui/material";
 import { index, union } from "d3-array";
@@ -97,8 +88,9 @@ export default function StackedBarChart() {
           .keys(union(d[hour].map((d) => d.label)))
           // @ts-ignore
           .value(([, group], key) => group.get(key).seconds)(hourIndex);
+        const height = series[series.length - 1][0][1];
         const sumSeconds = rects.reduce((p, c) => p + c.seconds, 0);
-        const y = scaleLinear().domain([0, sumSeconds]).rangeRound([0, 360]);
+        const y = scaleLinear().domain([0, 9620]).rangeRound([0, 360]);
         const colorInterpolator = scaleOrdinal()
           .domain(rects.map((r) => r.label))
           .range(schemeRdYlBu[rects.length]);
@@ -106,7 +98,7 @@ export default function StackedBarChart() {
           <Box
             component="g"
             key={hour}
-            transform={`translate(${i * (svgWidth / 24)}, 0)`}
+            transform={`translate(${i * (svgWidth / 24)}, ${360 - y(height)})`}
           >
             {series.map((d, i) => {
               const element = d[0];
