@@ -39,13 +39,6 @@ export default function usePosition(
       },
       (e) => {
         console.error("position error", e);
-        if (e.PERMISSION_DENIED) {
-          alert("Planetary Hours needs your location data to work.");
-          return;
-        }
-        if (e.POSITION_UNAVAILABLE || e.TIMEOUT) {
-          alert("Unable to get position data at this time.");
-        }
       }
     );
   }
