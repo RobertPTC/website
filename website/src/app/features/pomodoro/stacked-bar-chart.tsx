@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 
-import { Box } from "@mui/material";
+import { Box, Typography, Grid } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { index, union } from "d3-array";
 import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
 import { schemeRdYlBu } from "d3-scale-chromatic";
 import { stack } from "d3-shape";
 
-import { Pomodoro } from "./types";
+import { Pomodoro, Rect } from "./types";
 
 const d: { [key: string]: Pomodoro[] } = {
   0: [
@@ -15,29 +15,29 @@ const d: { [key: string]: Pomodoro[] } = {
     { label: "poetry", seconds: 480 },
     { label: "learning", seconds: 640 },
     { label: "substack", seconds: 400 },
+    { label: "website", seconds: 1920 },
+    { label: "running", seconds: 300 },
   ],
   1: [
     { label: "website", seconds: 1920 },
-    { label: "website", seconds: 3840 },
     { label: "learning", seconds: 960 },
     { label: "substack", seconds: 400 },
     { label: "running", seconds: 2500 },
   ],
   9: [
     { label: "website", seconds: 1920 },
-    { label: "website", seconds: 3840 },
     { label: "learning", seconds: 960 },
     { label: "substack", seconds: 400 },
     { label: "running", seconds: 2500 },
   ],
   10: [
-    { label: "website", seconds: 1600 },
+    { label: "website", seconds: 1920 },
     { label: "poetry", seconds: 1440 },
     { label: "learning", seconds: 960 },
     { label: "poetry", seconds: 400 },
   ],
   11: [
-    { label: "website", seconds: 640 },
+    { label: "website", seconds: 1920 },
     { label: "poetry", seconds: 960 },
     { label: "substack", seconds: 640 },
     { label: "substack", seconds: 400 },
@@ -50,14 +50,14 @@ const d: { [key: string]: Pomodoro[] } = {
   ],
   22: [],
   23: [
-    { label: "website", seconds: 640 },
+    { label: "website", seconds: 1920 },
     { label: "poetry", seconds: 960 },
     { label: "substack", seconds: 640 },
     { label: "substack", seconds: 400 },
   ],
 };
 
-function rollup(pomodoros: Pomodoro[], hour: string) {
+function rollup(pomodoros: Pomodoro[], hour: string): Rect[] {
   const labelsToSeconds: { [key: string]: number } = {};
   pomodoros.forEach((p) => {
     const currentSeconds = labelsToSeconds[p.label];
@@ -79,28 +79,40 @@ const marginBottom = 20;
 const marginLeft = 80;
 const numberOfHours = 24;
 
-const hourBars = Object.entries(d).map(([hour, pomodoros]) => {
-  if (!pomodoros.length) return null;
-  const rects = rollup(pomodoros, hour);
-  const hourIndex = index(
-    rects,
-    (r) => r.hour,
-    (r) => r.label
-  );
-  const series = stack()
-    .keys(union(d[hour].map((d) => d.label)))
-    // @ts-ignore
-    .value(([, group], key) => group.get(key).seconds)(hourIndex);
-  const barHeight = series[series.length - 1][0][1];
-  return {
-    rects,
-    hourIndex,
-    series,
-    barHeight,
-  };
-});
+function hourBars(d: { [key: string]: Pomodoro[] }) {
+  const allLabels: { [key: string]: string } = {};
+  const hourBars = Object.entries(d).map(([hour, pomodoros]) => {
+    if (!pomodoros.length) return null;
+    const rects = rollup(pomodoros, hour);
+    const hourIndex = index(
+      rects,
+      (r) => r.hour,
+      (r) => r.label
+    );
+    const labels = union(
+      d[hour].map((d) => {
+        allLabels[d.label] = d.label;
+        return d.label;
+      })
+    );
+    const series = stack()
+      .keys(labels)
+      // @ts-ignore
+      .value(([, group], key) => group.get(key).seconds)(hourIndex);
+    const barHeight = series[series.length - 1][0][1];
+    return {
+      rects,
+      hourIndex,
+      series,
+      barHeight,
+    };
+  });
+  return { hourBars, allLabels: Object.keys(allLabels) };
+}
 
-const maxSeconds = hourBars
+const bars = hourBars(d);
+
+const maxSeconds = bars.hourBars
   .filter((h) => !!h)
   .map((h) => h?.barHeight)
   .sort();
@@ -134,121 +146,142 @@ export default function StackedBarChart() {
   const y = scaleLinear()
     .domain([0, max])
     .rangeRound([0, svgHeight - marginBottom]);
+  const colorInterpolator = scaleOrdinal()
+    .domain(bars.allLabels)
+    .range(schemeRdYlBu[bars.allLabels.length]);
   return (
-    <Box
-      component="svg"
-      id="stacked-bar-chart"
-      width="100%"
-      height={`${svgHeight}px`}
-      ref={svgRef}
-    >
-      {Object.entries(d).map(([hour, pomodoros], i) => {
-        if (!pomodoros.length) return <Box key={hour} component="g" />;
-        const rects = rollup(pomodoros, hour);
-        const hourIndex = index(
-          rects,
-          (r) => r.hour,
-          (r) => r.label
-        );
-        const series = stack()
-          .keys(union(d[hour].map((d) => d.label)))
-          // @ts-ignore
-          .value(([, group], key) => group.get(key).seconds)(hourIndex);
-        const barHeight = series[series.length - 1][0][1];
-
-        const colorInterpolator = scaleOrdinal()
-          .domain(rects.map((r) => r.label))
-          .range(schemeRdYlBu[rects.length]);
-        return (
-          <Box
-            component="g"
-            key={hour}
-            transform={`translate(${x(Number(hour))}, ${
-              svgHeight - y(barHeight) - marginBottom
-            })`}
-          >
-            {series.map((d, i) => {
-              const element = d[0];
-              return (
-                <Box
-                  component="rect"
-                  height={y(element[1]) - y(element[0])}
-                  y={y(element[0])}
-                  width={bands.bandwidth()}
-                  id={d.key}
-                  key={d.key}
-                  fill={colorInterpolator(d.key) as string}
-                />
-              );
-            })}
-          </Box>
-        );
-      })}
-      <Box component="g" id="y-axis" transform={`translate(${marginLeft}, 0)`}>
-        <Box
-          component="line"
-          x1="0"
-          y1="0"
-          x2="0"
-          y2={svgHeight - marginBottom}
-          stroke="var(--accent)"
-          strokeWidth="1"
-        />
-        <Box
-          component="text"
-          transform={`translate(${-marginLeft}, ${
-            (svgHeight - marginBottom) / 3
-          }) rotate(90)`}
-          fill="var(--accent)"
-          sx={{ fontFamily: theme.typography.fontFamily, fontSize: "20px" }}
-        >
-          Minutes
-        </Box>
-        {y.ticks().map((t) => {
+    <Box>
+      <Grid container ml={`${marginLeft}px`} mb={2}>
+        {bars.allLabels.map((l) => {
           return (
-            <Box
-              key={t}
-              component="text"
-              fill="var(--accent)"
-              transform={`translate(${-marginLeft / 2}, ${
-                svgHeight - marginBottom - y(t)
-              })`}
-              sx={{ fontFamily: theme.typography.fontFamily }}
-            >
-              {t}
-            </Box>
+            <Grid item key={l} display="flex" mr="4px">
+              <Box
+                bgcolor={colorInterpolator(l) as string}
+                height="21px"
+                width="21px"
+                mr="4px"
+              />
+              <Typography lineHeight="21px">{l}</Typography>
+            </Grid>
           );
         })}
-      </Box>
+      </Grid>
       <Box
-        component="g"
-        id="x-axis"
-        textAnchor="middle"
-        transform={`translate(0, ${svgHeight - marginBottom})`}
+        component="svg"
+        id="stacked-bar-chart"
+        width="100%"
+        height={`${svgHeight}px`}
+        ref={svgRef}
       >
-        <Box
-          component="line"
-          x1={marginLeft}
-          y1="0"
-          x2={svgWidth}
-          y2="0"
-          stroke="var(--accent)"
-          strokeWidth="1"
-        />
-        {new Array(numberOfHours).fill(0).map((_, i) => {
+        {Object.entries(d).map(([hour, pomodoros], i) => {
+          if (!pomodoros.length) return <Box key={hour} component="g" />;
+          const rects = rollup(pomodoros, hour);
+          const hourIndex = index(
+            rects,
+            (r) => r.hour,
+            (r) => r.label
+          );
+          const series = stack()
+            .keys(union(d[hour].map((d) => d.label)))
+            // @ts-ignore
+            .value(([, group], key) => group.get(key).seconds)(hourIndex);
+          const barHeight = series[series.length - 1][0][1];
+
           return (
             <Box
-              key={i}
-              component="text"
-              transform={`translate(${x(i)},0)`}
-              y={marginBottom - 5}
-              fill="var(--accent)"
-              sx={{ fontFamily: theme.typography.fontFamily }}
+              component="g"
+              key={hour}
+              transform={`translate(${x(Number(hour))}, ${
+                svgHeight - y(barHeight) - marginBottom
+              })`}
             >
-              {i}
+              {series.map((d, i) => {
+                const element = d[0];
+                return (
+                  <Box
+                    component="rect"
+                    height={y(element[1]) - y(element[0])}
+                    y={y(element[0])}
+                    width={bands.bandwidth()}
+                    id={d.key}
+                    key={d.key}
+                    fill={colorInterpolator(d.key) as string}
+                  />
+                );
+              })}
             </Box>
           );
         })}
+        <Box
+          component="g"
+          id="y-axis"
+          transform={`translate(${marginLeft}, 0)`}
+        >
+          <Box
+            component="line"
+            x1="0"
+            y1="0"
+            x2="0"
+            y2={svgHeight - marginBottom}
+            stroke="var(--accent)"
+            strokeWidth="1"
+          />
+          <Box
+            component="text"
+            transform={`translate(${-marginLeft + 25}, ${
+              (svgHeight - marginBottom) / 2
+            }) rotate(270)`}
+            fill="var(--accent)"
+            sx={{ fontFamily: theme.typography.fontFamily, fontSize: "20px" }}
+          >
+            Minutes
+          </Box>
+          {y.ticks().map((t) => {
+            return (
+              <Box
+                key={t}
+                component="text"
+                fill="var(--accent)"
+                transform={`translate(${-marginLeft / 2}, ${
+                  svgHeight - marginBottom - y(t)
+                })`}
+                sx={{ fontFamily: theme.typography.fontFamily }}
+              >
+                {t}
+              </Box>
+            );
+          })}
+        </Box>
+        <Box
+          component="g"
+          id="x-axis"
+          textAnchor="middle"
+          transform={`translate(0, ${svgHeight - marginBottom})`}
+        >
+          <Box
+            component="line"
+            x1={marginLeft}
+            y1="0"
+            x2={svgWidth}
+            y2="0"
+            stroke="var(--accent)"
+            strokeWidth="1"
+          />
+          {new Array(numberOfHours).fill(0).map((_, i) => {
+            return (
+              <Box
+                key={i}
+                component="text"
+                transform={`translate(${x(i)},0)`}
+                y={marginBottom - 5}
+                fill="var(--accent)"
+                sx={{ fontFamily: theme.typography.fontFamily }}
+              >
+                {i}
+              </Box>
+            );
+          })}
+        </Box>
       </Box>
     </Box>
   );

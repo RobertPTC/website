@@ -6,3 +6,9 @@ export type Pomodoro = {
   label: string;
   seconds: number;
 };
+
+export type Rect = {
+  label: string;
+  seconds: number;
+  hour: string;
+};
