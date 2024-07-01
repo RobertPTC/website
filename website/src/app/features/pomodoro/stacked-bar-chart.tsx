@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { Box } from "@mui/material";
 import { index, union } from "d3-array";
-import { scaleLinear, scaleOrdinal } from "d3-scale";
+import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
 import { schemeRdYlBu } from "d3-scale-chromatic";
 import { stack } from "d3-shape";
 
@@ -75,7 +75,8 @@ function rollup(pomodoros: Pomodoro[], hour: string) {
 
 const svgHeight = 360;
 const marginBottom = 20;
-const marginLeft = 15;
+const marginLeft = 30;
+const marginRight = 30;
 const numberOfHours = 24;
 
 const hourBars = Object.entries(d).map(([hour, pomodoros]) => {
@@ -120,11 +121,17 @@ export default function StackedBarChart() {
       window.removeEventListener("resize", onWindowResize);
     };
   }, []);
+
+  if (!max) return <></>;
+  const bands = scaleBand(
+    new Array(24).fill(0).map((_, i) => i),
+    [marginLeft, svgWidth]
+  );
   const x = scaleLinear(
     [0, numberOfHours - 1],
-    [marginLeft, svgWidth - svgWidth / numberOfHours]
+    [marginLeft, svgWidth - bands.bandwidth()]
   );
-  if (!max) return <></>;
+
   return (
     <Box
       component="svg"
@@ -147,7 +154,6 @@ export default function StackedBarChart() {
           // @ts-ignore
           .value(([, group], key) => group.get(key).seconds)(hourIndex);
         const barHeight = series[series.length - 1][0][1];
-
         const y = scaleLinear()
           .domain([0, max])
           .rangeRound([0, svgHeight - marginBottom]);
@@ -169,7 +175,7 @@ export default function StackedBarChart() {
                   component="rect"
                   height={y(element[1]) - y(element[0])}
                   y={y(element[0])}
-                  width={svgWidth / numberOfHours}
+                  width={bands.bandwidth()}
                   id={d.key}
                   key={d.key}
                   fill={colorInterpolator(d.key) as string}
@@ -179,6 +185,7 @@ export default function StackedBarChart() {
           </Box>
         );
       })}
+      <Box component="g" id="y-axis"></Box>
       <Box
         component="g"
         id="x-axis"
@@ -203,6 +210,7 @@ export default function StackedBarChart() {
               component="text"
               transform={`translate(${x(i)},0)`}
               y={marginBottom - 5}
+              fill="var(--accent)"
             >
               {i}
             </Box>
