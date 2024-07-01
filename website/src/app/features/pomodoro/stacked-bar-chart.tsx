@@ -6,54 +6,55 @@ import { index, union } from "d3-array";
 import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
 import { schemeRdYlBu } from "d3-scale-chromatic";
 import { stack } from "d3-shape";
+import { v4 as uuid } from "uuid";
 
 import { Pomodoro, Rect } from "./types";
 
 const d: { [key: string]: Pomodoro[] } = {
   0: [
-    { label: "learning", seconds: 320 },
-    { label: "poetry", seconds: 480 },
-    { label: "learning", seconds: 640 },
-    { label: "substack", seconds: 400 },
-    { label: "website", seconds: 1920 },
-    { label: "running", seconds: 300 },
+    { id: uuid(), label: "learning", seconds: 320 },
+    { id: uuid(), label: "poetry", seconds: 480 },
+    { id: uuid(), label: "learning", seconds: 640 },
+    { id: uuid(), label: "substack", seconds: 400 },
+    { id: uuid(), label: "website", seconds: 1920 },
+    { id: uuid(), label: "running", seconds: 300 },
   ],
   1: [
-    { label: "website", seconds: 1920 },
-    { label: "learning", seconds: 960 },
-    { label: "substack", seconds: 400 },
-    { label: "running", seconds: 2500 },
+    { id: uuid(), label: "website", seconds: 1920 },
+    { id: uuid(), label: "learning", seconds: 960 },
+    { id: uuid(), label: "substack", seconds: 400 },
+    { id: uuid(), label: "running", seconds: 2500 },
   ],
   9: [
-    { label: "website", seconds: 1920 },
-    { label: "learning", seconds: 960 },
-    { label: "substack", seconds: 400 },
-    { label: "running", seconds: 2500 },
+    { id: uuid(), label: "website", seconds: 1920 },
+    { id: uuid(), label: "learning", seconds: 960 },
+    { id: uuid(), label: "substack", seconds: 400 },
+    { id: uuid(), label: "running", seconds: 2500 },
   ],
   10: [
-    { label: "website", seconds: 1920 },
-    { label: "poetry", seconds: 1440 },
-    { label: "learning", seconds: 960 },
-    { label: "poetry", seconds: 400 },
+    { id: uuid(), label: "website", seconds: 1920 },
+    { id: uuid(), label: "poetry", seconds: 1440 },
+    { id: uuid(), label: "learning", seconds: 960 },
+    { id: uuid(), label: "poetry", seconds: 400 },
   ],
   11: [
-    { label: "website", seconds: 1920 },
-    { label: "poetry", seconds: 960 },
-    { label: "substack", seconds: 640 },
-    { label: "substack", seconds: 400 },
+    { id: uuid(), label: "website", seconds: 1920 },
+    { id: uuid(), label: "poetry", seconds: 960 },
+    { id: uuid(), label: "substack", seconds: 640 },
+    { id: uuid(), label: "substack", seconds: 400 },
   ],
   12: [
-    { label: "learning", seconds: 320 },
-    { label: "poetry", seconds: 480 },
-    { label: "learning", seconds: 640 },
-    { label: "substack", seconds: 400 },
+    { id: uuid(), label: "learning", seconds: 320 },
+    { id: uuid(), label: "poetry", seconds: 480 },
+    { id: uuid(), label: "learning", seconds: 640 },
+    { id: uuid(), label: "substack", seconds: 400 },
   ],
   22: [],
   23: [
-    { label: "website", seconds: 1920 },
-    { label: "poetry", seconds: 960 },
-    { label: "substack", seconds: 640 },
-    { label: "substack", seconds: 400 },
+    { id: uuid(), label: "website", seconds: 1920 },
+    { id: uuid(), label: "poetry", seconds: 960 },
+    { id: uuid(), label: "substack", seconds: 640 },
+    { id: uuid(), label: "substack", seconds: 400 },
   ],
 };
 
@@ -82,7 +83,7 @@ const numberOfHours = 24;
 function hourBars(d: { [key: string]: Pomodoro[] }) {
   const allLabels: { [key: string]: string } = {};
   const hourBars = Object.entries(d).map(([hour, pomodoros]) => {
-    if (!pomodoros.length) return null;
+    if (!pomodoros.length) return { hour };
     const rects = rollup(pomodoros, hour);
     const hourIndex = index(
       rects,
@@ -99,12 +100,14 @@ function hourBars(d: { [key: string]: Pomodoro[] }) {
       .keys(labels)
       // @ts-ignore
       .value(([, group], key) => group.get(key).seconds)(hourIndex);
-    const barHeight = series[series.length - 1][0][1];
+    const barHeight = series?.[series.length - 1]?.[0]?.[1];
+
     return {
       rects,
       hourIndex,
       series,
       barHeight,
+      hour,
     };
   });
   return { hourBars, allLabels: Object.keys(allLabels) };
@@ -113,8 +116,8 @@ function hourBars(d: { [key: string]: Pomodoro[] }) {
 const bars = hourBars(d);
 
 const maxSeconds = bars.hourBars
-  .filter((h) => !!h)
-  .map((h) => h?.barHeight)
+  .filter((h) => !!h.barHeight)
+  .map((h) => h.barHeight)
   .sort();
 const max = maxSeconds[maxSeconds.length - 1];
 
@@ -173,18 +176,9 @@ export default function StackedBarChart() {
         height={`${svgHeight}px`}
         ref={svgRef}
       >
-        {Object.entries(d).map(([hour, pomodoros], i) => {
-          if (!pomodoros.length) return <Box key={hour} component="g" />;
-          const rects = rollup(pomodoros, hour);
-          const hourIndex = index(
-            rects,
-            (r) => r.hour,
-            (r) => r.label
-          );
-          const series = stack()
-            .keys(union(d[hour].map((d) => d.label)))
-            // @ts-ignore
-            .value(([, group], key) => group.get(key).seconds)(hourIndex);
+        {bars.hourBars.map((b, i) => {
+          if (!b.barHeight) return <Box component="g" key={b.hour} />;
+          const { series, hour } = b;
           const barHeight = series[series.length - 1][0][1];
 
           return (
@@ -245,7 +239,10 @@ export default function StackedBarChart() {
                 transform={`translate(${-marginLeft / 2}, ${
                   svgHeight - marginBottom - y(t)
                 })`}
-                sx={{ fontFamily: theme.typography.fontFamily }}
+                sx={{
+                  fontFamily: theme.typography.fontFamily,
+                  display: t ? "block" : "none",
+                }}
               >
                 {t}
               </Box>
@@ -275,7 +272,10 @@ export default function StackedBarChart() {
                 transform={`translate(${x(i)},0)`}
                 y={marginBottom - 5}
                 fill="var(--accent)"
-                sx={{ fontFamily: theme.typography.fontFamily }}
+                sx={{
+                  fontFamily: theme.typography.fontFamily,
+                  display: i ? "block" : "none",
+                }}
               >
                 {i}
               </Box>
