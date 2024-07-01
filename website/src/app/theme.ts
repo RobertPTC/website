@@ -91,7 +91,9 @@ const theme = createTheme({
     body1: {
       fontWeight: 300,
     },
-    fontFamily: roboto.style.fontFamily,
+    allVariants: {
+      fontFamily: roboto.style.fontFamily,
+    },
   },
 });
 

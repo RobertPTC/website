@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { Box } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { index, union } from "d3-array";
 import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
 import { schemeRdYlBu } from "d3-scale-chromatic";
@@ -75,8 +76,7 @@ function rollup(pomodoros: Pomodoro[], hour: string) {
 
 const svgHeight = 360;
 const marginBottom = 20;
-const marginLeft = 30;
-const marginRight = 30;
+const marginLeft = 80;
 const numberOfHours = 24;
 
 const hourBars = Object.entries(d).map(([hour, pomodoros]) => {
@@ -121,7 +121,7 @@ export default function StackedBarChart() {
       window.removeEventListener("resize", onWindowResize);
     };
   }, []);
-
+  const theme = useTheme();
   if (!max) return <></>;
   const bands = scaleBand(
     new Array(24).fill(0).map((_, i) => i),
@@ -131,14 +131,15 @@ export default function StackedBarChart() {
     [0, numberOfHours - 1],
     [marginLeft, svgWidth - bands.bandwidth()]
   );
-
+  const y = scaleLinear()
+    .domain([0, max])
+    .rangeRound([0, svgHeight - marginBottom]);
   return (
     <Box
       component="svg"
       id="stacked-bar-chart"
       width="100%"
       height={`${svgHeight}px`}
-      sx={{ border: "1px solid blue" }}
       ref={svgRef}
     >
       {Object.entries(d).map(([hour, pomodoros], i) => {
@@ -154,9 +155,7 @@ export default function StackedBarChart() {
           // @ts-ignore
           .value(([, group], key) => group.get(key).seconds)(hourIndex);
         const barHeight = series[series.length - 1][0][1];
-        const y = scaleLinear()
-          .domain([0, max])
-          .rangeRound([0, svgHeight - marginBottom]);
+
         const colorInterpolator = scaleOrdinal()
           .domain(rects.map((r) => r.label))
           .range(schemeRdYlBu[rects.length]);
@@ -185,14 +184,47 @@ export default function StackedBarChart() {
           </Box>
         );
       })}
-      <Box component="g" id="y-axis"></Box>
+      <Box component="g" id="y-axis" transform={`translate(${marginLeft}, 0)`}>
+        <Box
+          component="line"
+          x1="0"
+          y1="0"
+          x2="0"
+          y2={svgHeight - marginBottom}
+          stroke="var(--accent)"
+          strokeWidth="1"
+        />
+        <Box
+          component="text"
+          transform={`translate(${-marginLeft}, ${
+            (svgHeight - marginBottom) / 3
+          }) rotate(90)`}
+          fill="var(--accent)"
+          sx={{ fontFamily: theme.typography.fontFamily, fontSize: "20px" }}
+        >
+          Minutes
+        </Box>
+        {y.ticks().map((t) => {
+          return (
+            <Box
+              key={t}
+              component="text"
+              fill="var(--accent)"
+              transform={`translate(${-marginLeft / 2}, ${
+                svgHeight - marginBottom - y(t)
+              })`}
+              sx={{ fontFamily: theme.typography.fontFamily }}
+            >
+              {t}
+            </Box>
+          );
+        })}
+      </Box>
       <Box
         component="g"
         id="x-axis"
         textAnchor="middle"
         transform={`translate(0, ${svgHeight - marginBottom})`}
-        strokeWidth="1"
-        sx={{ fontFamily: "var(--font-mono)" }}
       >
         <Box
           component="line"
@@ -211,6 +243,7 @@ export default function StackedBarChart() {
               transform={`translate(${x(i)},0)`}
               y={marginBottom - 5}
               fill="var(--accent)"
+              sx={{ fontFamily: theme.typography.fontFamily }}
             >
               {i}
             </Box>
