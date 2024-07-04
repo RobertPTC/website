@@ -1,7 +1,12 @@
 import { FormMoment, Moment } from "app/api/types";
+import { Pomodoro } from "app/features/pomodoro/types";
 
 type MomentsRequest = {
   uri: `/api/moments-of-being/moments?year=${string}${string}${string}`;
+};
+
+type PomodorosRequest = {
+  uri: `/api/pomodoro?year=${string}${string}${string}`;
 };
 
 type MomentsNavRequest = {
@@ -13,8 +18,13 @@ type CreateMomentsRequest = {
   data: FormMoment;
 };
 
-type GetRequests = MomentsRequest | MomentsNavRequest;
-type SetRequests = CreateMomentsRequest;
+type CreatePomodoroRequest = {
+  uri: "/api/pomodoro";
+  data: { pomodoro: Pomodoro; year: string; month: string; date: string };
+};
+
+type GetRequests = MomentsRequest | MomentsNavRequest | PomodorosRequest;
+type SetRequests = CreateMomentsRequest | CreatePomodoroRequest;
 
 type Resp<T> = {
   ok: boolean;
@@ -26,7 +36,15 @@ interface DataStore {
   get<T>(r: GetRequests): Promise<T | null>;
   set<T extends SetRequests>(
     r: SetRequests
-  ): Promise<Resp<T extends CreateMomentsRequest ? Moment : never>>;
+  ): Promise<
+    Resp<
+      T extends CreateMomentsRequest
+        ? Moment
+        : T extends CreatePomodoroRequest
+        ? Pomodoro
+        : never
+    >
+  >;
   clearCache(): void;
 }
 
@@ -71,17 +89,73 @@ function clearCache(uri?: string) {
 const Storage = {
   localStorage: (storage: Storage): DataStore => ({
     get: async <T>({ uri }: GetRequests): Promise<T | null> => {
-      const value = storage.getItem(uri) as any;
+      const [path, query] = uri.split("?");
+      const value = storage.getItem(path);
       if (!value) return null;
-      if (uri.includes("/")) {
-        const pathPieces = uri.split("/");
-        const parsed = JSON.parse(value);
-        return pathPieces.reduce((p, c) => p[c], parsed);
+      let parsed = JSON.parse(value);
+      if (!query) return parsed;
+      const queryParams = new URLSearchParams(query);
+      for (const value of queryParams.values()) {
+        parsed = parsed[value];
       }
-      return value as any;
+      return parsed;
     },
     set: async <T>({ uri, data }: SetRequests) => {
-      storage.setItem(uri, JSON.stringify(data));
+      let value = storage.getItem(uri);
+      if (uri === "/api/pomodoro") {
+        const parsed = JSON.parse(value ? value : "{}");
+        const { year, month, date, pomodoro } = data;
+        let currentPoms = { ...parsed };
+        const yearPoms = parsed[year];
+        const monthPoms = yearPoms?.[month];
+        const datePoms = monthPoms?.[date];
+        if (yearPoms && monthPoms && datePoms) {
+          currentPoms = {
+            ...parsed,
+            [year]: {
+              ...yearPoms,
+              [month]: {
+                ...monthPoms,
+                [date]: [...datePoms, pomodoro],
+              },
+            },
+          };
+        }
+        if (yearPoms && monthPoms && !datePoms) {
+          currentPoms = {
+            ...parsed,
+            [year]: {
+              ...yearPoms,
+              [month]: {
+                ...monthPoms,
+                [date]: [pomodoro],
+              },
+            },
+          };
+        }
+        if (yearPoms && !monthPoms) {
+          currentPoms = {
+            ...parsed,
+            [year]: {
+              ...yearPoms,
+              [month]: {
+                [date]: [pomodoro],
+              },
+            },
+          };
+        }
+        if (!yearPoms) {
+          currentPoms = {
+            ...parsed,
+            [year]: {
+              [month]: {
+                [date]: [pomodoro],
+              },
+            },
+          };
+        }
+        storage.setItem(uri, JSON.stringify(currentPoms));
+      }
       return { ok: true, json: async () => ({} as any), statusText: "ok" };
     },
     clearCache() {},

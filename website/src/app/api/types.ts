@@ -12,16 +12,19 @@ export type City = {
   id: string;
 };
 
-export type FormMoment = {
+export type BaseMoment = {
   moment: string;
   date_string: string;
   month: string;
   year: string;
   date: string;
+};
+
+export type FormMoment = BaseMoment & {
   journalist_id: string;
 };
 
-export type Moment = FormMoment & {
+export type Moment = BaseMoment & {
   id: string;
   score: number;
 };
