@@ -1,6 +1,7 @@
 "use client";
-import Storage, { PomodoroIntentionRequest } from "app/storage";
 import { useEffect, useState } from "react";
+
+import Storage, { PomodoroIntentionRequest } from "app/storage";
 
 export default function Intentions() {
   const [intentions, setIntentions] = useState<string[]>([]);
