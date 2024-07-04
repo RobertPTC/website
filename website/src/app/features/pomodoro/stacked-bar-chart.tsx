@@ -226,7 +226,7 @@ export default function StackedBarChart() {
               (svgHeight - marginBottom) / 2
             }) rotate(270)`}
             fill="var(--accent)"
-            sx={{ fontFamily: theme.typography.fontFamily, fontSize: "20px" }}
+            sx={{ fontFamily: theme.typography.fontFamily, fontSize: "18px" }}
           >
             Minutes
           </Box>
@@ -242,6 +242,7 @@ export default function StackedBarChart() {
                 sx={{
                   fontFamily: theme.typography.fontFamily,
                   display: t ? "block" : "none",
+                  fontSize: "14px",
                 }}
               >
                 {t}
@@ -266,18 +267,27 @@ export default function StackedBarChart() {
           />
           {new Array(numberOfHours).fill(0).map((_, i) => {
             return (
-              <Box
-                key={i}
-                component="text"
-                transform={`translate(${x(i)},0)`}
-                y={marginBottom - 5}
-                fill="var(--accent)"
-                sx={{
-                  fontFamily: theme.typography.fontFamily,
-                  display: i ? "block" : "none",
-                }}
-              >
-                {i}
+              <Box component="g" key={i} transform={`translate(${x(i)},15)`}>
+                <Box
+                  component="text"
+                  fill="var(--accent)"
+                  sx={{
+                    fontFamily: theme.typography.fontFamily,
+                    display: i ? "block" : "none",
+                  }}
+                >
+                  {i === 12 ? i : i % 12}
+                  <Box
+                    component="tspan"
+                    sx={{
+                      fontFamily: theme.typography.fontFamily,
+                      display: i ? "block" : "none",
+                      fontSize: "10px",
+                    }}
+                  >
+                    {i >= 12 ? "pm" : "am"}
+                  </Box>
+                </Box>
               </Box>
             );
           })}

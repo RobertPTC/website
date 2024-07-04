@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import Link from "next/link";
 
 import { Loading } from "app/components/loading";

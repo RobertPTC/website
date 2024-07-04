@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { Moments } from "app/api/types";
-import ferry from "app/ferry";
+import Storage from "app/storage";
 
 export default function useMoments({
   year,
@@ -14,14 +14,16 @@ export default function useMoments({
 }) {
   const [moments, setMoments] = useState<Moments | undefined>();
   useEffect(() => {
-    ferry<Moments>(
-      `/api/moments-of-being/moments?year=${year}${
-        month ? `&month=${month}` : ""
-      }${date ? `&date=${date}` : ""}`
-    ).then((res) => {
-      setMoments(res);
-      return;
-    });
+    Storage["api"]
+      .get<Moments>(
+        `/api/moments-of-being/moments?year=${year}${
+          month ? `&month=${month}` : ""
+        }${date ? `&date=${date}` : ""}`
+      )
+      .then((res) => {
+        setMoments(res);
+        return;
+      });
   }, [year, month, date]);
   return moments;
 }

@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 
 import { MomentNav } from "app/api/types";
-import ferry from "app/ferry";
+import Storage from "app/storage";
 
 export default function useNav() {
   const [nav, setNav] = useState<MomentNav | undefined>();
   useEffect(() => {
-    ferry<MomentNav>("/api/moments-of-being/nav")
+    Storage["api"]
+      .get<MomentNav>("/api/moments-of-being/nav")
       .then((res) => {
         setNav(res);
       })
