@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { Moments } from "app/api/types";
 import Storage from "app/storage";
 
+const storage = Storage["api"](fetch);
+
 export default function useMoments({
   year,
   month,
@@ -14,15 +16,16 @@ export default function useMoments({
 }) {
   const [moments, setMoments] = useState<Moments | undefined>();
   useEffect(() => {
-    Storage["api"]
-      .get<Moments>(
-        `/api/moments-of-being/moments?year=${year}${
+    storage
+      .get<Moments>({
+        uri: `/api/moments-of-being/moments?year=${year}${
           month ? `&month=${month}` : ""
-        }${date ? `&date=${date}` : ""}`
-      )
+        }${date ? `&date=${date}` : ""}`,
+      })
       .then((res) => {
-        setMoments(res);
-        return;
+        if (res) {
+          setMoments(res);
+        }
       });
   }, [year, month, date]);
   return moments;

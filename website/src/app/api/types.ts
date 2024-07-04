@@ -12,14 +12,18 @@ export type City = {
   id: string;
 };
 
-export type Moment = {
+export type FormMoment = {
   moment: string;
   date_string: string;
-  month: number;
-  year: number;
-  date: number;
-  score?: number;
+  month: string;
+  year: string;
+  date: string;
+  journalist_id: string;
+};
+
+export type Moment = FormMoment & {
   id: string;
+  score: number;
 };
 
 export type UpdateMoment = {

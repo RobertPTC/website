@@ -3,13 +3,17 @@ import { useEffect, useState } from "react";
 import { MomentNav } from "app/api/types";
 import Storage from "app/storage";
 
+const storage = Storage["api"](fetch);
+
 export default function useNav() {
   const [nav, setNav] = useState<MomentNav | undefined>();
   useEffect(() => {
-    Storage["api"]
-      .get<MomentNav>("/api/moments-of-being/nav")
+    storage
+      .get<MomentNav>({ uri: "/api/moments-of-being/nav" })
       .then((res) => {
-        setNav(res);
+        if (res) {
+          setNav(res);
+        }
       })
       .catch((e) => {});
   }, []);

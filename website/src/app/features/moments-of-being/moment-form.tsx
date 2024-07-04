@@ -4,6 +4,7 @@ import { FormEvent, useRef, useState } from "react";
 
 import { Box, Button, TextField, Snackbar, Alert } from "@mui/material";
 
+import { FormMoment } from "app/api/types";
 import Storage from "app/storage";
 
 type SnackbarMetadata = {
@@ -35,6 +36,8 @@ function SB({
   );
 }
 
+const storage = Storage["api"](fetch);
+
 export default function MomentForm() {
   const formRef = useRef<HTMLFormElement>(null);
   const momentID = useRef<string | null>(null);
@@ -43,22 +46,22 @@ export default function MomentForm() {
     e.preventDefault();
     if (formRef.current) {
       const formValues = new FormData(formRef.current);
+
       const date = new Date();
-      let values: { [key: string]: FormDataEntryValue } = {
+      let values: FormMoment = {
         date_string: date.toLocaleDateString(),
         month: `${date.getMonth()}`,
         year: `${date.getFullYear()}`,
         date: `${date.getDate()}`,
         journalist_id: "c3e3bc64-e05e-439a-9159-24f8bf06bd3a",
+        moment: (formValues.get("moment") || "") as string,
       };
-      for (const [key, value] of formValues.entries()) {
-        values[key] = value;
-      }
+
       if (!momentID.current) {
         try {
-          const res = await fetch("/api/moments-of-being/create-moment", {
-            method: "POST",
-            body: JSON.stringify(values),
+          const res = await storage.set({
+            uri: "/api/moments-of-being/create-moment",
+            data: values,
           });
           if (!res.ok) {
             throw new Error(res.statusText);
@@ -69,7 +72,7 @@ export default function MomentForm() {
             severity: "success",
           });
           momentID.current = json.id;
-          Storage["api"].clearCache();
+          storage.clearCache();
         } catch (e) {
           setSnackbarMeta({
             message: "Something went wrong saving your moment",
@@ -90,7 +93,7 @@ export default function MomentForm() {
           message: "Your moment was updated successfully",
           severity: "success",
         });
-        Storage["api"].clearCache();
+        storage.clearCache();
       } catch (error) {
         setSnackbarMeta({
           message: "Something went wrong saving your moment",
