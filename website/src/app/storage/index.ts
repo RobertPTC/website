@@ -1,16 +1,20 @@
-import { FormMoment, Moment } from "app/api/types";
+import { FormMoment, Moment, Moments } from "app/api/types";
 import { Pomodoro } from "app/features/pomodoro/types";
 
-type MomentsRequest = {
+export type MomentsRequest = {
   uri: `/api/moments-of-being/moments?year=${string}${string}${string}`;
 };
 
-type PomodorosRequest = {
+export type PomodoroRequest = {
   uri: `/api/pomodoro?year=${string}${string}${string}`;
 };
 
-type MomentsNavRequest = {
+export type MomentsNavRequest = {
   uri: "/api/moments-of-being/nav";
+};
+
+export type PomodoroIntentionRequest = {
+  uri: "/api/pomodoro-intention";
 };
 
 type CreateMomentsRequest = {
@@ -23,8 +27,19 @@ type CreatePomodoroRequest = {
   data: { pomodoro: Pomodoro; year: string; month: string; date: string };
 };
 
-type GetRequests = MomentsRequest | MomentsNavRequest | PomodorosRequest;
-type SetRequests = CreateMomentsRequest | CreatePomodoroRequest;
+type CreatePomodoroIntentionRequest = PomodoroIntentionRequest & {
+  data: { intention: string };
+};
+
+type GetRequests =
+  | MomentsRequest
+  | MomentsNavRequest
+  | PomodoroRequest
+  | PomodoroIntentionRequest;
+type SetRequests =
+  | CreateMomentsRequest
+  | CreatePomodoroRequest
+  | CreatePomodoroIntentionRequest;
 
 type Resp<T> = {
   ok: boolean;
@@ -33,7 +48,17 @@ type Resp<T> = {
 };
 
 interface DataStore {
-  get<T>(r: GetRequests): Promise<T | null>;
+  get<T extends GetRequests>(
+    r: GetRequests
+  ): Promise<
+    T extends PomodoroIntentionRequest
+      ? string[]
+      : T extends MomentsRequest
+      ? Moments
+      : T extends PomodoroRequest
+      ? Pomodoro
+      : null
+  >;
   set<T extends SetRequests>(
     r: SetRequests
   ): Promise<
@@ -88,7 +113,7 @@ function clearCache(uri?: string) {
 
 const Storage = {
   localStorage: (storage: Storage): DataStore => ({
-    get: async <T>({ uri }: GetRequests): Promise<T | null> => {
+    get: async ({ uri }: GetRequests) => {
       const [path, query] = uri.split("?");
       const value = storage.getItem(path);
       if (!value) return null;
@@ -100,7 +125,7 @@ const Storage = {
       }
       return parsed;
     },
-    set: async <T>({ uri, data }: SetRequests) => {
+    set: async ({ uri, data }: SetRequests) => {
       let value = storage.getItem(uri);
       if (uri === "/api/pomodoro") {
         const parsed = JSON.parse(value ? value : "{}");
@@ -155,6 +180,24 @@ const Storage = {
           };
         }
         storage.setItem(uri, JSON.stringify(currentPoms));
+      }
+      if (uri === "/api/pomodoro-intention") {
+        const value = storage.getItem(uri);
+        let newValue: string[] = [];
+        if (!value) {
+          newValue = [data.intention];
+          storage.setItem(uri, JSON.stringify(newValue));
+        }
+        if (value) {
+          const parsed = JSON.parse(value);
+          newValue = [...parsed, data.intention];
+          storage.setItem(uri, JSON.stringify(newValue));
+        }
+        return {
+          ok: true,
+          json: async () => newValue,
+          statusText: "ok",
+        };
       }
       return { ok: true, json: async () => ({} as any), statusText: "ok" };
     },

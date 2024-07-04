@@ -1,6 +1,6 @@
 import { Pomodoro } from "app/features/pomodoro/types";
 
-import Storage from ".";
+import Storage, { PomodoroRequest } from ".";
 
 let storage: { [key: string]: any } = {};
 
@@ -35,7 +35,7 @@ describe("Storage", () => {
         pomodoro: { label: "hi", seconds: 60, id: "0" },
       },
     });
-    const data = await localStorage.get<Pomodoro[]>({
+    const data = await localStorage.get<PomodoroRequest>({
       uri: "/api/pomodoro?year=2024&month=6&date=3",
     });
     expect(data).toStrictEqual([{ label: "hi", seconds: 60, id: "0" }]);
@@ -60,7 +60,7 @@ describe("Storage", () => {
         pomodoro: { label: "hi", seconds: 60, id: "20240604" },
       },
     });
-    const data = await localStorage.get<Pomodoro[]>({
+    const data = await localStorage.get<PomodoroRequest>({
       uri: "/api/pomodoro?year=2024&month=6&date=4",
     });
     expect(data).toStrictEqual([{ label: "hi", seconds: 60, id: "20240604" }]);
@@ -85,7 +85,7 @@ describe("Storage", () => {
         pomodoro: { label: "hi", seconds: 60, id: "20240704" },
       },
     });
-    const data = await localStorage.get<Pomodoro[]>({
+    const data = await localStorage.get<PomodoroRequest>({
       uri: "/api/pomodoro?year=2024&month=7&date=4",
     });
     expect(data).toStrictEqual([{ label: "hi", seconds: 60, id: "20240704" }]);
@@ -110,7 +110,7 @@ describe("Storage", () => {
         pomodoro: { label: "hi", seconds: 60, id: "20250704" },
       },
     });
-    const data = await localStorage.get<Pomodoro[]>({
+    const data = await localStorage.get<PomodoroRequest>({
       uri: "/api/pomodoro?year=2025&month=7&date=4",
     });
     expect(data).toStrictEqual([{ label: "hi", seconds: 60, id: "20250704" }]);

@@ -1,6 +1,6 @@
 export type TimerPrimaryButtonText = "Start" | "Stop";
 
-export type TimerAction = 0 | 1 | null;
+export type TimerAction = "start" | "stop" | "restart" | "reset" | null;
 
 export type Pomodoro = {
   label: string;

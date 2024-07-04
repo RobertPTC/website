@@ -1,33 +1,18 @@
-import { Dispatch, SetStateAction } from "react";
-
 import { Box, Button } from "@mui/material";
 
-import { TimerAction, TimerPrimaryButtonText } from "./types";
+import { TimerPrimaryButtonText } from "./types";
 
 export default function TimerControls({
-  setTimerAction,
-  timerAction,
   buttonText,
+  onReset,
 }: {
-  setTimerAction: Dispatch<SetStateAction<TimerAction>>;
-  timerAction: TimerAction;
   buttonText: TimerPrimaryButtonText;
+  onReset(): void;
 }) {
   return (
     <Box>
-      <Button
-        onClick={() => {
-          if (!timerAction) {
-            setTimerAction(1);
-            return;
-          }
-          setTimerAction(0);
-        }}
-        variant="contained"
-      >
-        {buttonText}
-      </Button>
-      <Button onClick={() => setTimerAction(0)} variant="outlined">
+      <Button>{buttonText}</Button>
+      <Button onClick={onReset} variant="outlined">
         Reset
       </Button>
     </Box>
