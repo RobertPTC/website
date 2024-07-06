@@ -1,4 +1,4 @@
-export default function secondsToTimerArray(
+export function secondsToTimerArray(
   s: number
 ): [number, number, number, number, number, number] {
   if (s <= 0)
@@ -26,3 +26,12 @@ export default function secondsToTimerArray(
     Number(secondsString[1]),
   ];
 }
+
+export function renderActiveTimer(seconds: number) {
+  const [hh, h, mm, m, ss, s] = secondsToTimerArray(seconds);
+  const timeString = `${hh}${h}h${mm}${m}m${ss}${s}s`;
+  const firstDigitIndex = timeString.search(/[1-6]/);
+  return timeString.slice(firstDigitIndex);
+}
+
+export const timeGroups = ["h", "m", "s"];

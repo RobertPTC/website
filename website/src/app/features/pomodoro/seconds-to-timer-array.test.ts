@@ -1,4 +1,7 @@
-import secondsToTimerArray from "./seconds-to-timer-array";
+import {
+  secondsToTimerArray,
+  renderActiveTimer,
+} from "./seconds-to-timer-array";
 describe("pomodoro functions", () => {
   it("computes array for 3600s", () => {
     const array = secondsToTimerArray(3600);
@@ -23,5 +26,20 @@ describe("pomodoro functions", () => {
   it("computes array for 36000s", () => {
     const array = secondsToTimerArray(36000);
     expect(array).toStrictEqual([1, 0, 0, 0, 0, 0]);
+  });
+  it("renders 5m00s when duration is 300", () => {
+    expect(renderActiveTimer(300)).toEqual("5m00s");
+  });
+  it("renders 59m59s when duration is 3599", () => {
+    expect(renderActiveTimer(3599)).toEqual("59m59s");
+  });
+  it("renders 59s when duration is 59", () => {
+    expect(renderActiveTimer(59)).toEqual("59s");
+  });
+  it("renders 2h00m01s when duration is 7201", () => {
+    expect(renderActiveTimer(7201)).toEqual("2h00m01s");
+  });
+  it("renders 10h00m00s when duration is 36000", () => {
+    expect(renderActiveTimer(36000)).toEqual("10h00m00s");
   });
 });

@@ -14,7 +14,11 @@ import {
   Typography,
 } from "@mui/material";
 
-import secondsToTimerArray from "./seconds-to-timer-array";
+import {
+  secondsToTimerArray,
+  renderActiveTimer,
+  timeGroups,
+} from "./seconds-to-timer-array";
 import Timer from "./timer";
 import { TimerAction } from "./types";
 
@@ -56,39 +60,27 @@ export default function Intention({ intention }: { intention: string }) {
               />
               <Box>
                 <Typography sx={{ fontSize: "40px", fontWeight: 400 }}>
-                  {secondsToTimerArray(duration).map((v, i) => {
-                    return (
-                      <Box key={i} component="span">
+                  {renderActiveTimer(duration)
+                    .split("")
+                    .map((v, i) => {
+                      return (
                         <Box key={i} component="span">
-                          {v}
+                          {!timeGroups.includes(v) && (
+                            <Box key={i} component="span">
+                              {v}
+                            </Box>
+                          )}
+                          {timeGroups.includes(v) && (
+                            <Box
+                              component="span"
+                              sx={{ mr: 1, fontSize: "16px" }}
+                            >
+                              {v}
+                            </Box>
+                          )}
                         </Box>
-                        {i === 1 && (
-                          <Box
-                            component="span"
-                            sx={{ mr: 1, fontSize: "16px" }}
-                          >
-                            h
-                          </Box>
-                        )}
-                        {i === 3 && (
-                          <Box
-                            component="span"
-                            sx={{ mr: 1, fontSize: "16px" }}
-                          >
-                            m
-                          </Box>
-                        )}
-                        {i === 5 && (
-                          <Box
-                            component="span"
-                            sx={{ mr: 1, fontSize: "16px" }}
-                          >
-                            s
-                          </Box>
-                        )}
-                      </Box>
-                    );
-                  })}
+                      );
+                    })}
                 </Typography>
               </Box>
               <Box display="flex">
