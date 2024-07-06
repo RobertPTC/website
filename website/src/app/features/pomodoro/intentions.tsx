@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 
+import { Box } from "@mui/material";
+
 import { pomodoroDispatch } from "app/dispatch";
 import Storage, { PomodoroIntentionRequest } from "app/storage";
 
@@ -27,7 +29,11 @@ export default function Intentions() {
   return (
     <>
       {intentions.map((i) => {
-        return <Intention key={i} intention={i} />;
+        return (
+          <Box key={i} mb={1}>
+            <Intention intention={i} />
+          </Box>
+        );
       })}
     </>
   );

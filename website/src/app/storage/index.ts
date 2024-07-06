@@ -188,7 +188,7 @@ const Storage = {
           newValue = [data.intention];
           storage.setItem(uri, JSON.stringify(newValue));
         }
-        if (value) {
+        if (value && !value.includes(data.intention)) {
           const parsed = JSON.parse(value);
           newValue = [...parsed, data.intention];
           storage.setItem(uri, JSON.stringify(newValue));

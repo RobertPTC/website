@@ -7,17 +7,17 @@ import { pomodoroDispatch } from "app/dispatch";
 import Storage from "app/storage";
 
 export default function PomIntentionForm() {
-  const formRef = useRef(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!window) return;
+    if (!window || !formRef.current) return;
     const storage = Storage["localStorage"](localStorage);
-    if (!formRef.current) return;
     const formValues = new FormData(formRef.current);
     const intention = formValues.get("intention") as string;
     if (!intention) {
       throw new Error("intention not set");
     }
+    formRef.current.reset();
     storage.set({
       uri: "/api/pomodoro-intention",
       data: { intention },
@@ -25,9 +25,11 @@ export default function PomIntentionForm() {
     pomodoroDispatch.publish("setPomodoroIntentions");
   };
   return (
-    <Box component="form" onSubmit={onSubmit} ref={formRef}>
-      <TextField label="Create New Intention" name="intention" />
-      <Button type="submit">Create Intention</Button>
+    <Box component="form" onSubmit={onSubmit} ref={formRef} display="flex">
+      <TextField label="New Intention" name="intention" />
+      <Button type="submit" variant="outlined">
+        Create Intention
+      </Button>
     </Box>
   );
 }
