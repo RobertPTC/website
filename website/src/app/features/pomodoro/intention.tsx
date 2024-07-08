@@ -5,6 +5,7 @@ import {
   FormEventHandler,
   ChangeEventHandler,
   KeyboardEventHandler,
+  ChangeEvent,
 } from "react";
 
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -73,18 +74,26 @@ export default function Intention({ intention }: { intention: string }) {
       inputRef.current.value = transformTimerInput(renderedInput);
     }
   };
-  const onKeydown: KeyboardEventHandler<HTMLInputElement> = (e) => {
-    if (isNaN(Number(e.key))) {
-      e.preventDefault();
-      return;
-    }
-  };
-  const onChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    const s = transformTimerInput(e.currentTarget.value);
+  const onChange = (value: string, e?: ChangeEvent<HTMLInputElement>) => {
+    const s = transformTimerInput(value);
     if (inputRef.current) {
       inputRef.current.value = parseTimerInput(s);
     }
     setTimerInput(s);
+  };
+  const onKeydown: KeyboardEventHandler<HTMLInputElement> = (e) => {
+    if (inputRef.current && (e.key === "Backspace" || e.key === "Delete")) {
+      e.preventDefault();
+      const value = inputRef.current.value;
+      const newValue = value.substring(value.length - 1, 0);
+      console.log("value ", value);
+      console.log("newValue ", newValue);
+      onChange(`${newValue}`);
+    }
+    if (isNaN(Number(e.key))) {
+      e.preventDefault();
+      return;
+    }
   };
   return (
     <Card variant="outlined">
@@ -119,7 +128,7 @@ export default function Intention({ intention }: { intention: string }) {
                 pattern="\d*"
                 ref={inputRef}
                 onKeyDown={onKeydown}
-                onChange={onChange}
+                onChange={(e) => onChange(e.currentTarget.value, e)}
               />
               <Box component="div" onClick={onClickDurationContainer}>
                 <Typography sx={{ fontSize: "40px", fontWeight: 400 }}>
