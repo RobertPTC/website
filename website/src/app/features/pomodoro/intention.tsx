@@ -5,6 +5,7 @@ import {
   FormEventHandler,
   KeyboardEventHandler,
   ChangeEvent,
+  FormEvent,
 } from "react";
 
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -35,7 +36,7 @@ import { TimerAction } from "./types";
 
 export default function Intention({ intention }: { intention: string }) {
   const duration = useRef(0);
-  const intervalID = useRef(0);
+  const intervalID = useRef<NodeJS.Timeout>();
   const isFirstDeleteKeydown = useRef(true);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isIntentionLogsOpen, setIsIntentionLogsOpen] = useState(false);
@@ -57,13 +58,23 @@ export default function Intention({ intention }: { intention: string }) {
   const onClickAddIntentionPomodoro = () => {
     setIsIntentionLogsOpen(!isIntentionLogsOpen);
   };
-  const onSubmit: FormEventHandler<HTMLFormElement> = (e) => {
+  const onSubmit = (
+    e: FormEvent<HTMLFormElement>,
+    timerAction: TimerAction
+  ) => {
     e.preventDefault();
     setIsEditMode(false);
-    if (inputRef.current) {
-      setActiveDuration(
-        timerArrayToSeconds(timerInputToTimerArray(inputRef.current.value))
+    if (timerAction === "start" && inputRef.current) {
+      const seconds = timerArrayToSeconds(
+        timerInputToTimerArray(inputRef.current.value)
       );
+      duration.current = seconds;
+      setActiveDuration(seconds);
+      intervalID.current = setInterval(() => {
+        setActiveDuration((v) => {
+          return v - 1;
+        });
+      }, 1000);
     }
   };
   const onClickDurationContainer = () => {
@@ -77,7 +88,7 @@ export default function Intention({ intention }: { intention: string }) {
     setTimerInput(renderedInput);
     isFirstDeleteKeydown.current = true;
     if (inputRef.current) {
-      inputRef.current.value = interpolateTimeDivisions(renderedInput);
+      inputRef.current.value = parseTimerInput(renderedInput);
     }
   };
   const onChange = (value: string, e?: ChangeEvent<HTMLInputElement>) => {
@@ -117,7 +128,9 @@ export default function Intention({ intention }: { intention: string }) {
               flexDirection="column"
               height="100%"
               justifyContent="space-between"
-              onSubmit={onSubmit}
+              onSubmit={(e) => {
+                onSubmit(e, timerAction === "stop" ? "start" : "stop");
+              }}
             >
               <Box
                 component="input"
