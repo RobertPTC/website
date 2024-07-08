@@ -3,7 +3,6 @@ import {
   useRef,
   useEffect,
   FormEventHandler,
-  ChangeEventHandler,
   KeyboardEventHandler,
   ChangeEvent,
 } from "react";
@@ -37,6 +36,7 @@ import { TimerAction } from "./types";
 export default function Intention({ intention }: { intention: string }) {
   const duration = useRef(0);
   const intervalID = useRef(0);
+  const isFirstDeleteKeydown = useRef(true);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isIntentionLogsOpen, setIsIntentionLogsOpen] = useState(false);
   const [activeDuration, setActiveDuration] = useState<number>(5 * 60);
@@ -70,6 +70,7 @@ export default function Intention({ intention }: { intention: string }) {
     setIsEditMode(!isEditMode);
     const renderedInput = renderInactiveTimer(activeDuration);
     setTimerInput(renderedInput);
+    isFirstDeleteKeydown.current = true;
     if (inputRef.current) {
       inputRef.current.value = transformTimerInput(renderedInput);
     }
@@ -85,9 +86,10 @@ export default function Intention({ intention }: { intention: string }) {
     if (inputRef.current && (e.key === "Backspace" || e.key === "Delete")) {
       e.preventDefault();
       const value = inputRef.current.value;
-      const newValue = value.substring(value.length - 1, 0);
-      console.log("value ", value);
-      console.log("newValue ", newValue);
+      const newValue = isFirstDeleteKeydown.current
+        ? "0"
+        : value.substring(value.length - 1, 0);
+      isFirstDeleteKeydown.current = false;
       onChange(`${newValue}`);
     }
     if (isNaN(Number(e.key))) {
