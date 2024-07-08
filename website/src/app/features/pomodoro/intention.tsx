@@ -28,7 +28,7 @@ import {
   timeGroups,
   timerArrayToSeconds,
   timerInputToTimerArray,
-  transformTimerInput,
+  interpolateTimeDivisions,
 } from "./seconds-to-timer-array";
 import Timer from "./timer";
 import { TimerAction } from "./types";
@@ -68,15 +68,20 @@ export default function Intention({ intention }: { intention: string }) {
   };
   const onClickDurationContainer = () => {
     setIsEditMode(!isEditMode);
+    if (isEditMode && inputRef.current) {
+      setActiveDuration(
+        timerArrayToSeconds(timerInputToTimerArray(inputRef.current.value))
+      );
+    }
     const renderedInput = renderInactiveTimer(activeDuration);
     setTimerInput(renderedInput);
     isFirstDeleteKeydown.current = true;
     if (inputRef.current) {
-      inputRef.current.value = transformTimerInput(renderedInput);
+      inputRef.current.value = interpolateTimeDivisions(renderedInput);
     }
   };
   const onChange = (value: string, e?: ChangeEvent<HTMLInputElement>) => {
-    const s = transformTimerInput(value);
+    const s = interpolateTimeDivisions(value);
     if (inputRef.current) {
       inputRef.current.value = parseTimerInput(s);
     }

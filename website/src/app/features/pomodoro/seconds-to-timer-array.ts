@@ -65,7 +65,7 @@ export function timerInputToTimerArray(input: string): TimerArray {
   return p.split("").map((n) => Number(n)) as TimerArray;
 }
 
-export function transformTimerInput(input: string): string {
+export function interpolateTimeDivisions(input: string): string {
   const [hh, h, mm, m, ss, s] = timerInputToTimerArray(input);
   return `${hh}${h}h${mm}${m}m${ss}${s}s`;
 }
