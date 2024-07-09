@@ -54,7 +54,7 @@ function setActiveDurationInterval(
 export default function Intention({ intention }: { intention: string }) {
   const duration = useRef(0);
   const intervalID = useRef<NodeJS.Timeout>();
-  const isFirstDeleteKeydown = useRef(true);
+
   const isEditAwaitingInput = useRef(true);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isIntentionLogsOpen, setIsIntentionLogsOpen] = useState(false);
@@ -101,11 +101,7 @@ export default function Intention({ intention }: { intention: string }) {
     clearInterval(intervalID.current);
     const renderedInput = renderInactiveTimer(activeDuration);
     setTimerInput(renderedInput);
-    isFirstDeleteKeydown.current = true;
     if (isEditMode && inputRef.current) {
-      setActiveDuration(
-        timerArrayToSeconds(timerInputToTimerArray(inputRef.current.value))
-      );
       intervalID.current = setActiveDurationInterval(setActiveDuration);
       isEditAwaitingInput.current = true;
       setTimerAction("start");
@@ -117,6 +113,7 @@ export default function Intention({ intention }: { intention: string }) {
       inputRef.current.focus();
       inputRef.current.value = parseTimerInput(renderedInput);
     }
+    isEditAwaitingInput.current = true;
     setTimerAction("stop");
     setSubmitButtonText("Start");
   };
@@ -129,6 +126,9 @@ export default function Intention({ intention }: { intention: string }) {
     const s = interpolateTimeDivisions(newValue);
     if (inputRef.current) {
       inputRef.current.value = parseTimerInput(s);
+      setActiveDuration(
+        timerArrayToSeconds(timerInputToTimerArray(inputRef.current.value))
+      );
     }
     setTimerInput(s);
   };
@@ -137,11 +137,11 @@ export default function Intention({ intention }: { intention: string }) {
     if (inputRef.current && isDeleteKey) {
       e.preventDefault();
       const value = inputRef.current.value;
-      const newValue = isFirstDeleteKeydown.current
+      const newValue = isEditAwaitingInput.current
         ? "0"
         : value.substring(value.length - 1, 0);
       setActiveDuration(timerArrayToSeconds(timerInputToTimerArray(newValue)));
-      isFirstDeleteKeydown.current = false;
+      isEditAwaitingInput.current = false;
       onChange(`${newValue}`);
     }
     if (isNaN(Number(e.key))) {
@@ -193,7 +193,16 @@ export default function Intention({ intention }: { intention: string }) {
                 onChange={(e) => onChange(e.currentTarget.value, e)}
               />
               <Box component="div" onClick={onClickDurationContainer}>
-                <Typography sx={{ fontSize: "40px", fontWeight: 400 }}>
+                <Typography
+                  sx={{
+                    fontSize: "40px",
+                    fontWeight: 400,
+                    color:
+                      isEditMode && isEditAwaitingInput.current
+                        ? "gray"
+                        : "inherit",
+                  }}
+                >
                   {!isEditMode &&
                     renderActiveTimer(activeDuration)
                       .split("")
@@ -243,6 +252,9 @@ export default function Intention({ intention }: { intention: string }) {
                   type="submit"
                   variant="contained"
                   sx={{ mr: 2, textTransform: "capitalize" }}
+                  disabled={
+                    !activeDuration || Number(inputRef.current?.value) === 0
+                  }
                 >
                   {submitButtonText}
                 </Button>
