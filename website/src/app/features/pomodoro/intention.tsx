@@ -1,11 +1,13 @@
+"use client";
 import {
   useState,
   useRef,
   useEffect,
-  FormEventHandler,
   KeyboardEventHandler,
   ChangeEvent,
   FormEvent,
+  SetStateAction,
+  Dispatch,
 } from "react";
 
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -34,27 +36,42 @@ import {
 import Timer from "./timer";
 import { TimerAction } from "./types";
 
+const initialInput = "000500";
+const initialSeconds = timerArrayToSeconds(
+  timerInputToTimerArray(initialInput)
+);
+
+function setActiveDurationInterval(
+  setActiveDuration: Dispatch<SetStateAction<number>>
+) {
+  return setInterval(() => {
+    setActiveDuration((v) => {
+      return v - 1;
+    });
+  }, 1000);
+}
+
 export default function Intention({ intention }: { intention: string }) {
   const duration = useRef(0);
   const intervalID = useRef<NodeJS.Timeout>();
   const isFirstDeleteKeydown = useRef(true);
+  const isEditAwaitingInput = useRef(true);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isIntentionLogsOpen, setIsIntentionLogsOpen] = useState(false);
-  const [activeDuration, setActiveDuration] = useState<number>(5 * 60);
+  const [activeDuration, setActiveDuration] = useState<number>(initialSeconds);
   const [timerInput, setTimerInput] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
   const [timerAction, setTimerAction] = useState<TimerAction>("stop");
+  const [submitButtonText, setSubmitButtonText] = useState<"Start" | "Stop">(
+    "Start"
+  );
+
   useEffect(() => {
-    const { current } = inputRef;
-    if (isEditMode && current) {
-      current.focus();
-      return;
+    if (inputRef.current) {
+      inputRef.current.value = initialInput;
     }
-    if (!isEditMode && current) {
-      current.blur();
-      return;
-    }
-  }, [isEditMode]);
+  }, [inputRef]);
+
   const onClickAddIntentionPomodoro = () => {
     setIsIntentionLogsOpen(!isIntentionLogsOpen);
   };
@@ -70,49 +87,68 @@ export default function Intention({ intention }: { intention: string }) {
       );
       duration.current = seconds;
       setActiveDuration(seconds);
-      intervalID.current = setInterval(() => {
-        setActiveDuration((v) => {
-          return v - 1;
-        });
-      }, 1000);
+      intervalID.current = setActiveDurationInterval(setActiveDuration);
+    }
+    if (timerAction === "stop" && inputRef.current) {
+      inputRef.current.value = parseTimerInput(
+        renderInactiveTimer(activeDuration)
+      );
+      clearInterval(intervalID.current);
     }
   };
   const onClickDurationContainer = () => {
     setIsEditMode(!isEditMode);
+    clearInterval(intervalID.current);
+    const renderedInput = renderInactiveTimer(activeDuration);
+    setTimerInput(renderedInput);
+    isFirstDeleteKeydown.current = true;
     if (isEditMode && inputRef.current) {
       setActiveDuration(
         timerArrayToSeconds(timerInputToTimerArray(inputRef.current.value))
       );
+      intervalID.current = setActiveDurationInterval(setActiveDuration);
+      isEditAwaitingInput.current = true;
+      setTimerAction("start");
+      setSubmitButtonText("Stop");
+      inputRef.current.blur();
+      return;
     }
-    const renderedInput = renderInactiveTimer(activeDuration);
-    setTimerInput(renderedInput);
-    isFirstDeleteKeydown.current = true;
     if (inputRef.current) {
+      inputRef.current.focus();
       inputRef.current.value = parseTimerInput(renderedInput);
     }
+    setTimerAction("stop");
+    setSubmitButtonText("Start");
   };
   const onChange = (value: string, e?: ChangeEvent<HTMLInputElement>) => {
-    const s = interpolateTimeDivisions(value);
+    let newValue = value;
+    if (isEditMode && isEditAwaitingInput.current) {
+      newValue = value[value.length - 1];
+      isEditAwaitingInput.current = false;
+    }
+    const s = interpolateTimeDivisions(newValue);
     if (inputRef.current) {
       inputRef.current.value = parseTimerInput(s);
     }
     setTimerInput(s);
   };
   const onKeydown: KeyboardEventHandler<HTMLInputElement> = (e) => {
-    if (inputRef.current && (e.key === "Backspace" || e.key === "Delete")) {
+    const isDeleteKey = e.key === "Backspace" || e.key === "Delete";
+    if (inputRef.current && isDeleteKey) {
       e.preventDefault();
       const value = inputRef.current.value;
       const newValue = isFirstDeleteKeydown.current
         ? "0"
         : value.substring(value.length - 1, 0);
+      setActiveDuration(timerArrayToSeconds(timerInputToTimerArray(newValue)));
       isFirstDeleteKeydown.current = false;
       onChange(`${newValue}`);
     }
     if (isNaN(Number(e.key))) {
       e.preventDefault();
-      return;
     }
   };
+
   return (
     <Card variant="outlined">
       <CardHeader title={intention} />
@@ -129,7 +165,13 @@ export default function Intention({ intention }: { intention: string }) {
               height="100%"
               justifyContent="space-between"
               onSubmit={(e) => {
-                onSubmit(e, timerAction === "stop" ? "start" : "stop");
+                setSubmitButtonText(
+                  submitButtonText === "Stop" ? "Start" : "Stop"
+                );
+                const newTimerAction =
+                  timerAction === "stop" ? "start" : "stop";
+                setTimerAction(newTimerAction);
+                onSubmit(e, newTimerAction);
               }}
             >
               <Box
@@ -197,8 +239,12 @@ export default function Intention({ intention }: { intention: string }) {
                 </Typography>
               </Box>
               <Box display="flex">
-                <Button type="submit" variant="contained" sx={{ mr: 2 }}>
-                  Start
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{ mr: 2, textTransform: "capitalize" }}
+                >
+                  {submitButtonText}
                 </Button>
                 <Button type="reset" variant="outlined">
                   Reset
