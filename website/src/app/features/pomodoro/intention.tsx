@@ -8,6 +8,7 @@ import {
   FormEvent,
   SetStateAction,
   Dispatch,
+  MouseEventHandler,
 } from "react";
 
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -52,9 +53,8 @@ function setActiveDurationInterval(
 }
 
 export default function Intention({ intention }: { intention: string }) {
-  const duration = useRef(0);
+  const duration = useRef(initialSeconds);
   const intervalID = useRef<NodeJS.Timeout>();
-
   const isEditAwaitingInput = useRef(true);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isIntentionLogsOpen, setIsIntentionLogsOpen] = useState(false);
@@ -85,7 +85,6 @@ export default function Intention({ intention }: { intention: string }) {
       const seconds = timerArrayToSeconds(
         timerInputToTimerArray(inputRef.current.value)
       );
-      duration.current = seconds;
       setActiveDuration(seconds);
       intervalID.current = setActiveDurationInterval(setActiveDuration);
     }
@@ -101,9 +100,9 @@ export default function Intention({ intention }: { intention: string }) {
     clearInterval(intervalID.current);
     const renderedInput = renderInactiveTimer(activeDuration);
     setTimerInput(renderedInput);
+    isEditAwaitingInput.current = true;
     if (isEditMode && inputRef.current) {
       intervalID.current = setActiveDurationInterval(setActiveDuration);
-      isEditAwaitingInput.current = true;
       setTimerAction("start");
       setSubmitButtonText("Stop");
       inputRef.current.blur();
@@ -113,7 +112,6 @@ export default function Intention({ intention }: { intention: string }) {
       inputRef.current.focus();
       inputRef.current.value = parseTimerInput(renderedInput);
     }
-    isEditAwaitingInput.current = true;
     setTimerAction("stop");
     setSubmitButtonText("Start");
   };
@@ -126,9 +124,11 @@ export default function Intention({ intention }: { intention: string }) {
     const s = interpolateTimeDivisions(newValue);
     if (inputRef.current) {
       inputRef.current.value = parseTimerInput(s);
-      setActiveDuration(
-        timerArrayToSeconds(timerInputToTimerArray(inputRef.current.value))
+      const seconds = timerArrayToSeconds(
+        timerInputToTimerArray(inputRef.current.value)
       );
+      duration.current = seconds;
+      setActiveDuration(seconds);
     }
     setTimerInput(s);
   };
@@ -148,7 +148,13 @@ export default function Intention({ intention }: { intention: string }) {
       e.preventDefault();
     }
   };
-
+  const onReset: MouseEventHandler<HTMLButtonElement> = (e) => {
+    setActiveDuration(duration.current);
+    clearInterval(intervalID.current);
+    setIsEditMode(false);
+    setSubmitButtonText("Start");
+    setTimerAction("stop");
+  };
   return (
     <Card variant="outlined">
       <CardHeader title={intention} />
@@ -258,7 +264,12 @@ export default function Intention({ intention }: { intention: string }) {
                 >
                   {submitButtonText}
                 </Button>
-                <Button type="reset" variant="outlined">
+                <Button
+                  type="reset"
+                  variant="outlined"
+                  onClick={onReset}
+                  disabled={duration.current === activeDuration}
+                >
                   Reset
                 </Button>
               </Box>
