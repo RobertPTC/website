@@ -154,6 +154,11 @@ export default function Intention({ intention }: { intention: string }) {
     setIsEditMode(false);
     setSubmitButtonText("Start");
     setTimerAction("stop");
+    if (inputRef.current) {
+      inputRef.current.value = parseTimerInput(
+        renderInactiveTimer(duration.current)
+      );
+    }
   };
   return (
     <Card variant="outlined">
