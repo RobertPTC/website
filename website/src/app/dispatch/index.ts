@@ -5,12 +5,13 @@ type EventNames = {
 type Namespaces = keyof EventNames;
 
 interface Dispatch<T extends Namespaces> {
-  subscribe(eventName: EventNames[T], cb: () => void): void;
+  subscribe(eventName: EventNames[T], cb: Function): void;
   publish(eventName: EventNames[T]): void;
+  unsubscribe(eventName: EventNames[T], cb: Function): void;
 }
 
 const dispatchNamespaces: {
-  [key in Namespaces]: { [key: string]: (() => void)[] };
+  [key in Namespaces]: { [key: string]: Function[] };
 } = {
   pomodoro: {},
 } as const;
@@ -23,6 +24,13 @@ function dispatchFactory<T extends Namespaces>(
     subscribe(eventName, cb) {
       const callbacks = ns[eventName] || [];
       ns[eventName] = [...callbacks, cb];
+    },
+    unsubscribe(eventName, cb) {
+      const callbacks = ns[eventName] || [];
+      console.log("callbacks ", callbacks.length);
+      ns[eventName] = callbacks.filter((callback) => {
+        return callback !== cb;
+      });
     },
     publish(eventName) {
       const callbacks = ns[eventName];

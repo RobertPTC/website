@@ -25,6 +25,8 @@ import {
   Typography,
 } from "@mui/material";
 
+import { pomodoroDispatch } from "app/dispatch";
+
 import {
   parseTimerInput,
   renderActiveTimer,
@@ -45,11 +47,12 @@ const initialSeconds = timerArrayToSeconds(
 function setActiveDurationInterval(
   setActiveDuration: Dispatch<SetStateAction<number>>
 ) {
-  return setInterval(() => {
+  const intervalID = setInterval(() => {
     setActiveDuration((v) => {
       return v - 1;
     });
   }, 1000);
+  return intervalID;
 }
 
 export default function Intention({ intention }: { intention: string }) {
@@ -65,6 +68,26 @@ export default function Intention({ intention }: { intention: string }) {
   const [submitButtonText, setSubmitButtonText] = useState<"Start" | "Stop">(
     "Start"
   );
+
+  useEffect(() => {
+    function pomodoroCountdownEnd() {
+      console.log("pomodorCountdownEnd ", timerAction);
+    }
+    pomodoroDispatch.subscribe("pomodoroCountdownEnd", pomodoroCountdownEnd);
+    return () => {
+      pomodoroDispatch.unsubscribe(
+        "pomodoroCountdownEnd",
+        pomodoroCountdownEnd
+      );
+    };
+  }, [timerAction]);
+
+  useEffect(() => {
+    if (!activeDuration) {
+      pomodoroDispatch.publish("pomodoroCountdownEnd");
+      clearInterval(intervalID.current);
+    }
+  }, [activeDuration]);
 
   useEffect(() => {
     if (inputRef.current) {
