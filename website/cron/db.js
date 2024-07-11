@@ -28,7 +28,6 @@ export function getDB() {
  */
 
 /**
- *
  * @param {*} db
  * @param {string} email
  * @returns {Array.<Moment>}

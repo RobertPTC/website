@@ -27,7 +27,7 @@ import {
 import dayjs from "dayjs";
 import { v4 as uuid } from "uuid";
 
-import Storage, { CreatePomodoroRequest, PomodoroRequest } from "app/storage";
+import Storage, { CreatePomodoroRequest } from "app/storage";
 
 import {
   parseTimerInput,
@@ -57,7 +57,13 @@ function setActiveDurationInterval(
   return intervalID;
 }
 
-export default function Intention({ intention }: { intention: string }) {
+export default function Intention({
+  intention,
+  worker,
+}: {
+  intention: string;
+  worker: Worker;
+}) {
   const duration = useRef(initialSeconds);
   const intervalID = useRef<NodeJS.Timeout>();
   const isEditAwaitingInput = useRef(true);
@@ -114,6 +120,14 @@ export default function Intention({ intention }: { intention: string }) {
       );
       setActiveDuration(seconds);
       intervalID.current = setActiveDurationInterval(setActiveDuration);
+      worker.postMessage({
+        action: "setTimerDuration",
+        packet: { intention, duration: seconds },
+      });
+      worker.postMessage({
+        action: "startTimer",
+        packet: { intention, duration: seconds },
+      });
     }
     if (timerAction === "stop" && inputRef.current) {
       inputRef.current.value = parseTimerInput(

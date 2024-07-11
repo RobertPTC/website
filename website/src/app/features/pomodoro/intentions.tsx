@@ -10,6 +10,7 @@ import Intention from "./intention";
 
 export default function Intentions() {
   const [intentions, setIntentions] = useState<string[] | null>([]);
+  const [worker, setWorker] = useState<Worker>();
   useEffect(() => {
     if (!window) return;
     const storage = Storage["localStorage"](localStorage);
@@ -24,14 +25,19 @@ export default function Intentions() {
     pomodoroDispatch.subscribe("setPomodoroIntentions", () => {
       getPomodoroIntentions();
     });
+    const worker = new Worker("/pomodoro-webworker.js");
+    worker.onmessage = (e) => {
+      console.log("WORKER MESSAGE EVENT ", e);
+    };
+    setWorker(worker);
   }, []);
-  if (!intentions) return <></>;
+  if (!intentions || !worker) return <></>;
   return (
     <>
       {intentions.map((i) => {
         return (
           <Box key={i} mb={1}>
-            <Intention intention={i} />
+            <Intention intention={i} worker={worker} />
           </Box>
         );
       })}
