@@ -1,7 +1,38 @@
 import { Box } from "@mui/material";
 
-const minutes = new Array(60).fill(0);
-export default function Timer() {
+function polarToCartesian(
+  centerX: number,
+  centerY: number,
+  radius: number,
+  angleInDegrees: number
+) {
+  const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0;
+
+  return {
+    x: centerX + radius * Math.cos(angleInRadians),
+    y: centerY + radius * Math.sin(angleInRadians),
+  };
+}
+
+function describeArc(
+  x: number,
+  y: number,
+  radius: number,
+  startAngle: number,
+  endAngle: number
+) {
+  const start = polarToCartesian(x, y, radius, endAngle);
+  const end = polarToCartesian(x, y, radius, startAngle);
+
+  const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+
+  return `M${start.x},${start.y} A${radius},${radius} 0 ${largeArcFlag},0 ${end.x},${end.y}`;
+}
+export default function Timer({
+  timeRemainingDeg,
+}: {
+  timeRemainingDeg: number;
+}) {
   return (
     <Box component="svg" sx={{ height: "102px", width: "102px" }}>
       <Box component="g" sx={{ fill: "none", stroke: "none" }}>
@@ -16,21 +47,12 @@ export default function Timer() {
           }}
         />
         <Box component="g" sx={{ transform: "translate(51px, 51px)" }}>
-          {minutes.map((_, i) => (
-            <Box
-              key={i}
-              component="line"
-              x1="50"
-              x2="45"
-              y1="0"
-              y2="0"
-              strokeWidth="1px"
-              stroke="var(--accent)"
-              sx={{
-                transform: `rotate(calc(${i * 6}deg))`,
-              }}
-            />
-          ))}
+          <Box
+            component="path"
+            d={describeArc(0, 0, 49, 0, timeRemainingDeg)}
+            stroke="#880808"
+            strokeWidth="3"
+          />
         </Box>
       </Box>
     </Box>

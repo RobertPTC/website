@@ -22,7 +22,7 @@ type CreateMomentsRequest = {
   data: FormMoment;
 };
 
-type CreatePomodoroRequest = {
+export type CreatePomodoroRequest = {
   uri: "/api/pomodoro";
   data: { pomodoro: Pomodoro; year: string; month: string; date: string };
 };
