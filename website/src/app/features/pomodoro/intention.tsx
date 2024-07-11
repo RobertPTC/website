@@ -57,15 +57,6 @@ function setActiveDurationInterval(
   return intervalID;
 }
 
-const storage = Storage["localStorage"](localStorage);
-
-// console.log(
-//   "json.parse ",
-//   JSON.parse(
-//     '{"2024":{"6":{"10":[{"label":"pomodoro app","seconds":5,"id":"2d849946-cfcb-4a65-8fea-8bb59b660534"},{"label":"pomodoro app","seconds":10,"id":"5e936570-938a-4825-928e-3317c2a57867"},{"label":"pomodoro app","seconds":10,"id":"5d9d23f9-151e-4bd4-846a-76779a2e30db"}]}}}'
-//   )
-// );
-
 export default function Intention({ intention }: { intention: string }) {
   const duration = useRef(initialSeconds);
   const intervalID = useRef<NodeJS.Timeout>();
@@ -81,23 +72,23 @@ export default function Intention({ intention }: { intention: string }) {
   );
 
   useEffect(() => {
-    if (!activeDuration) {
-      console.log("record intention");
-      // const time = dayjs();
-      // const pomodoro: CreatePomodoroRequest = {
-      //   uri: "/api/pomodoro",
-      //   data: {
-      //     pomodoro: {
-      //       label: intention,
-      //       seconds: duration.current,
-      //       id: uuid(),
-      //     },
-      //     year: `${time.year()}`,
-      //     month: `${time.month()}`,
-      //     date: `${time.date()}`,
-      //   },
-      // };
-      // storage.set(pomodoro);
+    if (!activeDuration && window) {
+      const storage = Storage["localStorage"](localStorage);
+      const time = dayjs();
+      const pomodoro: CreatePomodoroRequest = {
+        uri: "/api/pomodoro",
+        data: {
+          pomodoro: {
+            label: intention,
+            seconds: duration.current,
+            id: uuid(),
+          },
+          year: `${time.year()}`,
+          month: `${time.month()}`,
+          date: `${time.date()}`,
+        },
+      };
+      storage.set(pomodoro);
       clearInterval(intervalID.current);
     }
   }, [activeDuration, intention]);
