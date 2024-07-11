@@ -4,6 +4,8 @@
  * @property {string} intention
  */
 
+const { duration } = require("@mui/material");
+
 /**
  * @typedef {Object} SetTimerDuration
  * @property {"setTimerDuraction"} action
@@ -11,14 +13,26 @@
  */
 
 /**
- * @typedef {Object} StartTimerPacket
+ * @typedef {Object} IntentionPacket
  * @property {string} intention
+ */
+
+/**
+ * @typedef {Object} StopTimer
+ * @property {"stopTimer"} action
+ * @property {IntentionPacket} packet
  */
 
 /**
  * @typedef {Object} StartTimer
  * @property {"startTimer"} action
- * @property {StartTimerPacket} packet
+ * @property {IntentionPacket} packet
+ */
+
+/**
+ * @typedef {Object} ResetTimer
+ * @property {"resetTimer"} action
+ * @property {SetTimerDurationPacket} packet
  */
 
 /**
@@ -34,24 +48,36 @@ let intentionDurations = {};
 /**
  * Send a moment via email to a journalist
  * @function onMessage
- * @param {MessageEvent<SetTimerDuration | StartTimer>} e
+ * @param {MessageEvent<SetTimerDuration | StartTimer | StopTimer | ResetTimer>} e
  */
 function onMessage(e) {
-  switch (e.data.action) {
+  const {
+    data: { action, packet },
+  } = e;
+  switch (action) {
     case "setTimerDuration":
-      intentionDurations[e.data.packet.intention] = e.data.packet.duration;
+      intentionDurations[packet.intention] = packet.duration;
       break;
     case "startTimer":
       const intervalID = setInterval(() => {
-        const nextDuration = intentionDurations[e.data.packet.intention] - 1;
-        console.log("nextDuration ", nextDuration);
-        intentionDurations[e.data.packet.intention] = nextDuration;
+        const nextDuration = intentionDurations[packet.intention] - 1;
+        intentionDurations[packet.intention] = nextDuration;
+        self.postMessage({
+          intention: packet.intention,
+          duration: nextDuration,
+        });
         if (!nextDuration) {
-          self.postMessage(`${e.data.packet.intention} complete`);
-          clearInterval(intentionIntervalIDs[e.data.packet.intention]);
+          clearInterval(intentionIntervalIDs[packet.intention]);
         }
       }, 1000);
-      intentionIntervalIDs[e.data.packet.intention] = intervalID;
+      intentionIntervalIDs[packet.intention] = intervalID;
+      break;
+    case "stopTimer":
+      clearInterval(intentionIntervalIDs[packet.intention]);
+      break;
+    case "resetTimer":
+      clearInterval(intentionIntervalIDs[packet.intention]);
+      intentionDurations[packet.intention] = packet.duration;
       break;
   }
 }
