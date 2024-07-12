@@ -69,6 +69,7 @@ export default function Intention({
       if (e.data.intention === intention) {
         setActiveDuration(e.data.duration);
       }
+      document.title = renderActiveTimer(e.data.duration);
     }
     worker.addEventListener("message", onWorkerMessage);
     return () => {
