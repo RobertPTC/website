@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 
-import { Box } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 
 import { pomodoroDispatch } from "app/dispatch";
 import Storage, { PomodoroIntentionRequest } from "app/storage";
@@ -30,14 +30,14 @@ export default function Intentions() {
   }, []);
   if (!intentions || !worker) return <></>;
   return (
-    <>
+    <Grid container columns={4} spacing={1}>
       {intentions.map((i) => {
         return (
-          <Box key={i} mb={1}>
+          <Grid key={i} mb={1} item xs={1}>
             <Intention intention={i} worker={worker} />
-          </Box>
+          </Grid>
         );
       })}
-    </>
+    </Grid>
   );
 }

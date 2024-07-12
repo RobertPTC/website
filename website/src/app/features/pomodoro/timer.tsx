@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 
-const radius = 20;
+const radius = 18;
 const translation = radius + 1;
 const arc = radius - 1;
 

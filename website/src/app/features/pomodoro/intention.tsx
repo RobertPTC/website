@@ -10,15 +10,12 @@ import {
   useCallback,
 } from "react";
 
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import {
   Box,
   Button,
   Card,
-  CardActions,
   CardContent,
   CardHeader,
   Grid,
@@ -121,9 +118,6 @@ export default function Intention({
     }
   }, [inputRef]);
 
-  const onClickAddIntentionPomodoro = () => {
-    setIsIntentionLogsOpen(!isIntentionLogsOpen);
-  };
   const onSubmit = (
     e: FormEvent<HTMLFormElement>,
     timerAction: TimerAction
@@ -238,80 +232,56 @@ export default function Intention({
     <Card variant="outlined">
       <CardHeader title={intention} />
       <CardContent>
-        <Grid container spacing={1}>
-          <Grid item sx={{ mt: 1 }}>
-            <Timer timeRemainingDeg={timeRemainingDeg} />
-          </Grid>
-          <Grid item>
-            <Box
-              component="form"
-              display="flex"
-              flexDirection="column"
-              height="100%"
-              justifyContent="space-between"
-              onSubmit={(e) => {
-                setSubmitButtonText(
-                  submitButtonText === "Stop" ? "Start" : "Stop"
-                );
-                const newTimerAction =
-                  timerAction === "stop" ? "start" : "stop";
-                setTimerAction(newTimerAction);
-                onSubmit(e, newTimerAction);
-              }}
-            >
-              <Box
-                component="input"
-                id={`${intention}-duration`}
-                name="duration"
-                inputMode="numeric"
+        <Box
+          component="form"
+          display="flex"
+          flexDirection="column"
+          height="100%"
+          justifyContent="space-between"
+          onSubmit={(e) => {
+            setSubmitButtonText(submitButtonText === "Stop" ? "Start" : "Stop");
+            const newTimerAction = timerAction === "stop" ? "start" : "stop";
+            setTimerAction(newTimerAction);
+            onSubmit(e, newTimerAction);
+          }}
+        >
+          <Box
+            component="input"
+            id={`${intention}-duration`}
+            name="duration"
+            inputMode="numeric"
+            sx={{
+              position: "absolute",
+              height: "0px",
+              opacity: 0,
+              width: 0,
+              left: "20px",
+              top: "20px",
+            }}
+            pattern="\d*"
+            ref={inputRef}
+            onKeyDown={onKeydown}
+            onChange={(e) => onChange(e.currentTarget.value, e)}
+          />
+          <Box display="flex" alignItems="center">
+            <Box mr={1}>
+              <Timer timeRemainingDeg={timeRemainingDeg} />
+            </Box>
+            <Box component="div" onClick={onClickDurationContainer}>
+              <Typography
                 sx={{
-                  position: "absolute",
-                  height: "0px",
-                  opacity: 0,
-                  width: 0,
-                  left: "20px",
-                  top: "20px",
+                  fontSize: "40px",
+                  fontWeight: 400,
+                  color:
+                    isEditMode && isEditAwaitingInput.current
+                      ? "gray"
+                      : "inherit",
                 }}
-                pattern="\d*"
-                ref={inputRef}
-                onKeyDown={onKeydown}
-                onChange={(e) => onChange(e.currentTarget.value, e)}
-              />
-              <Box component="div" onClick={onClickDurationContainer}>
-                <Typography
-                  sx={{
-                    fontSize: "40px",
-                    fontWeight: 400,
-                    color:
-                      isEditMode && isEditAwaitingInput.current
-                        ? "gray"
-                        : "inherit",
-                  }}
-                >
-                  {!isEditMode &&
-                    renderActiveTimer(activeDuration)
-                      .split("")
-                      .map((v, i) => {
-                        return (
-                          <Box key={i} component="span">
-                            {!timeGroups.includes(v) && (
-                              <Box key={i} component="span">
-                                {v}
-                              </Box>
-                            )}
-                            {timeGroups.includes(v) && (
-                              <Box
-                                component="span"
-                                sx={{ mr: 1, fontSize: "16px" }}
-                              >
-                                {v}
-                              </Box>
-                            )}
-                          </Box>
-                        );
-                      })}
-                  {isEditMode &&
-                    timerInput.split("").map((v, i) => {
+              >
+                {!isEditMode &&
+                  renderActiveTimer(activeDuration)
+                    .split("")
+                    .map((v, i) => {
                       return (
                         <Box key={i} component="span">
                           {!timeGroups.includes(v) && (
@@ -330,43 +300,56 @@ export default function Intention({
                         </Box>
                       );
                     })}
-                </Typography>
-              </Box>
-              <Box display="flex">
-                <Button
-                  type="submit"
-                  variant="contained"
-                  sx={{ mr: 2, textTransform: "capitalize" }}
-                  disabled={
-                    !activeDuration || Number(inputRef.current?.value) === 0
-                  }
-                >
-                  {submitButtonText}
-                </Button>
-                <Button
-                  type="reset"
-                  variant="outlined"
-                  onClick={onReset}
-                  disabled={duration.current === activeDuration}
-                >
-                  Reset
-                </Button>
-                <IconButton sx={{ ml: 1 }} onClick={onClickTogglePlayback}>
-                  {togglePlaybackVolume ? <VolumeOffIcon /> : <VolumeUpIcon />}
-                </IconButton>
-              </Box>
+                {isEditMode &&
+                  timerInput.split("").map((v, i) => {
+                    return (
+                      <Box key={i} component="span">
+                        {!timeGroups.includes(v) && (
+                          <Box key={i} component="span">
+                            {v}
+                          </Box>
+                        )}
+                        {timeGroups.includes(v) && (
+                          <Box
+                            component="span"
+                            sx={{ mr: 1, fontSize: "16px" }}
+                          >
+                            {v}
+                          </Box>
+                        )}
+                      </Box>
+                    );
+                  })}
+              </Typography>
             </Box>
-          </Grid>
-        </Grid>
+          </Box>
+
+          <Box display="flex">
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{ mr: 2, textTransform: "capitalize" }}
+              disabled={
+                !activeDuration || Number(inputRef.current?.value) === 0
+              }
+            >
+              {submitButtonText}
+            </Button>
+            <Button
+              type="reset"
+              variant="outlined"
+              onClick={onReset}
+              disabled={duration.current === activeDuration}
+            >
+              Reset
+            </Button>
+            <IconButton sx={{ ml: 1 }} onClick={onClickTogglePlayback}>
+              {togglePlaybackVolume ? <VolumeOffIcon /> : <VolumeUpIcon />}
+            </IconButton>
+          </Box>
+        </Box>
       </CardContent>
-      {/* <CardActions>
-        <IconButton
-          aria-label={`open ${intention} logs`}
-          onClick={onClickAddIntentionPomodoro}
-        >
-          {isIntentionLogsOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-        </IconButton>
-      </CardActions> */}
+
       <Box
         component="audio"
         src="time-up.m4a"
