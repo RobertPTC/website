@@ -7,6 +7,7 @@ import {
   ChangeEvent,
   FormEvent,
   MouseEventHandler,
+  useCallback,
 } from "react";
 
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -63,11 +64,21 @@ export default function Intention({
   const [submitButtonText, setSubmitButtonText] = useState<"Start" | "Stop">(
     "Start"
   );
+  function playAudio() {
+    const audio = document.getElementById(
+      `audio-${intention}`
+    ) as HTMLAudioElement;
+    audio.play();
+  }
+  const playAudioCallback = useCallback(playAudio, [intention]);
 
   useEffect(() => {
     function onWorkerMessage(e: MessageEvent) {
       if (e.data.intention === intention) {
         setActiveDuration(e.data.duration);
+      }
+      if (!e.data.duration) {
+        playAudioCallback();
       }
       document.title = renderActiveTimer(e.data.duration);
     }
@@ -75,7 +86,7 @@ export default function Intention({
     return () => {
       worker.removeEventListener("message", onWorkerMessage);
     };
-  }, [worker, intention]);
+  }, [worker, intention, playAudioCallback]);
 
   useEffect(() => {
     if (!activeDuration && window) {
@@ -337,6 +348,7 @@ export default function Intention({
           {isIntentionLogsOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
       </CardActions>
+      <Box component="audio" src="time-up.m4a" id={`audio-${intention}`} />
     </Card>
   );
 }
