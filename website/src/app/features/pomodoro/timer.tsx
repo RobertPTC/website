@@ -1,5 +1,9 @@
 import { Box } from "@mui/material";
 
+const radius = 20;
+const translation = radius + 1;
+const arc = radius - 1;
+
 function polarToCartesian(
   centerX: number,
   centerY: number,
@@ -34,22 +38,28 @@ export default function Timer({
   timeRemainingDeg: number;
 }) {
   return (
-    <Box component="svg" sx={{ height: "102px", width: "102px" }}>
+    <Box
+      component="svg"
+      sx={{ height: `${translation * 2}px`, width: `${translation * 2}px` }}
+    >
       <Box component="g" sx={{ fill: "none", stroke: "none" }}>
         <Box
           component="circle"
-          cx="51"
-          cy="51"
-          r="50"
+          cx={translation}
+          cy={translation}
+          r={radius}
           sx={{
             stroke: "var(--accent)",
             strokeWidth: "1px",
           }}
         />
-        <Box component="g" sx={{ transform: "translate(51px, 51px)" }}>
+        <Box
+          component="g"
+          sx={{ transform: `translate(${translation}px, ${translation}px)` }}
+        >
           <Box
             component="path"
-            d={describeArc(0, 0, 49, 0, timeRemainingDeg)}
+            d={describeArc(0, 0, arc, 0, timeRemainingDeg)}
             stroke="#880808"
             strokeWidth="3"
           />

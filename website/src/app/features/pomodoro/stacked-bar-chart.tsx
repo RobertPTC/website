@@ -138,6 +138,10 @@ export default function StackedBarChart() {
       window.removeEventListener("resize", onWindowResize);
     };
   }, []);
+  useEffect(() => {
+    if (window) {
+    }
+  }, []);
   const theme = useTheme();
   if (!max) return <></>;
   const bands = scaleBand(

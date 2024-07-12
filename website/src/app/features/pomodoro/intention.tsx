@@ -12,6 +12,8 @@ import {
 
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import VolumeOffIcon from "@mui/icons-material/VolumeOff";
+import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import {
   Box,
   Button,
@@ -56,6 +58,7 @@ export default function Intention({
   const duration = useRef(initialSeconds);
   const isEditAwaitingInput = useRef(true);
   const inputRef = useRef<HTMLInputElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const [isIntentionLogsOpen, setIsIntentionLogsOpen] = useState(false);
   const [activeDuration, setActiveDuration] = useState<number>(initialSeconds);
   const [timerInput, setTimerInput] = useState("");
@@ -64,20 +67,22 @@ export default function Intention({
   const [submitButtonText, setSubmitButtonText] = useState<"Start" | "Stop">(
     "Start"
   );
+  const [togglePlaybackVolume, setTogglePlaybackVolume] = useState(0);
   function playAudio() {
-    const audio = document.getElementById(
-      `audio-${intention}`
-    ) as HTMLAudioElement;
-    audio.play();
+    if (audioRef.current) {
+      audioRef.current.play().catch((e) => {
+        console.error(`error playing timer up audio: ${e}`);
+      });
+    }
   }
-  const playAudioCallback = useCallback(playAudio, [intention]);
+  const playAudioCallback = useCallback(playAudio, []);
 
   useEffect(() => {
     function onWorkerMessage(e: MessageEvent) {
       if (e.data.intention === intention) {
         setActiveDuration(e.data.duration);
       }
-      if (!e.data.duration) {
+      if (!e.data.duration && e.data.intention === intention) {
         playAudioCallback();
       }
       document.title = renderActiveTimer(e.data.duration);
@@ -202,7 +207,7 @@ export default function Intention({
       e.preventDefault();
     }
   };
-  const onReset: MouseEventHandler<HTMLButtonElement> = (e) => {
+  const onReset: MouseEventHandler<HTMLButtonElement> = () => {
     setActiveDuration(duration.current);
     worker.postMessage({
       action: "resetTimer",
@@ -215,6 +220,16 @@ export default function Intention({
       inputRef.current.value = secondsToInputValue(duration.current);
     }
   };
+  const onClickTogglePlayback: MouseEventHandler<HTMLButtonElement> = () => {
+    const volume = togglePlaybackVolume ? 0 : 1;
+    setTogglePlaybackVolume(volume);
+    if (audioRef.current && !togglePlaybackVolume) {
+      audioRef.current.muted = true;
+    }
+    if (audioRef.current && togglePlaybackVolume) {
+      audioRef.current.muted = false;
+    }
+  };
   const timeRemainingDeg = duration.current
     ? 360 - (activeDuration / duration.current) * 360 - 0.0001
     : 0;
@@ -222,8 +237,8 @@ export default function Intention({
     <Card variant="outlined">
       <CardHeader title={intention} />
       <CardContent>
-        <Grid container spacing={2}>
-          <Grid item>
+        <Grid container spacing={1}>
+          <Grid item sx={{ mt: 1 }}>
             <Timer timeRemainingDeg={timeRemainingDeg} />
           </Grid>
           <Grid item>
@@ -335,6 +350,9 @@ export default function Intention({
                 >
                   Reset
                 </Button>
+                <IconButton sx={{ ml: 1 }} onClick={onClickTogglePlayback}>
+                  {togglePlaybackVolume ? <VolumeOffIcon /> : <VolumeUpIcon />}
+                </IconButton>
               </Box>
             </Box>
           </Grid>
@@ -348,7 +366,13 @@ export default function Intention({
           {isIntentionLogsOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
       </CardActions>
-      <Box component="audio" src="time-up.m4a" id={`audio-${intention}`} />
+      <Box
+        component="audio"
+        src="time-up.m4a"
+        id={`audio-${intention}`}
+        ref={audioRef}
+        muted={!!togglePlaybackVolume}
+      />
     </Card>
   );
 }
