@@ -2,7 +2,7 @@ import { FormMoment, Moment, Moments } from "app/api/types";
 import { Pomodoro } from "app/features/pomodoro/types";
 
 export type MomentsRequest = {
-  uri: `/api/moments-of-being/moments?year=${string}${string}${string}`;
+  uri: `/api/moments-of-being/moments?year=${string}${string}${string}${string}`;
 };
 
 export type PomodoroRequest = {
@@ -24,7 +24,13 @@ type CreateMomentsRequest = {
 
 export type CreatePomodoroRequest = {
   uri: "/api/pomodoro";
-  data: { pomodoro: Pomodoro; year: string; month: string; date: string };
+  data: {
+    pomodoro: Pomodoro;
+    year: string;
+    month: string;
+    date: string;
+    hour: string;
+  };
 };
 
 type CreatePomodoroIntentionRequest = PomodoroIntentionRequest & {
@@ -129,7 +135,7 @@ const Storage = {
       let value = storage.getItem(uri);
       if (uri === "/api/pomodoro") {
         const parsed = JSON.parse(value ? value : "{}");
-        const { year, month, date, pomodoro } = data;
+        const { year, month, date, hour, pomodoro } = data;
         let currentPoms = { ...parsed };
         const yearPoms = parsed[year];
         const monthPoms = yearPoms?.[month];

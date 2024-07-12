@@ -1,5 +1,5 @@
-import DayView from "app/features/pomodoro/day-view";
+import Main from "app/features/pomodoro/main";
 
 export default function Pomodoro() {
-  return <DayView />;
+  return <Main />;
 }

@@ -108,6 +108,7 @@ export default function Intention({
           year: `${time.year()}`,
           month: `${time.month()}`,
           date: `${time.date()}`,
+          hour: `${time.hour()}`,
         },
       };
       storage.set(pomodoro);
@@ -358,14 +359,14 @@ export default function Intention({
           </Grid>
         </Grid>
       </CardContent>
-      <CardActions>
+      {/* <CardActions>
         <IconButton
           aria-label={`open ${intention} logs`}
           onClick={onClickAddIntentionPomodoro}
         >
           {isIntentionLogsOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
-      </CardActions>
+      </CardActions> */}
       <Box
         component="audio"
         src="time-up.m4a"

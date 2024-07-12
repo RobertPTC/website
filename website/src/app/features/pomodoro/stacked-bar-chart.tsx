@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { Box, Typography, Grid } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { index, InternMap, union } from "d3-array";
 import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
@@ -15,10 +15,10 @@ const s = Storage.localStorage;
 
 import { Pomodoro, Rect } from "./types";
 
-type HourBars = {
-  hourBars: (
+type Bars = {
+  bars: (
     | {
-        hour: string;
+        timeUnit: string;
         rects?: undefined;
         hourIndex?: undefined;
         series?: undefined;
@@ -29,7 +29,7 @@ type HourBars = {
         hourIndex: InternMap<string, InternMap<string, Rect>>;
         series: Series<{ [key: string]: number }, string>[];
         barHeight: number;
-        hour: string;
+        timeUnit: string;
       }
   )[];
   allLabels: string[];
@@ -55,20 +55,20 @@ function rollup(pomodoros: Pomodoro[], hour: string): Rect[] {
 const svgHeight = 360;
 const marginBottom = 20;
 const marginLeft = 80;
-const numberOfHours = 24;
+const bandWidthModifer = 80;
 
-function hourBars(d: { [key: string]: Pomodoro[] }) {
+function makeBars(d: { [key: string]: Pomodoro[] }) {
   const allLabels: { [key: string]: string } = {};
-  const hourBars = Object.entries(d).map(([hour, pomodoros]) => {
-    if (!pomodoros.length) return { hour };
-    const rects = rollup(pomodoros, hour);
+  const bars = Object.entries(d).map(([timeUnit, pomodoros]) => {
+    if (!pomodoros.length) return { timeUnit };
+    const rects = rollup(pomodoros, timeUnit);
     const hourIndex = index(
       rects,
       (r) => r.hour,
       (r) => r.label
     );
     const labels = union(
-      d[hour].map((d) => {
+      d[timeUnit].map((d) => {
         allLabels[d.label] = d.label;
         return d.label;
       })
@@ -84,17 +84,18 @@ function hourBars(d: { [key: string]: Pomodoro[] }) {
       hourIndex,
       series,
       barHeight,
-      hour,
+      timeUnit,
     };
   });
-  return { hourBars, allLabels: Object.keys(allLabels) };
+  return { bars, allLabels: Object.keys(allLabels) };
 }
-
-export default function StackedBarChart() {
+const numberOfHours = 24;
+export default function StackedBarChart({ type }: { type: "date" | "month" }) {
   const svgRef = useRef<HTMLDivElement | null>(null);
   const [svgWidth, setSVGWidth] = useState(0);
   const [max, setMax] = useState(0);
-  const [bars, setBars] = useState<HourBars>();
+  const [bars, setBars] = useState<Bars>();
+  const xScaleRange = type === "date" ? numberOfHours : dayjs().daysInMonth();
   useEffect(() => {
     function onWindowResize() {
       if (svgRef.current) {
@@ -106,7 +107,7 @@ export default function StackedBarChart() {
     return () => {
       window.removeEventListener("resize", onWindowResize);
     };
-  }, []);
+  }, [bars]);
   useEffect(() => {
     if (window) {
       const storage = s(localStorage);
@@ -116,8 +117,8 @@ export default function StackedBarChart() {
           uri: `/api/pomodoro?year=${date.year()}&month=${date.month()}`,
         })
         .then((v) => {
-          const bars = hourBars(v);
-          const maxSeconds = bars.hourBars
+          const barsData = makeBars(v);
+          const maxSeconds = barsData.bars
             .filter((h) => !!h.barHeight)
             .map((h) => h.barHeight)
             .sort();
@@ -125,7 +126,7 @@ export default function StackedBarChart() {
           if (max) {
             setMax(max);
           }
-          setBars(bars);
+          setBars(barsData);
         });
     }
   }, []);
@@ -133,11 +134,11 @@ export default function StackedBarChart() {
   if (!max || !bars) return <></>;
 
   const bands = scaleBand(
-    new Array(24).fill(0).map((_, i) => i),
-    [marginLeft, svgWidth]
+    new Array(xScaleRange).fill(0).map((_, i) => i),
+    [marginLeft, svgWidth - bandWidthModifer]
   );
   const x = scaleLinear(
-    [0, numberOfHours - 1],
+    [0, xScaleRange - 1],
     [marginLeft, svgWidth - bands.bandwidth()]
   );
   const y = scaleLinear()
@@ -149,10 +150,10 @@ export default function StackedBarChart() {
     .range(schemeRdYlBu[3]);
   return (
     <Box>
-      <Grid container ml={`${marginLeft}px`} mb={2}>
+      <Box ml={`${marginLeft}px`} mb={2} display="flex">
         {bars.allLabels.map((l) => {
           return (
-            <Grid item key={l} display="flex" mr="4px">
+            <Box key={l} display="flex" mr={1}>
               <Box
                 bgcolor={colorInterpolator(l) as string}
                 height="21px"
@@ -160,10 +161,10 @@ export default function StackedBarChart() {
                 mr="4px"
               />
               <Typography lineHeight="21px">{l}</Typography>
-            </Grid>
+            </Box>
           );
         })}
-      </Grid>
+      </Box>
       <Box
         component="svg"
         id="stacked-bar-chart"
@@ -171,16 +172,16 @@ export default function StackedBarChart() {
         height={`${svgHeight}px`}
         ref={svgRef}
       >
-        {bars.hourBars.map((b, i) => {
-          if (!b.barHeight) return <Box component="g" key={b.hour} />;
-          const { series, hour } = b;
+        {bars.bars.map((b, i) => {
+          if (!b.barHeight) return <Box component="g" key={b.timeUnit} />;
+          const { series, timeUnit } = b;
           const barHeight = series[series.length - 1][0][1];
 
           return (
             <Box
               component="g"
-              key={hour}
-              transform={`translate(${x(Number(hour))}, ${
+              key={timeUnit}
+              transform={`translate(${x(Number(timeUnit))}, ${
                 svgHeight - y(barHeight) - marginBottom
               })`}
             >
@@ -260,29 +261,43 @@ export default function StackedBarChart() {
             stroke="var(--accent)"
             strokeWidth="1"
           />
-          {new Array(numberOfHours).fill(0).map((_, i) => {
+          {new Array(xScaleRange).fill(0).map((_, i) => {
             return (
               <Box component="g" key={i} transform={`translate(${x(i)},15)`}>
-                <Box
-                  component="text"
-                  fill="var(--accent)"
-                  sx={{
-                    fontFamily: theme.typography.fontFamily,
-                    display: i ? "block" : "none",
-                  }}
-                >
-                  {i === 12 ? i : i % 12}
+                {type === "date" && (
                   <Box
-                    component="tspan"
+                    component="text"
+                    fill="var(--accent)"
                     sx={{
                       fontFamily: theme.typography.fontFamily,
                       display: i ? "block" : "none",
-                      fontSize: "10px",
                     }}
                   >
-                    {i >= 12 ? "pm" : "am"}
+                    {i === 12 ? i : i % 12}
+                    <Box
+                      component="tspan"
+                      sx={{
+                        fontFamily: theme.typography.fontFamily,
+                        display: i ? "block" : "none",
+                        fontSize: "10px",
+                      }}
+                    >
+                      {i >= 12 ? "pm" : "am"}
+                    </Box>
                   </Box>
-                </Box>
+                )}
+                {type === "month" && (
+                  <Box
+                    component="text"
+                    fill="var(--accent)"
+                    sx={{
+                      fontFamily: theme.typography.fontFamily,
+                      display: i ? "block" : "none",
+                    }}
+                  >
+                    {i}
+                  </Box>
+                )}
               </Box>
             );
           })}

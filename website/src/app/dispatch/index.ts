@@ -1,5 +1,5 @@
 type EventNames = {
-  pomodoro: "setPomodoroIntentions" | "pomodoroCountdownEnd";
+  pomodoro: "setPomodoroIntentions" | "pomodoroCountdownEnd" | "setPomodoro";
 };
 
 type Namespaces = keyof EventNames;
