@@ -6,8 +6,6 @@ import {
   KeyboardEventHandler,
   ChangeEvent,
   FormEvent,
-  SetStateAction,
-  Dispatch,
   MouseEventHandler,
 } from "react";
 
@@ -37,6 +35,7 @@ import {
   timerArrayToSeconds,
   timerInputToTimerArray,
   interpolateTimeDivisions,
+  secondsToInputValue,
 } from "./seconds-to-timer-array";
 import Timer from "./timer";
 import { TimerAction } from "./types";
@@ -46,17 +45,6 @@ const initialSeconds = timerArrayToSeconds(
   timerInputToTimerArray(initialInput)
 );
 
-function setActiveDurationInterval(
-  setActiveDuration: Dispatch<SetStateAction<number>>
-) {
-  const intervalID = setInterval(() => {
-    setActiveDuration((v) => {
-      return v - 1;
-    });
-  }, 1000);
-  return intervalID;
-}
-
 export default function Intention({
   intention,
   worker,
@@ -65,7 +53,6 @@ export default function Intention({
   worker: Worker;
 }) {
   const duration = useRef(initialSeconds);
-  const intervalID = useRef<NodeJS.Timeout>();
   const isEditAwaitingInput = useRef(true);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isIntentionLogsOpen, setIsIntentionLogsOpen] = useState(false);
@@ -76,6 +63,18 @@ export default function Intention({
   const [submitButtonText, setSubmitButtonText] = useState<"Start" | "Stop">(
     "Start"
   );
+
+  useEffect(() => {
+    function onWorkerMessage(e: MessageEvent) {
+      if (e.data.intention === intention) {
+        setActiveDuration(e.data.duration);
+      }
+    }
+    worker.addEventListener("message", onWorkerMessage);
+    return () => {
+      worker.removeEventListener("message", onWorkerMessage);
+    };
+  }, [worker, intention]);
 
   useEffect(() => {
     if (!activeDuration && window) {
@@ -95,7 +94,6 @@ export default function Intention({
         },
       };
       storage.set(pomodoro);
-      clearInterval(intervalID.current);
     }
   }, [activeDuration, intention]);
 
@@ -119,31 +117,34 @@ export default function Intention({
         timerInputToTimerArray(inputRef.current.value)
       );
       setActiveDuration(seconds);
-      intervalID.current = setActiveDurationInterval(setActiveDuration);
       worker.postMessage({
         action: "setTimerDuration",
         packet: { intention, duration: seconds },
       });
       worker.postMessage({
         action: "startTimer",
-        packet: { intention, duration: seconds },
+        packet: { intention },
       });
     }
     if (timerAction === "stop" && inputRef.current) {
-      inputRef.current.value = parseTimerInput(
-        renderInactiveTimer(activeDuration)
-      );
-      clearInterval(intervalID.current);
+      inputRef.current.value = secondsToInputValue(activeDuration);
+      worker.postMessage({ action: "stopTimer", packet: { intention } });
     }
   };
   const onClickDurationContainer = () => {
     setIsEditMode(!isEditMode);
-    clearInterval(intervalID.current);
     const renderedInput = renderInactiveTimer(activeDuration);
     setTimerInput(renderedInput);
     isEditAwaitingInput.current = true;
     if (isEditMode && inputRef.current) {
-      intervalID.current = setActiveDurationInterval(setActiveDuration);
+      worker.postMessage({
+        action: "setTimerDuration",
+        packet: { intention, duration: duration.current },
+      });
+      worker.postMessage({
+        action: "startTimer",
+        packet: { intention },
+      });
       setTimerAction("start");
       setSubmitButtonText("Stop");
       inputRef.current.blur();
@@ -191,14 +192,15 @@ export default function Intention({
   };
   const onReset: MouseEventHandler<HTMLButtonElement> = (e) => {
     setActiveDuration(duration.current);
-    clearInterval(intervalID.current);
+    worker.postMessage({
+      action: "resetTimer",
+      packet: { intention, duration: duration.current },
+    });
     setIsEditMode(false);
     setSubmitButtonText("Start");
     setTimerAction("stop");
     if (inputRef.current) {
-      inputRef.current.value = parseTimerInput(
-        renderInactiveTimer(duration.current)
-      );
+      inputRef.current.value = secondsToInputValue(duration.current);
     }
   };
   const timeRemainingDeg = duration.current

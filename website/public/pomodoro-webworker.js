@@ -4,8 +4,6 @@
  * @property {string} intention
  */
 
-const { duration } = require("@mui/material");
-
 /**
  * @typedef {Object} SetTimerDuration
  * @property {"setTimerDuraction"} action

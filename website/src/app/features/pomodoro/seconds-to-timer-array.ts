@@ -71,4 +71,8 @@ export function interpolateTimeDivisions(input: string): string {
   return `${hh}${h}h${mm}${m}m${ss}${s}s`;
 }
 
+export function secondsToInputValue(seconds: number): string {
+  return parseTimerInput(renderInactiveTimer(seconds));
+}
+
 export const timeGroups = ["h", "m", "s"];

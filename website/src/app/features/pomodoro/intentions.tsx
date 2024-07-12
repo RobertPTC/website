@@ -26,9 +26,6 @@ export default function Intentions() {
       getPomodoroIntentions();
     });
     const worker = new Worker("/pomodoro-webworker.js");
-    worker.onmessage = (e) => {
-      console.log("WORKER MESSAGE EVENT ", e);
-    };
     setWorker(worker);
   }, []);
   if (!intentions || !worker) return <></>;
