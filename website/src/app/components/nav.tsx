@@ -17,7 +17,7 @@ const linkStyles: SxProps = {
 
 export function Nav() {
   return (
-    <>
+    <Box sx={{ zIndex: 100 }}>
       <Box
         sx={{
           display: ["block", "block", "none", "none"],
@@ -158,6 +158,6 @@ export function Nav() {
           </Grid>
         </Grid>
       </Box>
-    </>
+    </Box>
   );
 }

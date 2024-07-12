@@ -9,7 +9,6 @@ import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
 import { schemeRdYlBu } from "d3-scale-chromatic";
 import { Series, stack } from "d3-shape";
 import dayjs from "dayjs";
-import { v4 as uuid } from "uuid";
 
 import Storage, { PomodoroRequest } from "app/storage";
 const s = Storage.localStorage;
@@ -144,7 +143,7 @@ export default function StackedBarChart() {
   const y = scaleLinear()
     .domain([0, max])
     .rangeRound([0, svgHeight - marginBottom]);
-  console.log("schemeRdYlBu ", schemeRdYlBu);
+
   const colorInterpolator = scaleOrdinal()
     .domain(bars.allLabels)
     .range(schemeRdYlBu[3]);
