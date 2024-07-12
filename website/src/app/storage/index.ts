@@ -56,7 +56,7 @@ interface DataStore {
       : T extends MomentsRequest
       ? Moments
       : T extends PomodoroRequest
-      ? Pomodoro
+      ? { [key: string]: Pomodoro[] }
       : null
   >;
   set<T extends SetRequests>(

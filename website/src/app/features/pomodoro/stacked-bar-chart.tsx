@@ -4,60 +4,36 @@ import { useEffect, useRef, useState } from "react";
 
 import { Box, Typography, Grid } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { index, union } from "d3-array";
+import { index, InternMap, union } from "d3-array";
 import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
 import { schemeRdYlBu } from "d3-scale-chromatic";
-import { stack } from "d3-shape";
+import { Series, stack } from "d3-shape";
+import dayjs from "dayjs";
 import { v4 as uuid } from "uuid";
+
+import Storage, { PomodoroRequest } from "app/storage";
+const s = Storage.localStorage;
 
 import { Pomodoro, Rect } from "./types";
 
-const d: { [key: string]: Pomodoro[] } = {
-  0: [
-    { id: uuid(), label: "learning", seconds: 320 },
-    { id: uuid(), label: "poetry", seconds: 480 },
-    { id: uuid(), label: "learning", seconds: 640 },
-    { id: uuid(), label: "substack", seconds: 400 },
-    { id: uuid(), label: "website", seconds: 1920 },
-    { id: uuid(), label: "running", seconds: 300 },
-  ],
-  1: [
-    { id: uuid(), label: "website", seconds: 1920 },
-    { id: uuid(), label: "learning", seconds: 960 },
-    { id: uuid(), label: "substack", seconds: 400 },
-    { id: uuid(), label: "running", seconds: 2500 },
-  ],
-  9: [
-    { id: uuid(), label: "website", seconds: 1920 },
-    { id: uuid(), label: "learning", seconds: 960 },
-    { id: uuid(), label: "substack", seconds: 400 },
-    { id: uuid(), label: "running", seconds: 2500 },
-  ],
-  10: [
-    { id: uuid(), label: "website", seconds: 1920 },
-    { id: uuid(), label: "poetry", seconds: 1440 },
-    { id: uuid(), label: "learning", seconds: 960 },
-    { id: uuid(), label: "poetry", seconds: 400 },
-  ],
-  11: [
-    { id: uuid(), label: "website", seconds: 1920 },
-    { id: uuid(), label: "poetry", seconds: 960 },
-    { id: uuid(), label: "substack", seconds: 640 },
-    { id: uuid(), label: "substack", seconds: 400 },
-  ],
-  12: [
-    { id: uuid(), label: "learning", seconds: 320 },
-    { id: uuid(), label: "poetry", seconds: 480 },
-    { id: uuid(), label: "learning", seconds: 640 },
-    { id: uuid(), label: "substack", seconds: 400 },
-  ],
-  22: [],
-  23: [
-    { id: uuid(), label: "website", seconds: 1920 },
-    { id: uuid(), label: "poetry", seconds: 960 },
-    { id: uuid(), label: "substack", seconds: 640 },
-    { id: uuid(), label: "substack", seconds: 400 },
-  ],
+type HourBars = {
+  hourBars: (
+    | {
+        hour: string;
+        rects?: undefined;
+        hourIndex?: undefined;
+        series?: undefined;
+        barHeight?: undefined;
+      }
+    | {
+        rects: Rect[];
+        hourIndex: InternMap<string, InternMap<string, Rect>>;
+        series: Series<{ [key: string]: number }, string>[];
+        barHeight: number;
+        hour: string;
+      }
+  )[];
+  allLabels: string[];
 };
 
 function rollup(pomodoros: Pomodoro[], hour: string): Rect[] {
@@ -115,17 +91,11 @@ function hourBars(d: { [key: string]: Pomodoro[] }) {
   return { hourBars, allLabels: Object.keys(allLabels) };
 }
 
-const bars = hourBars(d);
-
-const maxSeconds = bars.hourBars
-  .filter((h) => !!h.barHeight)
-  .map((h) => h.barHeight)
-  .sort();
-const max = maxSeconds[maxSeconds.length - 1];
-
 export default function StackedBarChart() {
   const svgRef = useRef<HTMLDivElement | null>(null);
   const [svgWidth, setSVGWidth] = useState(0);
+  const [max, setMax] = useState(0);
+  const [bars, setBars] = useState<HourBars>();
   useEffect(() => {
     function onWindowResize() {
       if (svgRef.current) {
@@ -140,10 +110,29 @@ export default function StackedBarChart() {
   }, []);
   useEffect(() => {
     if (window) {
+      const storage = s(localStorage);
+      const date = dayjs();
+      storage
+        .get<PomodoroRequest>({
+          uri: `/api/pomodoro?year=${date.year()}&month=${date.month()}`,
+        })
+        .then((v) => {
+          const bars = hourBars(v);
+          const maxSeconds = bars.hourBars
+            .filter((h) => !!h.barHeight)
+            .map((h) => h.barHeight)
+            .sort();
+          const max = maxSeconds[maxSeconds.length - 1];
+          if (max) {
+            setMax(max);
+          }
+          setBars(bars);
+        });
     }
   }, []);
   const theme = useTheme();
-  if (!max) return <></>;
+  if (!max || !bars) return <></>;
+
   const bands = scaleBand(
     new Array(24).fill(0).map((_, i) => i),
     [marginLeft, svgWidth]
@@ -155,9 +144,10 @@ export default function StackedBarChart() {
   const y = scaleLinear()
     .domain([0, max])
     .rangeRound([0, svgHeight - marginBottom]);
+  console.log("schemeRdYlBu ", schemeRdYlBu);
   const colorInterpolator = scaleOrdinal()
     .domain(bars.allLabels)
-    .range(schemeRdYlBu[bars.allLabels.length]);
+    .range(schemeRdYlBu[3]);
   return (
     <Box>
       <Grid container ml={`${marginLeft}px`} mb={2}>
