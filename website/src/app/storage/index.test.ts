@@ -1,6 +1,6 @@
 import { Pomodoro } from "app/features/pomodoro/types";
 
-import Storage, { PomodoroRequest } from ".";
+import Storage, { PomodorosForDateRequest, PomodorosForMonthRequest } from ".";
 
 let storage: { [key: string]: any } = {};
 
@@ -10,7 +10,7 @@ const mockLocalStorage: Storage = {
   },
   length: 0,
   clear: function (): void {
-    throw new Error("Function not implemented.");
+    storage = {};
   },
   key: function (index: number): string | null {
     throw new Error("Function not implemented.");
@@ -24,6 +24,9 @@ const mockLocalStorage: Storage = {
 };
 
 describe("Storage", () => {
+  beforeEach(() => {
+    mockLocalStorage.clear();
+  });
   it("accesses data in local storage from initially empty data storage", async () => {
     const localStorage = Storage["localStorage"](mockLocalStorage);
     await localStorage.set({
@@ -32,10 +35,11 @@ describe("Storage", () => {
         year: "2024",
         date: "3",
         month: "6",
+        hour: "12",
         pomodoro: { label: "hi", seconds: 60, id: "0" },
       },
     });
-    const data = await localStorage.get<PomodoroRequest>({
+    const data = await localStorage.get({
       uri: "/api/pomodoro?year=2024&month=6&date=3",
     });
     expect(data).toStrictEqual([{ label: "hi", seconds: 60, id: "0" }]);
@@ -48,6 +52,7 @@ describe("Storage", () => {
         year: "2024",
         date: "3",
         month: "6",
+        hour: "12",
         pomodoro: { label: "hi", seconds: 60, id: "0" },
       },
     });
@@ -57,10 +62,11 @@ describe("Storage", () => {
         year: "2024",
         date: "4",
         month: "6",
+        hour: "12",
         pomodoro: { label: "hi", seconds: 60, id: "20240604" },
       },
     });
-    const data = await localStorage.get<PomodoroRequest>({
+    const data = await localStorage.get({
       uri: "/api/pomodoro?year=2024&month=6&date=4",
     });
     expect(data).toStrictEqual([{ label: "hi", seconds: 60, id: "20240604" }]);
@@ -73,6 +79,7 @@ describe("Storage", () => {
         year: "2024",
         date: "3",
         month: "6",
+        hour: "12",
         pomodoro: { label: "hi", seconds: 60, id: "0" },
       },
     });
@@ -82,10 +89,11 @@ describe("Storage", () => {
         year: "2024",
         date: "4",
         month: "7",
+        hour: "12",
         pomodoro: { label: "hi", seconds: 60, id: "20240704" },
       },
     });
-    const data = await localStorage.get<PomodoroRequest>({
+    const data = await localStorage.get<PomodorosForDateRequest>({
       uri: "/api/pomodoro?year=2024&month=7&date=4",
     });
     expect(data).toStrictEqual([{ label: "hi", seconds: 60, id: "20240704" }]);
@@ -98,6 +106,7 @@ describe("Storage", () => {
         year: "2024",
         date: "3",
         month: "6",
+        hour: "12",
         pomodoro: { label: "hi", seconds: 60, id: "0" },
       },
     });
@@ -107,12 +116,54 @@ describe("Storage", () => {
         year: "2025",
         date: "4",
         month: "7",
+        hour: "12",
         pomodoro: { label: "hi", seconds: 60, id: "20250704" },
       },
     });
-    const data = await localStorage.get<PomodoroRequest>({
+    const data = await localStorage.get<PomodorosForDateRequest>({
       uri: "/api/pomodoro?year=2025&month=7&date=4",
     });
     expect(data).toStrictEqual([{ label: "hi", seconds: 60, id: "20250704" }]);
+  });
+  it("deletes an intention from local storage", async () => {
+    const localStorage = Storage["localStorage"](mockLocalStorage);
+    await localStorage.set({
+      uri: "/api/pomodoro",
+      data: {
+        year: "2024",
+        date: "3",
+        month: "6",
+        hour: "12",
+        pomodoro: { label: "foo", seconds: 60, id: "0" },
+      },
+    });
+    await localStorage.set({
+      uri: "/api/pomodoro",
+      data: {
+        year: "2024",
+        date: "3",
+        month: "6",
+        hour: "12",
+        pomodoro: { label: "bar", seconds: 60, id: "0" },
+      },
+    });
+    await localStorage.set({
+      uri: "/api/pomodoro",
+      data: {
+        year: "2025",
+        date: "4",
+        month: "7",
+        hour: "12",
+        pomodoro: { label: "foo", seconds: 60, id: "20250704" },
+      },
+    });
+    await localStorage.delete({
+      uri: "/api/pomodoro/delete/intention",
+      data: { intention: "foo" },
+    });
+    const pomodoros = await localStorage.get({ uri: "/api/pomodoro" });
+    expect(pomodoros).toStrictEqual({
+      2024: { 6: { 3: [{ label: "bar", seconds: 60, id: "0" }] } },
+    });
   });
 });

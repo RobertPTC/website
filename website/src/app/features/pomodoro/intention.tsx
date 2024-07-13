@@ -18,13 +18,13 @@ import {
   Card,
   CardContent,
   CardHeader,
-  Grid,
   IconButton,
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
 import { v4 as uuid } from "uuid";
 
+import { pomodoroDispatch } from "app/dispatch";
 import Storage, { CreatePomodoroRequest } from "app/storage";
 
 import {
@@ -56,7 +56,6 @@ export default function Intention({
   const isEditAwaitingInput = useRef(true);
   const inputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [isIntentionLogsOpen, setIsIntentionLogsOpen] = useState(false);
   const [activeDuration, setActiveDuration] = useState<number>(initialSeconds);
   const [timerInput, setTimerInput] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
@@ -225,12 +224,35 @@ export default function Intention({
       audioRef.current.muted = false;
     }
   };
+  const onClickDeleteIntention: MouseEventHandler<
+    HTMLButtonElement
+  > = async () => {
+    if (window) {
+      const s = Storage["localStorage"](localStorage);
+      await s.delete({
+        uri: "/api/pomodoro/delete/intention",
+        data: { intention },
+      });
+      pomodoroDispatch.publish("deletePomodoroIntention");
+    }
+  };
   const timeRemainingDeg = duration.current
     ? 360 - (activeDuration / duration.current) * 360 - 0.0001
     : 0;
   return (
     <Card variant="outlined">
-      <CardHeader title={intention} />
+      <Box display="flex" alignItems="center" justifyContent="space-between">
+        <CardHeader title={intention} />
+        <Button
+          onClick={onClickDeleteIntention}
+          variant="contained"
+          size="small"
+          color="error"
+          sx={{ mr: 2 }}
+        >
+          Delete
+        </Button>
+      </Box>
       <CardContent>
         <Box
           component="form"

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 
-import { Box, Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 
 import { pomodoroDispatch } from "app/dispatch";
 import Storage, { PomodoroIntentionRequest } from "app/storage";
@@ -23,6 +23,9 @@ export default function Intentions() {
     };
     getPomodoroIntentions();
     pomodoroDispatch.subscribe("setPomodoroIntentions", () => {
+      getPomodoroIntentions();
+    });
+    pomodoroDispatch.subscribe("deletePomodoroIntention", () => {
       getPomodoroIntentions();
     });
     const worker = new Worker("/pomodoro-webworker.js");

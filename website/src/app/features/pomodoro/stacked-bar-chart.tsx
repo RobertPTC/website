@@ -10,7 +10,8 @@ import { schemeRdYlBu } from "d3-scale-chromatic";
 import { Series, stack } from "d3-shape";
 import dayjs from "dayjs";
 
-import Storage, { PomodoroRequest } from "app/storage";
+import { pomodoroDispatch } from "app/dispatch";
+import Storage, { PomodorosForMonthRequest } from "app/storage";
 const s = Storage.localStorage;
 
 import { Pomodoro, Rect } from "./types";
@@ -109,11 +110,12 @@ export default function StackedBarChart({ type }: { type: "date" | "month" }) {
     };
   }, [bars]);
   useEffect(() => {
-    if (window) {
-      const storage = s(localStorage);
-      const date = dayjs();
+    if (!window) return;
+    const storage = s(localStorage);
+    const date = dayjs();
+    function getPomodorosForMonth() {
       storage
-        .get<PomodoroRequest>({
+        .get<PomodorosForMonthRequest>({
           uri: `/api/pomodoro?year=${date.year()}&month=${date.month()}`,
         })
         .then((v) => {
@@ -129,6 +131,8 @@ export default function StackedBarChart({ type }: { type: "date" | "month" }) {
           setBars(barsData);
         });
     }
+    getPomodorosForMonth();
+    pomodoroDispatch.subscribe("deletePomodoroIntention", getPomodorosForMonth);
   }, []);
   const theme = useTheme();
   if (!max || !bars) return <></>;

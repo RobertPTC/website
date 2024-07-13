@@ -5,7 +5,7 @@ import { FormEvent, useRef, useState } from "react";
 import { Box, Button, TextField, Snackbar, Alert } from "@mui/material";
 
 import { FormMoment } from "app/api/types";
-import Storage from "app/storage";
+import Storage, { CreateMomentRequest } from "app/storage";
 
 type SnackbarMetadata = {
   message: string;
@@ -59,7 +59,7 @@ export default function MomentForm() {
 
       if (!momentID.current) {
         try {
-          const res = await storage.set({
+          const res = await storage.set<CreateMomentRequest>({
             uri: "/api/moments-of-being/create-moment",
             data: values,
           });

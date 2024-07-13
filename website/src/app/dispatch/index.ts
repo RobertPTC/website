@@ -1,5 +1,9 @@
 type EventNames = {
-  pomodoro: "setPomodoroIntentions" | "pomodoroCountdownEnd" | "setPomodoro";
+  pomodoro:
+    | "setPomodoroIntentions"
+    | "pomodoroCountdownEnd"
+    | "setPomodoro"
+    | "deletePomodoroIntention";
 };
 
 type Namespaces = keyof EventNames;
@@ -27,7 +31,6 @@ function dispatchFactory<T extends Namespaces>(
     },
     unsubscribe(eventName, cb) {
       const callbacks = ns[eventName] || [];
-      console.log("callbacks ", callbacks.length);
       ns[eventName] = callbacks.filter((callback) => {
         return callback !== cb;
       });

@@ -1,25 +1,17 @@
 import { FormMoment, Moment, Moments } from "app/api/types";
 import { Pomodoro } from "app/features/pomodoro/types";
 
-export type MomentsRequest = {
-  uri: `/api/moments-of-being/moments?year=${string}${string}${string}${string}`;
+// Pomodoros
+export type PomodorosForMonthRequest = {
+  uri: `/api/pomodoro?year=${number}&month=${number}`;
 };
 
-export type PomodoroRequest = {
-  uri: `/api/pomodoro?year=${string}${string}${string}`;
+export type PomodorosForDateRequest = {
+  uri: `/api/pomodoro?year=${number}&month=${number}&date=${number}`;
 };
 
-export type MomentsNavRequest = {
-  uri: "/api/moments-of-being/nav";
-};
-
-export type PomodoroIntentionRequest = {
-  uri: "/api/pomodoro-intention";
-};
-
-type CreateMomentsRequest = {
-  uri: "/api/moments-of-being/create-moment";
-  data: FormMoment;
+export type AllPomodorosRequest = {
+  uri: `/api/pomodoro`;
 };
 
 export type CreatePomodoroRequest = {
@@ -33,19 +25,55 @@ export type CreatePomodoroRequest = {
   };
 };
 
+export type DeletePomodoroRequest = {
+  uri: "/api/pomodoro/delete/intention";
+  data: {
+    intention: string;
+  };
+};
+
 type CreatePomodoroIntentionRequest = PomodoroIntentionRequest & {
   data: { intention: string };
+};
+
+export type PomodorosForDate = Pomodoro[];
+
+export type PomodorosForMonth = { [key: string]: PomodorosForDate };
+
+export type AllPomodoros = {
+  [key: string]: { [key: string]: PomodorosForMonth };
+};
+
+export type PomodoroIntentionRequest = {
+  uri: "/api/pomodoro-intention";
+};
+
+// Moments
+export type MomentsRequest = {
+  uri: `/api/moments-of-being/moments?year=${string}${string}${string}${string}`;
+};
+
+export type MomentsNavRequest = {
+  uri: "/api/moments-of-being/nav";
+};
+
+export type CreateMomentRequest = {
+  uri: "/api/moments-of-being/create-moment";
+  data: FormMoment;
 };
 
 type GetRequests =
   | MomentsRequest
   | MomentsNavRequest
-  | PomodoroRequest
-  | PomodoroIntentionRequest;
+  | PomodorosForMonthRequest
+  | PomodoroIntentionRequest
+  | PomodorosForDateRequest
+  | AllPomodorosRequest;
 type SetRequests =
-  | CreateMomentsRequest
+  | CreateMomentRequest
   | CreatePomodoroRequest
   | CreatePomodoroIntentionRequest;
+type DeleteRequests = DeletePomodoroRequest;
 
 type Resp<T> = {
   ok: boolean;
@@ -61,21 +89,26 @@ interface DataStore {
       ? string[]
       : T extends MomentsRequest
       ? Moments
-      : T extends PomodoroRequest
-      ? { [key: string]: Pomodoro[] }
+      : T extends PomodorosForMonthRequest
+      ? PomodorosForMonth
+      : T extends PomodorosForDateRequest
+      ? PomodorosForDate
+      : T extends AllPomodorosRequest
+      ? AllPomodoros
       : null
   >;
   set<T extends SetRequests>(
     r: SetRequests
   ): Promise<
     Resp<
-      T extends CreateMomentsRequest
+      T extends CreateMomentRequest
         ? Moment
         : T extends CreatePomodoroRequest
         ? Pomodoro
         : never
     >
   >;
+  delete<T extends DeleteRequests>(r: DeleteRequests): Promise<void>;
   clearCache(): void;
 }
 
@@ -207,12 +240,60 @@ const Storage = {
       }
       return { ok: true, json: async () => ({} as any), statusText: "ok" };
     },
-    clearCache() {},
+    clearCache() {
+      storage.clear();
+    },
+    delete: async ({ uri, data }: DeleteRequests) => {
+      const lS = Storage["localStorage"](storage);
+      if (uri === "/api/pomodoro/delete/intention") {
+        const { intention } = data;
+        const pomodoros = await lS.get<AllPomodorosRequest>({
+          uri: "/api/pomodoro",
+        });
+        const pomodoroIntentions = await lS.get<PomodoroIntentionRequest>({
+          uri: "/api/pomodoro-intention",
+        });
+        const newPomodoroIntentions = pomodoroIntentions.filter(
+          (p) => p !== intention
+        );
+        Object.keys(pomodoros).forEach((year) => {
+          Object.keys(pomodoros[year]).forEach((month) => {
+            Object.keys(pomodoros[year][month]).forEach((date) => {
+              const newPomodoros = pomodoros[year][month][date].filter(
+                (p: Pomodoro) => {
+                  return p.label !== intention;
+                }
+              );
+              pomodoros[year][month][date] = newPomodoros;
+              if (!newPomodoros.length) {
+                delete pomodoros[year][month][date];
+              }
+              if (!Object.keys(pomodoros[year][month]).length) {
+                delete pomodoros[year][month];
+              }
+              if (!Object.keys(pomodoros[year]).length) {
+                delete pomodoros[year];
+              }
+            });
+          });
+        });
+        storage.setItem("/api/pomodoro", JSON.stringify(pomodoros));
+        storage.setItem(
+          "/api/pomodoro-intention",
+          JSON.stringify(newPomodoroIntentions)
+        );
+      }
+    },
   }),
   api: (httpClient: typeof fetch): DataStore => ({
-    get: <T>(request: GetRequests) => ferryGet<T>(request, httpClient),
+    get: (request: GetRequests) => ferryGet(request, httpClient),
     clearCache: (uri?: string) => clearCache(uri),
-    set: <T>(request: SetRequests) => ferrySet<T>(request, httpClient),
+    set: (request: SetRequests) => ferrySet(request, httpClient),
+    delete: function <T extends DeleteRequests>(
+      r: DeleteRequests
+    ): Promise<void> {
+      throw new Error("Function not implemented.");
+    },
   }),
 } as const;
 
