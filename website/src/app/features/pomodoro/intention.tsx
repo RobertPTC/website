@@ -79,7 +79,7 @@ export default function Intention({
         setActiveDuration(e.data.duration);
       }
       if (!e.data.duration && e.data.intention === intention) {
-        playAudioCallback();
+        playAudio();
       }
       document.title = renderActiveTimer(e.data.duration);
     }
@@ -87,7 +87,7 @@ export default function Intention({
     return () => {
       worker.removeEventListener("message", onWorkerMessage);
     };
-  }, [worker, intention, playAudioCallback]);
+  }, [worker, intention]);
 
   useEffect(() => {
     if (!activeDuration && window) {
@@ -141,6 +141,9 @@ export default function Intention({
       inputRef.current.value = secondsToInputValue(activeDuration);
       worker.postMessage({ action: "stopTimer", packet: { intention } });
     }
+    if (audioRef.current) {
+      audioRef.current.src = "time-up.m4a";
+    }
   };
   const onClickDurationContainer = () => {
     setIsEditMode(!isEditMode);
@@ -165,6 +168,7 @@ export default function Intention({
       inputRef.current.focus();
       inputRef.current.value = parseTimerInput(renderedInput);
     }
+    worker.postMessage({ action: "stopTimer", packet: { intention } });
     setTimerAction("stop");
     setSubmitButtonText("Start");
   };
@@ -224,6 +228,7 @@ export default function Intention({
       audioRef.current.muted = false;
     }
   };
+  const onClickPlayAudio = () => playAudio();
   const onClickDeleteIntention: MouseEventHandler<
     HTMLButtonElement
   > = async () => {
@@ -239,12 +244,13 @@ export default function Intention({
   const timeRemainingDeg = duration.current
     ? 360 - (activeDuration / duration.current) * 360 - 0.0001
     : 0;
+  const isMuted = !!togglePlaybackVolume;
   return (
     <Card variant="outlined">
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <CardHeader title={intention} />
         <Button
-          onClick={onClickDeleteIntention}
+          onClick={onClickPlayAudio}
           variant="contained"
           size="small"
           color="error"
@@ -374,10 +380,9 @@ export default function Intention({
 
       <Box
         component="audio"
-        src="time-up.m4a"
         id={`audio-${intention}`}
         ref={audioRef}
-        muted={!!togglePlaybackVolume}
+        muted={isMuted}
       />
     </Card>
   );

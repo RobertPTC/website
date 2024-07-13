@@ -8,8 +8,8 @@ export type Pomodoro = {
   id: string;
 };
 
-export type Rect = {
+export type MonthRect = {
   label: string;
   seconds: number;
-  hour: string;
+  date: string;
 };

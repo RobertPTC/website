@@ -14,20 +14,20 @@ import { pomodoroDispatch } from "app/dispatch";
 import Storage, { PomodorosForMonthRequest } from "app/storage";
 const s = Storage.localStorage;
 
-import { Pomodoro, Rect } from "./types";
+import { Pomodoro, MonthRect } from "./types";
 
 type Bars = {
   bars: (
     | {
         timeUnit: string;
         rects?: undefined;
-        hourIndex?: undefined;
+        dateIndex?: undefined;
         series?: undefined;
         barHeight?: undefined;
       }
     | {
-        rects: Rect[];
-        hourIndex: InternMap<string, InternMap<string, Rect>>;
+        rects: MonthRect[];
+        dateIndex: InternMap<string, InternMap<string, MonthRect>>;
         series: Series<{ [key: string]: number }, string>[];
         barHeight: number;
         timeUnit: string;
@@ -36,7 +36,7 @@ type Bars = {
   allLabels: string[];
 };
 
-function rollup(pomodoros: Pomodoro[], hour: string): Rect[] {
+function rollup(pomodoros: Pomodoro[], date: string): MonthRect[] {
   const labelsToSeconds: { [key: string]: number } = {};
   pomodoros.forEach((p) => {
     const currentSeconds = labelsToSeconds[p.label];
@@ -49,7 +49,7 @@ function rollup(pomodoros: Pomodoro[], hour: string): Rect[] {
   return Object.entries(labelsToSeconds).map(([label, seconds]) => ({
     label,
     seconds,
-    hour,
+    date,
   }));
 }
 
@@ -58,14 +58,14 @@ const marginBottom = 20;
 const marginLeft = 80;
 const bandWidthModifer = 80;
 
-function makeBars(d: { [key: string]: Pomodoro[] }) {
+function makeMonthBars(d: { [key: string]: Pomodoro[] }) {
   const allLabels: { [key: string]: string } = {};
   const bars = Object.entries(d).map(([timeUnit, pomodoros]) => {
     if (!pomodoros.length) return { timeUnit };
     const rects = rollup(pomodoros, timeUnit);
-    const hourIndex = index(
+    const dateIndex = index(
       rects,
-      (r) => r.hour,
+      (r) => r.date,
       (r) => r.label
     );
     const labels = union(
@@ -77,12 +77,12 @@ function makeBars(d: { [key: string]: Pomodoro[] }) {
     const series = stack()
       .keys(labels)
       // @ts-ignore
-      .value(([, group], key) => group.get(key).seconds)(hourIndex);
+      .value(([, group], key) => group.get(key).seconds)(dateIndex);
     const barHeight = series?.[series.length - 1]?.[0]?.[1];
 
     return {
       rects,
-      hourIndex,
+      dateIndex,
       series,
       barHeight,
       timeUnit,
@@ -119,11 +119,16 @@ export default function StackedBarChart({ type }: { type: "date" | "month" }) {
           uri: `/api/pomodoro?year=${date.year()}&month=${date.month()}`,
         })
         .then((v) => {
-          const barsData = makeBars(v);
+          const barsData = makeMonthBars(v);
           const maxSeconds = barsData.bars
             .filter((h) => !!h.barHeight)
             .map((h) => h.barHeight)
-            .sort();
+            .sort((a, b) => {
+              if (a && b) {
+                return a - b;
+              }
+              return 0;
+            });
           const max = maxSeconds[maxSeconds.length - 1];
           if (max) {
             setMax(max);
@@ -133,6 +138,7 @@ export default function StackedBarChart({ type }: { type: "date" | "month" }) {
     }
     getPomodorosForMonth();
     pomodoroDispatch.subscribe("deletePomodoroIntention", getPomodorosForMonth);
+    pomodoroDispatch.subscribe("setPomodoro", getPomodorosForMonth);
   }, []);
   const theme = useTheme();
   if (!max || !bars) return <></>;
@@ -147,7 +153,7 @@ export default function StackedBarChart({ type }: { type: "date" | "month" }) {
   );
   const y = scaleLinear()
     .domain([0, max])
-    .rangeRound([0, svgHeight - marginBottom]);
+    .rangeRound([0, svgHeight - marginBottom * 2]);
 
   const colorInterpolator = scaleOrdinal()
     .domain(bars.allLabels)
@@ -230,7 +236,7 @@ export default function StackedBarChart({ type }: { type: "date" | "month" }) {
           >
             Minutes
           </Box>
-          {y.ticks().map((t) => {
+          {y.ticks(9).map((t) => {
             return (
               <Box
                 key={t}
@@ -245,7 +251,7 @@ export default function StackedBarChart({ type }: { type: "date" | "month" }) {
                   fontSize: "14px",
                 }}
               >
-                {t}
+                {Math.floor(t / 60)}
               </Box>
             );
           })}
