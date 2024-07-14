@@ -1,3 +1,4 @@
+import { Box, Typography } from "@mui/material";
 import dayjs from "dayjs";
 
 import IntentionForm from "./intention-form";
@@ -9,8 +10,17 @@ export default function Main() {
 
   return (
     <>
-      <IntentionForm />
-      <Intentions />
+      <Box mb={2}>
+        <Typography variant="h1" fontSize="3.25rem" textAlign="center">
+          Pomodoro Timer
+        </Typography>
+      </Box>
+      <Box mb={3}>
+        <IntentionForm />
+      </Box>
+      <Box mb={5}>
+        <Intentions />
+      </Box>
       <StackedBarChart type="month" />
     </>
   );

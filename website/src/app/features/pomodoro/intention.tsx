@@ -96,8 +96,9 @@ export default function Intention({
             hour: `${time.hour()}`,
           },
         };
-        storage.set(pomodoro);
-        pomodoroDispatch.publish("setPomodoro");
+        storage.set(pomodoro).then(() => {
+          pomodoroDispatch.publish("setPomodoro");
+        });
       }
       document.title = renderActiveTimer(e.data.duration);
     }

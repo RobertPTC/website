@@ -96,7 +96,7 @@ export default function StackedBarChart({ type }: { type: "date" | "month" }) {
   const [svgWidth, setSVGWidth] = useState(0);
   const [max, setMax] = useState(0);
   const [bars, setBars] = useState<Bars>();
-  const xScaleRange = type === "date" ? numberOfHours : dayjs().daysInMonth();
+
   useEffect(() => {
     function onWindowResize() {
       if (svgRef.current) {
@@ -142,7 +142,12 @@ export default function StackedBarChart({ type }: { type: "date" | "month" }) {
   }, []);
   const theme = useTheme();
   if (!max || !bars) return <></>;
-
+  const now = dayjs();
+  const xScaleRange = type === "date" ? numberOfHours : now.daysInMonth();
+  const chartHeading =
+    type === "date"
+      ? `${now.month()}/${now.date()}/${now.year()}`
+      : `${now.format("MMMM YYYY")}`;
   const bands = scaleBand(
     new Array(xScaleRange).fill(0).map((_, i) => i),
     [marginLeft, svgWidth - bandWidthModifer]
@@ -158,8 +163,12 @@ export default function StackedBarChart({ type }: { type: "date" | "month" }) {
   const colorInterpolator = scaleOrdinal()
     .domain(bars.allLabels)
     .range(schemeRdYlBu[3]);
+
   return (
     <Box>
+      <Typography variant="h2" textAlign="center" sx={{ fontSize: "3rem" }}>
+        {chartHeading}
+      </Typography>
       <Box ml={`${marginLeft}px`} mb={2} display="flex">
         {bars.allLabels.map((l) => {
           return (
@@ -178,7 +187,7 @@ export default function StackedBarChart({ type }: { type: "date" | "month" }) {
       <Box
         component="svg"
         id="stacked-bar-chart"
-        width="100%"
+        width={850}
         height={`${svgHeight}px`}
         ref={svgRef}
       >

@@ -26,7 +26,7 @@ export default function PomIntentionForm() {
   };
   return (
     <Box component="form" onSubmit={onSubmit} ref={formRef} display="flex">
-      <TextField label="New Intention" name="intention" />
+      <TextField label="New Intention" name="intention" sx={{ mr: 2 }} />
       <Button type="submit" variant="outlined">
         Create Intention
       </Button>
