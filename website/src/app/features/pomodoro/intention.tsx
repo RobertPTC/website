@@ -79,7 +79,25 @@ export default function Intention({
         setActiveDuration(e.data.duration);
       }
       if (!e.data.duration && e.data.intention === intention) {
-        playAudio();
+        playAudioCallback();
+        const storage = Storage["localStorage"](localStorage);
+        const time = dayjs();
+        const pomodoro: CreatePomodoroRequest = {
+          uri: "/api/pomodoro",
+          data: {
+            pomodoro: {
+              label: intention,
+              seconds: duration.current,
+              id: uuid(),
+            },
+            year: `${time.year()}`,
+            month: `${time.month()}`,
+            date: `${time.date()}`,
+            hour: `${time.hour()}`,
+          },
+        };
+        storage.set(pomodoro);
+        pomodoroDispatch.publish("setPomodoro");
       }
       document.title = renderActiveTimer(e.data.duration);
     }
@@ -87,29 +105,7 @@ export default function Intention({
     return () => {
       worker.removeEventListener("message", onWorkerMessage);
     };
-  }, [worker, intention]);
-
-  useEffect(() => {
-    if (!activeDuration && window) {
-      const storage = Storage["localStorage"](localStorage);
-      const time = dayjs();
-      const pomodoro: CreatePomodoroRequest = {
-        uri: "/api/pomodoro",
-        data: {
-          pomodoro: {
-            label: intention,
-            seconds: duration.current,
-            id: uuid(),
-          },
-          year: `${time.year()}`,
-          month: `${time.month()}`,
-          date: `${time.date()}`,
-          hour: `${time.hour()}`,
-        },
-      };
-      storage.set(pomodoro);
-    }
-  }, [activeDuration, intention]);
+  }, [worker, intention, playAudioCallback]);
 
   useEffect(() => {
     if (inputRef.current) {
