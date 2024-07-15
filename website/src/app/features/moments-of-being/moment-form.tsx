@@ -59,14 +59,10 @@ export default function MomentForm() {
 
       if (!momentID.current) {
         try {
-          const res = await storage.set<CreateMomentRequest>({
+          const json = await storage.set<CreateMomentRequest>({
             uri: "/api/moments-of-being/create-moment",
             data: values,
           });
-          if (!res.ok) {
-            throw new Error(res.statusText);
-          }
-          const json = await res.json();
           setSnackbarMeta({
             message: "Your moment was saved successfully",
             severity: "success",
