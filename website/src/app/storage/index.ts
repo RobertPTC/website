@@ -1,4 +1,4 @@
-import { FormMoment, Moment, Moments } from "app/api/types";
+import { FormMoment, Moment, MomentNav, Moments } from "app/api/types";
 import { Pomodoro, PomodoroInput } from "app/features/pomodoro/types";
 
 // Pomodoros
@@ -96,6 +96,8 @@ interface DataStore {
       ? PomodorosForDate
       : T extends AllPomodorosRequest
       ? AllPomodoros
+      : T extends MomentsNavRequest
+      ? MomentNav
       : null
   >;
   set<T extends SetRequests>(
