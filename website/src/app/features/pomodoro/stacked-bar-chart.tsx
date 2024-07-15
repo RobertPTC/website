@@ -11,7 +11,11 @@ import { Series, stack } from "d3-shape";
 import dayjs from "dayjs";
 
 import { pomodoroDispatch } from "app/dispatch";
-import Storage, { PomodorosForMonthRequest } from "app/storage";
+import Storage, {
+  PomodorosForDate,
+  PomodorosForMonth,
+  PomodorosForMonthRequest,
+} from "app/storage";
 const s = Storage.localStorage;
 
 import { Pomodoro, MonthRect } from "./types";
@@ -58,36 +62,47 @@ const marginBottom = 20;
 const marginLeft = 80;
 const bandWidthModifer = 80;
 
-function makeMonthBars(d: { [key: string]: Pomodoro[] }) {
+function makeMonthBars(d: PomodorosForMonth) {
   const allLabels: { [key: string]: string } = {};
-  const bars = Object.entries(d).map(([timeUnit, pomodoros]) => {
-    if (!pomodoros.length) return { timeUnit };
-    const rects = rollup(pomodoros, timeUnit);
-    const dateIndex = index(
-      rects,
-      (r) => r.date,
-      (r) => r.label
-    );
-    const labels = union(
-      d[timeUnit].map((d) => {
-        allLabels[d.label] = d.label;
-        return d.label;
-      })
-    );
-    const series = stack()
-      .keys(labels)
-      // @ts-ignore
-      .value(([, group], key) => group.get(key).seconds)(dateIndex);
-    const barHeight = series?.[series.length - 1]?.[0]?.[1];
-
-    return {
-      rects,
-      dateIndex,
-      series,
-      barHeight,
-      timeUnit,
-    };
+  let pomodorosForDates: PomodorosForDate = {};
+  Object.entries(d).forEach(([date, hourPomodoros]) => {
+    Object.entries(hourPomodoros).forEach(([hour, pomodorosForHour]) => {
+      const currentPomodorosForHour = pomodorosForDates[date] || [];
+      const newPomodorosForHour =
+        currentPomodorosForHour.concat(pomodorosForHour);
+      pomodorosForDates[date] = newPomodorosForHour;
+    });
   });
+  const bars = Object.entries(pomodorosForDates).map(
+    ([timeUnit, pomodoros]) => {
+      if (!pomodoros.length) return { timeUnit };
+      const rects = rollup(pomodoros, timeUnit);
+      const dateIndex = index(
+        rects,
+        (r) => r.date,
+        (r) => r.label
+      );
+      const labels = union(
+        pomodorosForDates[timeUnit].map((d) => {
+          allLabels[d.label] = d.label;
+          return d.label;
+        })
+      );
+      const series = stack()
+        .keys(labels)
+        // @ts-ignore
+        .value(([, group], key) => group.get(key).seconds)(dateIndex);
+      const barHeight = series?.[series.length - 1]?.[0]?.[1];
+
+      return {
+        rects,
+        dateIndex,
+        series,
+        barHeight,
+        timeUnit,
+      };
+    }
+  );
   return { bars, allLabels: Object.keys(allLabels) };
 }
 const numberOfHours = 24;

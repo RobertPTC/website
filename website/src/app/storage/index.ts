@@ -36,12 +36,22 @@ type CreatePomodoroIntentionRequest = PomodoroIntentionRequest & {
   data: { intention: string };
 };
 
-export type PomodorosForDate = Pomodoro[];
+export type PomodorosForHour = Pomodoro[];
 
-export type PomodorosForMonth = { [key: string]: PomodorosForDate };
+export type PomodorosForDate = {
+  [key: string]: PomodorosForHour;
+};
+
+export type PomodorosForMonth = {
+  [key: string]: PomodorosForDate;
+};
+
+type PomodorosForYear = {
+  [key: string]: PomodorosForMonth;
+};
 
 export type AllPomodoros = {
-  [key: string]: { [key: string]: PomodorosForMonth };
+  [key: string]: PomodorosForYear;
 };
 
 export type PomodoroIntentionRequest = {
@@ -167,20 +177,21 @@ const Storage = {
     set: async ({ uri, data }: SetRequests) => {
       let value = storage.getItem(uri);
       if (uri === "/api/pomodoro") {
-        const parsed = JSON.parse(value ? value : "{}");
+        const parsed: AllPomodoros = JSON.parse(value ? value : "{}");
         const { year, month, date, hour, pomodoro } = data;
         let currentPoms = { ...parsed };
         const yearPoms = parsed[year];
-        const monthPoms = yearPoms?.[month];
+        const monthPoms = parsed[year]?.[month];
         const datePoms = monthPoms?.[date];
-        if (yearPoms && monthPoms && datePoms) {
+        const hourPoms = datePoms?.[hour];
+        if (yearPoms && monthPoms && datePoms && hourPoms) {
           currentPoms = {
             ...parsed,
             [year]: {
               ...yearPoms,
               [month]: {
                 ...monthPoms,
-                [date]: [...datePoms, pomodoro],
+                [date]: { [hour]: [...hourPoms, pomodoro] },
               },
             },
           };
@@ -192,7 +203,7 @@ const Storage = {
               ...yearPoms,
               [month]: {
                 ...monthPoms,
-                [date]: [pomodoro],
+                [date]: { [hour]: [pomodoro] },
               },
             },
           };
@@ -203,7 +214,7 @@ const Storage = {
             [year]: {
               ...yearPoms,
               [month]: {
-                [date]: [pomodoro],
+                [date]: { [hour]: [pomodoro] },
               },
             },
           };
@@ -213,7 +224,7 @@ const Storage = {
             ...parsed,
             [year]: {
               [month]: {
-                [date]: [pomodoro],
+                [date]: { [hour]: [pomodoro] },
               },
             },
           };
@@ -260,21 +271,24 @@ const Storage = {
           Object.keys(pomodoros).forEach((year) => {
             Object.keys(pomodoros[year]).forEach((month) => {
               Object.keys(pomodoros[year][month]).forEach((date) => {
-                const newPomodoros = pomodoros[year][month][date].filter(
-                  (p: Pomodoro) => {
+                Object.keys(pomodoros[year][month][date]).forEach((hour) => {
+                  const newPomodoros = pomodoros[year][month][date][
+                    hour
+                  ].filter((p: Pomodoro) => {
                     return p.label !== intention;
+                  });
+
+                  pomodoros[year][month][date][hour] = newPomodoros;
+                  if (!newPomodoros.length) {
+                    delete pomodoros[year][month][date];
                   }
-                );
-                pomodoros[year][month][date] = newPomodoros;
-                if (!newPomodoros.length) {
-                  delete pomodoros[year][month][date];
-                }
-                if (!Object.keys(pomodoros[year][month]).length) {
-                  delete pomodoros[year][month];
-                }
-                if (!Object.keys(pomodoros[year]).length) {
-                  delete pomodoros[year];
-                }
+                  if (!Object.keys(pomodoros[year][month]).length) {
+                    delete pomodoros[year][month];
+                  }
+                  if (!Object.keys(pomodoros[year]).length) {
+                    delete pomodoros[year];
+                  }
+                });
               });
             });
           });
