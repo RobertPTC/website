@@ -253,31 +253,33 @@ const Storage = {
         const pomodoroIntentions = await lS.get<PomodoroIntentionRequest>({
           uri: "/api/pomodoro-intention",
         });
-        const newPomodoroIntentions = pomodoroIntentions.filter(
+        const newPomodoroIntentions = (pomodoroIntentions || []).filter(
           (p) => p !== intention
         );
-        Object.keys(pomodoros).forEach((year) => {
-          Object.keys(pomodoros[year]).forEach((month) => {
-            Object.keys(pomodoros[year][month]).forEach((date) => {
-              const newPomodoros = pomodoros[year][month][date].filter(
-                (p: Pomodoro) => {
-                  return p.label !== intention;
+        if (pomodoros) {
+          Object.keys(pomodoros).forEach((year) => {
+            Object.keys(pomodoros[year]).forEach((month) => {
+              Object.keys(pomodoros[year][month]).forEach((date) => {
+                const newPomodoros = pomodoros[year][month][date].filter(
+                  (p: Pomodoro) => {
+                    return p.label !== intention;
+                  }
+                );
+                pomodoros[year][month][date] = newPomodoros;
+                if (!newPomodoros.length) {
+                  delete pomodoros[year][month][date];
                 }
-              );
-              pomodoros[year][month][date] = newPomodoros;
-              if (!newPomodoros.length) {
-                delete pomodoros[year][month][date];
-              }
-              if (!Object.keys(pomodoros[year][month]).length) {
-                delete pomodoros[year][month];
-              }
-              if (!Object.keys(pomodoros[year]).length) {
-                delete pomodoros[year];
-              }
+                if (!Object.keys(pomodoros[year][month]).length) {
+                  delete pomodoros[year][month];
+                }
+                if (!Object.keys(pomodoros[year]).length) {
+                  delete pomodoros[year];
+                }
+              });
             });
           });
-        });
-        storage.setItem("/api/pomodoro", JSON.stringify(pomodoros));
+          storage.setItem("/api/pomodoro", JSON.stringify(pomodoros));
+        }
         storage.setItem(
           "/api/pomodoro-intention",
           JSON.stringify(newPomodoroIntentions)
