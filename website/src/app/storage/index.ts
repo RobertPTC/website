@@ -32,6 +32,10 @@ export type DeletePomodoroRequest = {
   };
 };
 
+export type PomodoroIntentionRequest = {
+  uri: "/api/pomodoro-intention";
+};
+
 export type CreatePomodoroIntentionRequest = PomodoroIntentionRequest & {
   data: { intention: string };
 };
@@ -52,10 +56,6 @@ type PomodorosForYear = {
 
 export type AllPomodoros = {
   [key: string]: PomodorosForYear;
-};
-
-export type PomodoroIntentionRequest = {
-  uri: "/api/pomodoro-intention";
 };
 
 // Moments
@@ -82,15 +82,9 @@ type GetRequests =
 type SetRequests =
   | CreateMomentRequest
   | CreatePomodoroRequest
-  | CreatePomodoroIntentionRequest
   | CreatePomodoroIntentionRequest;
-type DeleteRequests = DeletePomodoroRequest;
 
-type Resp<T> = {
-  ok: boolean;
-  json(): Promise<T>;
-  statusText: string;
-};
+type DeleteRequests = DeletePomodoroRequest;
 
 interface DataStore {
   get<T extends GetRequests>(
@@ -111,15 +105,13 @@ interface DataStore {
   set<T extends SetRequests>(
     r: SetRequests
   ): Promise<
-    Resp<
-      T extends CreateMomentRequest
-        ? Moment
-        : T extends CreatePomodoroRequest
-        ? Pomodoro
-        : T extends CreatePomodoroIntentionRequest
-        ? string
-        : Resp<null>
-    >
+    T extends CreateMomentRequest
+      ? Moment
+      : T extends CreatePomodoroRequest
+      ? Pomodoro
+      : T extends CreatePomodoroIntentionRequest
+      ? string
+      : null
   >;
   delete(r: DeleteRequests): Promise<void>;
   clearCache(): void;
@@ -146,13 +138,13 @@ async function ferryGet<T>(
 async function ferrySet<T>(
   { uri, data }: SetRequests,
   httpClient: typeof fetch
-): Promise<Resp<T>> {
+): Promise<T> {
   const body = JSON.stringify(data);
   const res = await httpClient(uri, { body, method: "POST" });
   if (!res.ok) {
     throw new Error(`unable to fetch: ${res.status} - ${res.statusText}`);
   }
-  return res;
+  return await res.json();
 }
 
 function clearCache(uri?: string) {
@@ -179,6 +171,9 @@ const Storage = {
     },
     set: async ({ uri, data }: SetRequests) => {
       let value = storage.getItem(uri);
+      if (uri === "/api/moments-of-being/create-moment") {
+        return {} as Moment;
+      }
       if (uri === "/api/pomodoro") {
         const parsed: AllPomodoros = JSON.parse(value ? value : "{}");
         const { year, month, date, hour, pomodoro } = data;
@@ -233,11 +228,7 @@ const Storage = {
           };
         }
         storage.setItem(uri, JSON.stringify(currentPoms));
-        return {
-          ok: true,
-          json: async () => pomodoro,
-          statusText: "ok",
-        };
+        return pomodoro;
       }
       if (uri === "/api/pomodoro-intention") {
         const value = storage.getItem(uri);
@@ -251,16 +242,9 @@ const Storage = {
           newValue = [...parsed, data.intention];
           storage.setItem(uri, JSON.stringify(newValue));
         }
-        return {
-          ok: true,
-          json: async () => newValue,
-          statusText: "ok",
-        };
+        return newValue;
       }
-      if (uri === "/api/moments-of-being/create-moment") {
-        return { ok: true, json: async () => ({} as any), statusText: "ok" };
-      }
-      return { ok: true, json: async () => null, statusText: "ok" };
+      return null;
     },
     clearCache() {
       storage.clear();
