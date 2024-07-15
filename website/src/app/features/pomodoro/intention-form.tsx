@@ -18,7 +18,7 @@ export default function PomIntentionForm() {
       throw new Error("intention not set");
     }
     formRef.current.reset();
-    storage.set({
+    await storage.set({
       uri: "/api/pomodoro-intention",
       data: { intention },
     });

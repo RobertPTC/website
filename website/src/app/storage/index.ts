@@ -88,7 +88,7 @@ type DeleteRequests = DeletePomodoroRequest;
 
 interface DataStore {
   get<T extends GetRequests>(
-    r: GetRequests
+    r: T
   ): Promise<
     T extends PomodoroIntentionRequest
       ? string[]
@@ -103,7 +103,7 @@ interface DataStore {
       : null
   >;
   set<T extends SetRequests>(
-    r: SetRequests
+    r: T
   ): Promise<
     T extends CreateMomentRequest
       ? Moment
@@ -171,9 +171,6 @@ const Storage = {
     },
     set: async ({ uri, data }: SetRequests) => {
       let value = storage.getItem(uri);
-      if (uri === "/api/moments-of-being/create-moment") {
-        return {} as Moment;
-      }
       if (uri === "/api/pomodoro") {
         const parsed: AllPomodoros = JSON.parse(value ? value : "{}");
         const { year, month, date, hour, pomodoro } = data;
@@ -228,7 +225,7 @@ const Storage = {
           };
         }
         storage.setItem(uri, JSON.stringify(currentPoms));
-        return pomodoro;
+        return pomodoro as any;
       }
       if (uri === "/api/pomodoro-intention") {
         const value = storage.getItem(uri);
