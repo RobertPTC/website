@@ -32,7 +32,7 @@ export type DeletePomodoroRequest = {
   };
 };
 
-type CreatePomodoroIntentionRequest = PomodoroIntentionRequest & {
+export type CreatePomodoroIntentionRequest = PomodoroIntentionRequest & {
   data: { intention: string };
 };
 
@@ -82,6 +82,7 @@ type GetRequests =
 type SetRequests =
   | CreateMomentRequest
   | CreatePomodoroRequest
+  | CreatePomodoroIntentionRequest
   | CreatePomodoroIntentionRequest;
 type DeleteRequests = DeletePomodoroRequest;
 
@@ -115,10 +116,12 @@ interface DataStore {
         ? Moment
         : T extends CreatePomodoroRequest
         ? Pomodoro
-        : never
+        : T extends CreatePomodoroIntentionRequest
+        ? string
+        : Resp<null>
     >
   >;
-  delete<T extends DeleteRequests>(r: DeleteRequests): Promise<void>;
+  delete(r: DeleteRequests): Promise<void>;
   clearCache(): void;
 }
 
@@ -230,6 +233,11 @@ const Storage = {
           };
         }
         storage.setItem(uri, JSON.stringify(currentPoms));
+        return {
+          ok: true,
+          json: async () => pomodoro,
+          statusText: "ok",
+        };
       }
       if (uri === "/api/pomodoro-intention") {
         const value = storage.getItem(uri);
@@ -249,7 +257,10 @@ const Storage = {
           statusText: "ok",
         };
       }
-      return { ok: true, json: async () => ({} as any), statusText: "ok" };
+      if (uri === "/api/moments-of-being/create-moment") {
+        return { ok: true, json: async () => ({} as any), statusText: "ok" };
+      }
+      return { ok: true, json: async () => null, statusText: "ok" };
     },
     clearCache() {
       storage.clear();

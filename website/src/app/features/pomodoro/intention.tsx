@@ -96,7 +96,8 @@ export default function Intention({
             hour: `${time.hour()}`,
           },
         };
-        storage.set(pomodoro).then(() => {
+        storage.set<CreatePomodoroRequest>(pomodoro).then((v) => {
+          console.log("v ", v);
           pomodoroDispatch.publish("setPomodoro");
         });
       }
