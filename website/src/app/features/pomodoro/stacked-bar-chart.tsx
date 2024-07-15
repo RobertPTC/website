@@ -119,6 +119,7 @@ export default function StackedBarChart({ type }: { type: "date" | "month" }) {
           uri: `/api/pomodoro?year=${date.year()}&month=${date.month()}`,
         })
         .then((v) => {
+          if (!v) return;
           const barsData = makeMonthBars(v);
           const maxSeconds = barsData.bars
             .filter((h) => !!h.barHeight)
