@@ -229,14 +229,13 @@ export default function Intention({
   const onClickDeleteIntention: MouseEventHandler<
     HTMLButtonElement
   > = async () => {
-    if (window) {
-      const s = Storage["localStorage"](localStorage);
-      await s.delete({
-        uri: "/api/pomodoro/delete/intention",
-        data: { intention },
-      });
-      pomodoroDispatch.publish("deletePomodoroIntention");
-    }
+    if (!window) return;
+    const s = Storage["localStorage"](localStorage);
+    await s.delete({
+      uri: "/api/pomodoro/delete/intention",
+      data: { intention },
+    });
+    pomodoroDispatch.publish("deletePomodoroIntention");
   };
   const timeRemainingDeg = duration.current
     ? 360 - (activeDuration / duration.current) * 360 - 0.0001
@@ -247,7 +246,7 @@ export default function Intention({
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <CardHeader title={intention} />
         <Button
-          onClick={onClickPlayAudio}
+          onClick={onClickDeleteIntention}
           variant="contained"
           size="small"
           color="error"
