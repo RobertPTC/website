@@ -134,7 +134,11 @@ export default function StackedBarChart({ type }: { type: "date" | "month" }) {
           uri: `/api/pomodoro?year=${date.year()}&month=${date.month()}`,
         })
         .then((v) => {
-          if (!v) return;
+          if (!v) {
+            setMax(0);
+            setBars(undefined);
+            return;
+          }
           const barsData = makeMonthBars(v);
           const maxSeconds = barsData.bars
             .filter((h) => !!h.barHeight)
@@ -150,6 +154,11 @@ export default function StackedBarChart({ type }: { type: "date" | "month" }) {
             setMax(max);
           }
           setBars(barsData);
+        })
+        .catch((e) => {
+          console.error("getPomodorosForMonth ", e);
+          setMax(0);
+          setBars(undefined);
         });
     }
     getPomodorosForMonth();

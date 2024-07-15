@@ -85,19 +85,20 @@ export default function Intention({
         const pomodoro: CreatePomodoroRequest = {
           uri: "/api/pomodoro",
           data: {
-            pomodoro: {
-              label: intention,
-              seconds: duration.current,
-              id: uuid(),
-            },
-            year: `${time.year()}`,
-            month: `${time.month()}`,
-            date: `${time.date()}`,
-            hour: `${time.hour()}`,
+            pomodoros: [
+              {
+                label: intention,
+                seconds: duration.current,
+                id: uuid(),
+                year: time.year(),
+                month: time.month(),
+                date: time.date(),
+                hour: time.hour(),
+              },
+            ],
           },
         };
         storage.set<CreatePomodoroRequest>(pomodoro).then((v) => {
-          console.log("v ", v);
           pomodoroDispatch.publish("setPomodoro");
         });
       }

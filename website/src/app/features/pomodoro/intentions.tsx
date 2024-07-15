@@ -9,25 +9,27 @@ import Storage, { PomodoroIntentionRequest } from "app/storage";
 import Intention from "./intention";
 
 export default function Intentions() {
-  const [intentions, setIntentions] = useState<string[] | null>([]);
+  const [intentions, setIntentions] = useState<string[] | null>(null);
   const [worker, setWorker] = useState<Worker>();
   useEffect(() => {
     if (!window) return;
     const storage = Storage["localStorage"](localStorage);
-    const getPomodoroIntentions = () => {
+    function getPomodoroIntentions() {
       storage
         .get<PomodoroIntentionRequest>({ uri: "/api/pomodoro-intention" })
         .then((res) => {
           setIntentions(res);
+        })
+        .catch((e) => {
+          console.error("error getting pomodoro intentions", e);
         });
-    };
+    }
     getPomodoroIntentions();
-    pomodoroDispatch.subscribe("setPomodoroIntentions", () => {
-      getPomodoroIntentions();
-    });
-    pomodoroDispatch.subscribe("deletePomodoroIntention", () => {
-      getPomodoroIntentions();
-    });
+    pomodoroDispatch.subscribe("setPomodoroIntentions", getPomodoroIntentions);
+    pomodoroDispatch.subscribe(
+      "deletePomodoroIntention",
+      getPomodoroIntentions
+    );
     const worker = new Worker("/pomodoro-webworker.js");
     setWorker(worker);
   }, []);

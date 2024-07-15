@@ -1,5 +1,5 @@
 import { FormMoment, Moment, Moments } from "app/api/types";
-import { Pomodoro } from "app/features/pomodoro/types";
+import { Pomodoro, PomodoroInput } from "app/features/pomodoro/types";
 
 // Pomodoros
 export type PomodorosForMonthRequest = {
@@ -17,11 +17,7 @@ export type AllPomodorosRequest = {
 export type CreatePomodoroRequest = {
   uri: "/api/pomodoro";
   data: {
-    pomodoro: Pomodoro;
-    year: string;
-    month: string;
-    date: string;
-    hour: string;
+    pomodoros: PomodoroInput[];
   };
 };
 
@@ -108,7 +104,7 @@ interface DataStore {
     T extends CreateMomentRequest
       ? Moment
       : T extends CreatePomodoroRequest
-      ? Pomodoro
+      ? Pomodoro[]
       : T extends CreatePomodoroIntentionRequest
       ? string
       : null
@@ -162,70 +158,89 @@ const Storage = {
       const value = storage.getItem(path);
       if (!value) return null;
       let parsed = JSON.parse(value);
+      const copy = { ...parsed };
       if (!query) return parsed;
       const queryParams = new URLSearchParams(query);
       for (const value of queryParams.values()) {
-        parsed = parsed[value];
+        try {
+          parsed = parsed[value];
+        } catch (e) {
+          throw new Error(`${value} does not exist in ${JSON.stringify(copy)}`);
+        }
       }
       return parsed;
     },
     set: async ({ uri, data }: SetRequests) => {
       let value = storage.getItem(uri);
       if (uri === "/api/pomodoro") {
-        const parsed: AllPomodoros = JSON.parse(value ? value : "{}");
-        const { year, month, date, hour, pomodoro } = data;
+        const parsed: Partial<AllPomodoros> = JSON.parse(value ? value : "{}");
+        const { pomodoros } = data;
         let currentPoms = { ...parsed };
-        const yearPoms = parsed[year];
-        const monthPoms = parsed[year]?.[month];
-        const datePoms = monthPoms?.[date];
-        const hourPoms = datePoms?.[hour];
-        if (yearPoms && monthPoms && datePoms && hourPoms) {
-          currentPoms = {
-            ...parsed,
-            [year]: {
-              ...yearPoms,
-              [month]: {
-                ...monthPoms,
-                [date]: { [hour]: [...hourPoms, pomodoro] },
+
+        const newPomodoros = pomodoros.reduce((p, c) => {
+          const { year, month, date, hour } = c;
+          const yearPoms = p[year];
+          const monthPoms = yearPoms?.[month];
+          const datePoms = monthPoms?.[date];
+          const hourPoms = datePoms?.[hour];
+          const pomodoro = { label: c.label, id: c.id, seconds: c.seconds };
+          if (!yearPoms) {
+            return {
+              ...p,
+              [year]: {
+                [month]: {
+                  [date]: { [hour]: [pomodoro] },
+                },
               },
-            },
-          };
-        }
-        if (yearPoms && monthPoms && !datePoms) {
-          currentPoms = {
-            ...parsed,
-            [year]: {
-              ...yearPoms,
-              [month]: {
-                ...monthPoms,
-                [date]: { [hour]: [pomodoro] },
+            };
+          }
+
+          if (monthPoms && datePoms && hourPoms) {
+            return {
+              ...p,
+              [year]: {
+                ...yearPoms,
+                [month]: {
+                  ...monthPoms,
+                  [date]: {
+                    ...datePoms,
+                    [hour]: [...hourPoms, pomodoro],
+                  },
+                },
               },
-            },
-          };
-        }
-        if (yearPoms && !monthPoms) {
-          currentPoms = {
-            ...parsed,
-            [year]: {
-              ...yearPoms,
-              [month]: {
-                [date]: { [hour]: [pomodoro] },
+            };
+          }
+
+          if (monthPoms && datePoms) {
+            return {
+              ...p,
+              [year]: {
+                ...yearPoms,
+                [month]: {
+                  ...monthPoms,
+                  [date]: { ...datePoms, [hour]: [pomodoro] },
+                },
               },
-            },
-          };
-        }
-        if (!yearPoms) {
-          currentPoms = {
-            ...parsed,
-            [year]: {
-              [month]: {
-                [date]: { [hour]: [pomodoro] },
+            };
+          }
+
+          if (monthPoms) {
+            return {
+              ...p,
+              [year]: {
+                ...yearPoms,
+                [month]: {
+                  ...monthPoms,
+                  [date]: { [hour]: [pomodoro] },
+                },
               },
-            },
-          };
-        }
-        storage.setItem(uri, JSON.stringify(currentPoms));
-        return pomodoro as any;
+            };
+          }
+          return p;
+        }, currentPoms);
+
+        storage.setItem(uri, JSON.stringify(newPomodoros));
+        return pomodoros as any;
       }
       if (uri === "/api/pomodoro-intention") {
         const value = storage.getItem(uri);
@@ -269,7 +284,6 @@ const Storage = {
                   ].filter((p: Pomodoro) => {
                     return p.label !== intention;
                   });
-
                   pomodoros[year][month][date][hour] = newPomodoros;
                   if (!newPomodoros.length) {
                     delete pomodoros[year][month][date];
@@ -284,8 +298,21 @@ const Storage = {
               });
             });
           });
-          storage.setItem("/api/pomodoro", JSON.stringify(pomodoros));
         }
+        if (!newPomodoroIntentions.length) {
+          storage.removeItem("/api/pomodoro");
+          storage.removeItem("/api/pomodoro-intention");
+          return;
+        }
+        if (newPomodoroIntentions.length && !Object.keys(pomodoros).length) {
+          storage.setItem(
+            "/api/pomodoro-intention",
+            JSON.stringify(newPomodoroIntentions)
+          );
+          storage.removeItem("/api/pomodoro");
+          return;
+        }
+        storage.setItem("/api/pomodoro", JSON.stringify(pomodoros));
         storage.setItem(
           "/api/pomodoro-intention",
           JSON.stringify(newPomodoroIntentions)
