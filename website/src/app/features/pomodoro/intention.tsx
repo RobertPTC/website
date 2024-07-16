@@ -8,6 +8,8 @@ import {
   FormEvent,
   MouseEventHandler,
   useCallback,
+  SetStateAction,
+  Dispatch,
 } from "react";
 
 import VolumeOffIcon from "@mui/icons-material/VolumeOff";
@@ -48,7 +50,11 @@ const initialSeconds = timerArrayToSeconds(
 export default function Intention({
   intention,
   worker,
+  activeIntention,
+  setActiveIntention,
 }: {
+  activeIntention: string;
+  setActiveIntention: Dispatch<SetStateAction<string>>;
   intention: string;
   worker: Worker;
 }) {
@@ -115,14 +121,25 @@ export default function Intention({
       inputRef.current.value = initialInput;
     }
   }, [inputRef]);
+  useEffect(() => {
+    if (intention !== activeIntention) {
+      worker.postMessage({
+        action: "stopTimer",
+        packet: { intention },
+      });
+      setTimerAction("stop");
+      setSubmitButtonText("Start");
+      if (inputRef.current) {
+        inputRef.current.value = secondsToInputValue(activeDuration);
+      }
+    }
+  }, [activeIntention, worker, intention, activeDuration]);
 
-  const onSubmit = (
-    e: FormEvent<HTMLFormElement>,
-    timerAction: TimerAction
-  ) => {
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const newTimerAction = timerAction === "stop" ? "start" : "stop";
     e.preventDefault();
     setIsEditMode(false);
-    if (timerAction === "start" && inputRef.current) {
+    if (newTimerAction === "start" && inputRef.current) {
       const seconds = timerArrayToSeconds(
         timerInputToTimerArray(inputRef.current.value)
       );
@@ -135,14 +152,17 @@ export default function Intention({
         action: "startTimer",
         packet: { intention },
       });
+      setActiveIntention(intention);
     }
-    if (timerAction === "stop" && inputRef.current) {
+    if (newTimerAction === "stop" && inputRef.current) {
       inputRef.current.value = secondsToInputValue(activeDuration);
       worker.postMessage({ action: "stopTimer", packet: { intention } });
     }
     if (audioRef.current) {
       audioRef.current.src = "time-up.m4a";
     }
+    setTimerAction(newTimerAction);
+    setSubmitButtonText(submitButtonText === "Stop" ? "Start" : "Stop");
   };
   const onClickDurationContainer = () => {
     setIsEditMode(!isEditMode);
@@ -288,10 +308,7 @@ export default function Intention({
           height="100%"
           justifyContent="space-between"
           onSubmit={(e) => {
-            setSubmitButtonText(submitButtonText === "Stop" ? "Start" : "Stop");
-            const newTimerAction = timerAction === "stop" ? "start" : "stop";
-            setTimerAction(newTimerAction);
-            onSubmit(e, newTimerAction);
+            onSubmit(e);
           }}
         >
           <Box

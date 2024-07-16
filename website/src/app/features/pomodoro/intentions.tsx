@@ -12,6 +12,7 @@ export default function Intentions() {
   const [intentions, setIntentions] = useState<string[] | null>(null);
   const [loaded, setIsLoaded] = useState(false);
   const [worker, setWorker] = useState<Worker>();
+  const [activeIntention, setActiveIntention] = useState("");
   useEffect(() => {
     if (!window) return;
     const storage = Storage["localStorage"](localStorage);
@@ -49,8 +50,13 @@ export default function Intentions() {
       <Grid container columns={4} spacing={1}>
         {intentions.map((i) => {
           return (
-            <Grid key={i} mb={1} item xs={1}>
-              <Intention intention={i} worker={worker} />
+            <Grid key={i} mb={1} item xs={4} sm={2} md={1}>
+              <Intention
+                intention={i}
+                activeIntention={activeIntention}
+                worker={worker}
+                setActiveIntention={setActiveIntention}
+              />
             </Grid>
           );
         })}
