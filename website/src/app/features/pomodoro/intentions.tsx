@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 
 import { pomodoroDispatch } from "app/dispatch";
 import Storage, { PomodoroIntentionRequest } from "app/storage";
@@ -33,7 +33,14 @@ export default function Intentions() {
     const worker = new Worker("/pomodoro-webworker.js");
     setWorker(worker);
   }, []);
-  if (!intentions) return <Box>Create your first intention ⭐</Box>;
+  if (!intentions)
+    return (
+      <Box>
+        <Typography sx={{ fontSize: "35px", textAlign: "center" }}>
+          Create your first intention ⭐
+        </Typography>
+      </Box>
+    );
   if (!worker) return <Box></Box>;
   return (
     <Grid container columns={4} spacing={1}>
