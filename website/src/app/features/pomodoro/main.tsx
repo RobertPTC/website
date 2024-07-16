@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 
 import IntentionForm from "./intention-form";
 import Intentions from "./intentions";
-import StackedBarChart from "./stacked-bar-chart";
+import StackedBarChartMonth from "./stacked-bar-chart-month";
 
 export default function Main() {
   const now = dayjs();
@@ -21,7 +21,7 @@ export default function Main() {
       <Box mb={5}>
         <Intentions />
       </Box>
-      <StackedBarChart type="month" />
+      <StackedBarChartMonth />
     </>
   );
 }

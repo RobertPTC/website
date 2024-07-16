@@ -1,3 +1,6 @@
+import { InternMap } from "d3-array";
+import { Series } from "d3-shape";
+
 import Pomodoro from "app/pomodoro-timer/page";
 
 export type TimerPrimaryButtonText = "Start" | "Stop";
@@ -22,3 +25,25 @@ export type MonthRect = {
   seconds: number;
   date: string;
 };
+
+export type Bars = {
+  bars: (
+    | {
+        timeUnit: string;
+        rects?: undefined;
+        dateIndex?: undefined;
+        series?: undefined;
+        barHeight?: undefined;
+      }
+    | {
+        rects: MonthRect[];
+        dateIndex: InternMap<string, InternMap<string, MonthRect>>;
+        series: Series<{ [key: string]: number }, string>[];
+        barHeight: number;
+        timeUnit: string;
+      }
+  )[];
+  allLabels: string[];
+};
+
+export type ChartTypes = "date" | "month";

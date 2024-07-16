@@ -1,118 +1,47 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 
 import { Box, Typography } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import { index, InternMap, union } from "d3-array";
-import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
+import { scaleBand, ScaleLinear, scaleOrdinal } from "d3-scale";
 import { schemeRdYlBu } from "d3-scale-chromatic";
-import { Series, stack } from "d3-shape";
-import dayjs from "dayjs";
 
-import { pomodoroDispatch } from "app/dispatch";
-import Storage, {
-  PomodorosForDate,
-  PomodorosForMonth,
-  PomodorosForMonthRequest,
-} from "app/storage";
-const s = Storage.localStorage;
+import theme from "app/theme";
 
-import { Pomodoro, MonthRect } from "./types";
+import {
+  marginLeft,
+  bandWidthModifer,
+  svgHeight,
+  marginBottom,
+} from "./stacked-bar-chart-utils";
+import { Bars, ChartTypes } from "./types";
 
-type Bars = {
-  bars: (
-    | {
-        timeUnit: string;
-        rects?: undefined;
-        dateIndex?: undefined;
-        series?: undefined;
-        barHeight?: undefined;
-      }
-    | {
-        rects: MonthRect[];
-        dateIndex: InternMap<string, InternMap<string, MonthRect>>;
-        series: Series<{ [key: string]: number }, string>[];
-        barHeight: number;
-        timeUnit: string;
-      }
-  )[];
-  allLabels: string[];
-};
-
-function rollup(pomodoros: Pomodoro[], date: string): MonthRect[] {
-  const labelsToSeconds: { [key: string]: number } = {};
-  pomodoros.forEach((p) => {
-    const currentSeconds = labelsToSeconds[p.label];
-    if (currentSeconds) {
-      labelsToSeconds[p.label] += p.seconds;
-      return;
-    }
-    labelsToSeconds[p.label] = p.seconds;
-  });
-  return Object.entries(labelsToSeconds).map(([label, seconds]) => ({
-    label,
-    seconds,
-    date,
-  }));
+interface StackedBarChartProps {
+  chartHeading: string;
+  bars: Bars;
+  x: ScaleLinear<number, number, never>;
+  y: ScaleLinear<number, number, never>;
+  xScaleRange: number;
+  type: ChartTypes;
+  svgWidth: number;
+  setSVGWidth: Dispatch<SetStateAction<number>>;
 }
 
-const svgHeight = 360;
-
-const marginBottom = 20;
-const marginLeft = 80;
-const bandWidthModifer = 80;
-
-function makeMonthBars(d: PomodorosForMonth) {
-  const allLabels: { [key: string]: string } = {};
-  let pomodorosForDates: PomodorosForDate = {};
-  Object.entries(d).forEach(([date, hourPomodoros]) => {
-    Object.entries(hourPomodoros).forEach(([hour, pomodorosForHour]) => {
-      const currentPomodorosForHour = pomodorosForDates[date] || [];
-      const newPomodorosForHour =
-        currentPomodorosForHour.concat(pomodorosForHour);
-      pomodorosForDates[date] = newPomodorosForHour;
-    });
-  });
-  const bars = Object.entries(pomodorosForDates).map(
-    ([timeUnit, pomodoros]) => {
-      if (!pomodoros.length) return { timeUnit };
-      const rects = rollup(pomodoros, timeUnit);
-      const dateIndex = index(
-        rects,
-        (r) => r.date,
-        (r) => r.label
-      );
-      const labels = union(
-        pomodorosForDates[timeUnit].map((d) => {
-          allLabels[d.label] = d.label;
-          return d.label;
-        })
-      );
-      const series = stack()
-        .keys(labels)
-        // @ts-ignore
-        .value(([, group], key) => group.get(key).seconds)(dateIndex);
-      const barHeight = series?.[series.length - 1]?.[0]?.[1];
-
-      return {
-        rects,
-        dateIndex,
-        series,
-        barHeight,
-        timeUnit,
-      };
-    }
-  );
-  return { bars, allLabels: Object.keys(allLabels) };
-}
-const numberOfHours = 24;
-export default function StackedBarChart({ type }: { type: "date" | "month" }) {
+export default function StackedBarChart({
+  chartHeading,
+  bars,
+  x,
+  y,
+  xScaleRange,
+  type,
+  svgWidth,
+  setSVGWidth,
+}: StackedBarChartProps) {
   const svgRef = useRef<HTMLDivElement | null>(null);
-  const [svgWidth, setSVGWidth] = useState(0);
-  const [max, setMax] = useState(0);
-  const [bars, setBars] = useState<Bars>();
 
+  const colorInterpolator = scaleOrdinal()
+    .domain(bars.allLabels)
+    .range(schemeRdYlBu[bars.allLabels.length < 3 ? 3 : bars.allLabels.length]);
   useEffect(() => {
     function onWindowResize() {
       if (svgRef.current) {
@@ -124,71 +53,11 @@ export default function StackedBarChart({ type }: { type: "date" | "month" }) {
     return () => {
       window.removeEventListener("resize", onWindowResize);
     };
-  }, [bars]);
-  useEffect(() => {
-    if (!window) return;
-    const storage = s(localStorage);
-    const date = dayjs();
-    function getPomodorosForMonth() {
-      storage
-        .get<PomodorosForMonthRequest>({
-          uri: `/api/pomodoro?year=${date.year()}&month=${date.month()}`,
-        })
-        .then((v) => {
-          if (!v) {
-            setMax(0);
-            setBars(undefined);
-            return;
-          }
-          const barsData = makeMonthBars(v);
-          const maxSeconds = barsData.bars
-            .filter((h) => !!h.barHeight)
-            .map((h) => h.barHeight)
-            .sort((a, b) => {
-              if (a && b) {
-                return a - b;
-              }
-              return 0;
-            });
-          const max = maxSeconds[maxSeconds.length - 1];
-          if (max) {
-            setMax(max);
-          }
-          setBars(barsData);
-        })
-        .catch((e) => {
-          setMax(0);
-          setBars(undefined);
-        });
-    }
-    getPomodorosForMonth();
-    pomodoroDispatch.subscribe("deletePomodoroIntention", getPomodorosForMonth);
-    pomodoroDispatch.subscribe("setPomodoro", getPomodorosForMonth);
-  }, []);
-  const theme = useTheme();
-  if (!max || !bars) return <></>;
-  const now = dayjs();
-  const xScaleRange = type === "date" ? numberOfHours : now.daysInMonth();
-  const chartHeading =
-    type === "date"
-      ? `${now.month()}/${now.date()}/${now.year()}`
-      : `${now.format("MMMM YYYY")}`;
+  }, [bars, setSVGWidth]);
   const bands = scaleBand(
     new Array(xScaleRange).fill(0).map((_, i) => i),
     [marginLeft, svgWidth - bandWidthModifer]
   );
-  const x = scaleLinear(
-    [0, xScaleRange],
-    [marginLeft, svgWidth - bands.bandwidth()]
-  );
-  const y = scaleLinear()
-    .domain([0, max])
-    .rangeRound([0, svgHeight - marginBottom * 2]);
-
-  const colorInterpolator = scaleOrdinal()
-    .domain(bars.allLabels)
-    .range(schemeRdYlBu[bars.allLabels.length < 3 ? 3 : bars.allLabels.length]);
-
   return (
     <Box>
       <Typography variant="h2" textAlign="center" sx={{ fontSize: "3rem" }}>

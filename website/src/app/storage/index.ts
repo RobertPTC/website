@@ -119,6 +119,7 @@ let cache: { [key: string]: any } = {};
 
 async function ferryGet<T>(
   { uri }: GetRequests,
+  // TODO: refactor httpClient to proper abstraction
   httpClient: typeof fetch
 ): Promise<T> {
   if (cache[uri]) {
