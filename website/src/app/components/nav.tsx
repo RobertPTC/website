@@ -39,11 +39,18 @@ export function Nav() {
           <AccordionDetails>
             <Box component="nav" mb={1}>
               <Link href="/">
-                <Typography variant="body1">Home</Typography>
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  Home
+                </Typography>
               </Link>
               <Link href="/planetary-hours-calculator">
-                <Typography variant="body1">
+                <Typography variant="body1" sx={{ mb: 1 }}>
                   Planetary Hours Calculator
+                </Typography>
+              </Link>
+              <Link href="/pomodoro-timer">
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  Pomodoro Timer (WIP)
                 </Typography>
               </Link>
             </Box>
@@ -151,8 +158,8 @@ export function Nav() {
               </Link>
             </Grid>
             <Grid item xs={6}>
-              <Link href="/pomodoro">
-                <Typography variant="body1">Pomodor (WIP)</Typography>
+              <Link href="/pomodoro-timer">
+                <Typography variant="body1">Pomodoro Timer (WIP)</Typography>
               </Link>
             </Grid>
           </Grid>

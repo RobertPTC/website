@@ -1,4 +1,4 @@
-import Pomodoro from "app/pomodoro/page";
+import Pomodoro from "app/pomodoro-timer/page";
 
 export type TimerPrimaryButtonText = "Start" | "Stop";
 

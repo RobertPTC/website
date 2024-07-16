@@ -228,6 +228,29 @@ export default function Intention({
     }
   };
   const onClickPlayAudio = () => playAudio();
+  const onClickCreatePomodoro = () => {
+    const storage = Storage["localStorage"](localStorage);
+    const time = dayjs();
+    const pomodoro: CreatePomodoroRequest = {
+      uri: "/api/pomodoro",
+      data: {
+        pomodoros: [
+          {
+            label: intention,
+            seconds: duration.current,
+            id: uuid(),
+            year: 2024,
+            month: 6,
+            date: 17,
+            hour: 3,
+          },
+        ],
+      },
+    };
+    storage.set<CreatePomodoroRequest>(pomodoro).then((v) => {
+      pomodoroDispatch.publish("setPomodoro");
+    });
+  };
   const onClickDeleteIntention: MouseEventHandler<
     HTMLButtonElement
   > = async () => {
