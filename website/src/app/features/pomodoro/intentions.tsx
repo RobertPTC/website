@@ -10,6 +10,7 @@ import Intention from "./intention";
 
 export default function Intentions() {
   const [intentions, setIntentions] = useState<string[] | null>(null);
+  const [loaded, setIsLoaded] = useState(false);
   const [worker, setWorker] = useState<Worker>();
   useEffect(() => {
     if (!window) return;
@@ -18,6 +19,7 @@ export default function Intentions() {
       storage
         .get<PomodoroIntentionRequest>({ uri: "/api/pomodoro-intention" })
         .then((res) => {
+          setIsLoaded(true);
           setIntentions(res);
         })
         .catch((e) => {
@@ -33,7 +35,7 @@ export default function Intentions() {
     const worker = new Worker("/pomodoro-webworker.js");
     setWorker(worker);
   }, []);
-  if (!intentions)
+  if (!intentions && loaded)
     return (
       <Box>
         <Typography sx={{ fontSize: "35px", textAlign: "center" }}>
@@ -42,15 +44,18 @@ export default function Intentions() {
       </Box>
     );
   if (!worker) return <Box></Box>;
-  return (
-    <Grid container columns={4} spacing={1}>
-      {intentions.map((i) => {
-        return (
-          <Grid key={i} mb={1} item xs={1}>
-            <Intention intention={i} worker={worker} />
-          </Grid>
-        );
-      })}
-    </Grid>
-  );
+  if (intentions) {
+    return (
+      <Grid container columns={4} spacing={1}>
+        {intentions.map((i) => {
+          return (
+            <Grid key={i} mb={1} item xs={1}>
+              <Intention intention={i} worker={worker} />
+            </Grid>
+          );
+        })}
+      </Grid>
+    );
+  }
+  return <></>;
 }

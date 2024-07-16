@@ -237,12 +237,12 @@ export default function Intention({
         pomodoros: [
           {
             label: intention,
-            seconds: duration.current,
+            seconds: 30,
             id: uuid(),
             year: 2024,
             month: 6,
-            date: 17,
-            hour: 3,
+            date: 4,
+            hour: 4,
           },
         ],
       },
@@ -271,7 +271,7 @@ export default function Intention({
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <CardHeader title={intention} />
         <Button
-          onClick={onClickDeleteIntention}
+          onClick={onClickCreatePomodoro}
           variant="contained"
           size="small"
           color="error"

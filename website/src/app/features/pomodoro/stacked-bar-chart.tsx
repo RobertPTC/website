@@ -58,7 +58,7 @@ function rollup(pomodoros: Pomodoro[], date: string): MonthRect[] {
 }
 
 const svgHeight = 360;
-const intitialSVGWidth = 1000;
+
 const marginBottom = 20;
 const marginLeft = 80;
 const bandWidthModifer = 80;
@@ -109,7 +109,7 @@ function makeMonthBars(d: PomodorosForMonth) {
 const numberOfHours = 24;
 export default function StackedBarChart({ type }: { type: "date" | "month" }) {
   const svgRef = useRef<HTMLDivElement | null>(null);
-  const [svgWidth, setSVGWidth] = useState(intitialSVGWidth);
+  const [svgWidth, setSVGWidth] = useState(0);
   const [max, setMax] = useState(0);
   const [bars, setBars] = useState<Bars>();
 
@@ -157,7 +157,6 @@ export default function StackedBarChart({ type }: { type: "date" | "month" }) {
           setBars(barsData);
         })
         .catch((e) => {
-          console.error("getPomodorosForMonth ", e);
           setMax(0);
           setBars(undefined);
         });
@@ -213,7 +212,7 @@ export default function StackedBarChart({ type }: { type: "date" | "month" }) {
       <Box
         component="svg"
         id="stacked-bar-chart"
-        width={svgWidth}
+        width="100%"
         height={`${svgHeight}px`}
         ref={svgRef}
       >
@@ -221,7 +220,6 @@ export default function StackedBarChart({ type }: { type: "date" | "month" }) {
           if (!b.barHeight) return <Box component="g" key={b.timeUnit} />;
           const { series, timeUnit } = b;
           const barHeight = series[series.length - 1][0][1];
-
           return (
             <Box
               component="g"
@@ -263,7 +261,7 @@ export default function StackedBarChart({ type }: { type: "date" | "month" }) {
           />
           <Box
             component="text"
-            transform={`translate(${-marginLeft + 25}, ${
+            transform={`translate(${-marginLeft + 20}, ${
               (svgHeight - marginBottom) / 2
             }) rotate(270)`}
             fill="var(--accent)"
@@ -272,7 +270,7 @@ export default function StackedBarChart({ type }: { type: "date" | "month" }) {
             Minutes
           </Box>
           {y.ticks(9).map((t) => {
-            const value = Math.floor(t / 60);
+            const value = t / 60;
             return (
               <Box
                 key={t}
@@ -287,7 +285,7 @@ export default function StackedBarChart({ type }: { type: "date" | "month" }) {
                   fontSize: "14px",
                 }}
               >
-                {value}
+                {value.toFixed(2)}
               </Box>
             );
           })}
@@ -338,6 +336,7 @@ export default function StackedBarChart({ type }: { type: "date" | "month" }) {
                     fill="var(--accent)"
                     sx={{
                       fontFamily: theme.typography.fontFamily,
+                      display: i ? "block" : "none",
                     }}
                   >
                     {i}
