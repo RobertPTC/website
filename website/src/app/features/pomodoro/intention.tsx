@@ -291,7 +291,7 @@ export default function Intention({
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <CardHeader title={intention} />
         <Button
-          onClick={onClickCreatePomodoro}
+          onClick={onClickDeleteIntention}
           variant="contained"
           size="small"
           color="error"

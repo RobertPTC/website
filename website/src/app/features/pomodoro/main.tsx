@@ -13,6 +13,7 @@ import {
 
 import IntentionForm from "./intention-form";
 import Intentions from "./intentions";
+import StackedBarChartDate from "./stacked-bar-chart-date";
 import StackedBarChartMonth from "./stacked-bar-chart-month";
 import { ChartTypes } from "./types";
 
@@ -52,6 +53,7 @@ export default function Main() {
         </Select>
       </FormControl>
       {chartType === "month" && <StackedBarChartMonth />}
+      {chartType === "date" && <StackedBarChartDate />}
     </>
   );
 }

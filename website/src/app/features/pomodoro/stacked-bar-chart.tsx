@@ -8,6 +8,7 @@ import { schemeRdYlBu } from "d3-scale-chromatic";
 
 import theme from "app/theme";
 
+import { renderActiveTimer } from "./seconds-to-timer-array";
 import {
   marginLeft,
   bandWidthModifer,
@@ -154,7 +155,7 @@ export default function StackedBarChart({
                   fontSize: "14px",
                 }}
               >
-                {value.toFixed(2)}
+                {renderActiveTimer(t)}
               </Box>
             );
           })}

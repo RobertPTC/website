@@ -7,16 +7,18 @@ import dayjs from "dayjs";
 
 import { pomodoroDispatch } from "app/dispatch";
 import Storage, { PomodorosForMonthRequest } from "app/storage";
-const s = Storage.localStorage;
 
 import StackedBarChart from "./stacked-bar-chart";
-import { makeMonthBars } from "./stacked-bar-chart-utils";
+import {
+  bandWidthModifer,
+  makeMonthBars,
+  marginBottom,
+  marginLeft,
+  svgHeight,
+} from "./stacked-bar-chart-utils";
 import { Bars } from "./types";
 
-const svgHeight = 360;
-const marginBottom = 20;
-const marginLeft = 80;
-const bandWidthModifer = 80;
+const s = Storage.localStorage;
 
 export default function StackedBarChartMonth() {
   const [svgWidth, setSVGWidth] = useState(0);

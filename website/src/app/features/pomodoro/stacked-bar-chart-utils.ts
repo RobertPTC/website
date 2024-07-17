@@ -66,7 +66,44 @@ export function makeMonthBars(d: PomodorosForMonth) {
   return { bars, allLabels: Object.keys(allLabels) };
 }
 
+export function makeDateBars(d: PomodorosForDate) {
+  const allLabels: { [key: string]: string } = {};
+  const pomodorosForDates = { ...d };
+  const bars = Object.entries(pomodorosForDates).map(
+    ([timeUnit, pomodoros]) => {
+      if (!pomodoros.length) return { timeUnit };
+      const rects = rollup(pomodoros, timeUnit);
+      const dateIndex = index(
+        rects,
+        (r) => r.date,
+        (r) => r.label
+      );
+      const labels = union(
+        pomodorosForDates[timeUnit].map((d) => {
+          allLabels[d.label] = d.label;
+          return d.label;
+        })
+      );
+      const series = stack()
+        .keys(labels)
+        // @ts-ignore
+        .value(([, group], key) => group.get(key).seconds)(dateIndex);
+      const barHeight = series?.[series.length - 1]?.[0]?.[1];
+
+      return {
+        rects,
+        dateIndex,
+        series,
+        barHeight,
+        timeUnit,
+      };
+    }
+  );
+  return { bars, allLabels: Object.keys(allLabels) };
+}
+
 export const svgHeight = 360;
 export const marginBottom = 20;
-export const marginLeft = 80;
+export const marginLeft = 100;
 export const bandWidthModifer = 80;
+export const numberOfHours = 24;
