@@ -4,7 +4,7 @@ import { Box, Typography } from "@mui/material";
 
 import IntentionForm from "./intention-form";
 import Intentions from "./intentions";
-import StackedBarChartWidget from "./stacked-bar-chart-container";
+import StackedBarChartWidget from "./stacked-bar-chart-widget";
 
 export default function Main() {
   return (
