@@ -40,12 +40,49 @@ import {
   secondsToInputValue,
 } from "./seconds-to-timer-array";
 import Timer from "./timer";
-import { TimerAction } from "./types";
+import { PomodoroInput, TimerAction } from "./types";
 
 const initialInput = "000500";
 const initialSeconds = timerArrayToSeconds(
   timerInputToTimerArray(initialInput)
 );
+
+function createPomodoroRequest({
+  label,
+  activeDuration,
+  duration,
+  pomodoroSpans,
+}: {
+  label: string;
+  duration: number;
+  activeDuration: number;
+  pomodoroSpans: number[];
+}): Promise<number> {
+  const storage = Storage["localStorage"](localStorage);
+  const elapsedTime =
+    duration - activeDuration - pomodoroSpans.reduce((p, c) => p + c, 0);
+  const time = dayjs();
+  const request: CreatePomodoroRequest = {
+    uri: "/api/pomodoro",
+    data: {
+      pomodoros: [
+        {
+          label,
+          seconds: elapsedTime,
+          id: uuid(),
+          year: time.year(),
+          month: time.month(),
+          date: time.date(),
+          hour: time.hour(),
+        },
+      ],
+    },
+  };
+  return storage
+    .set<CreatePomodoroRequest>(request)
+    .then(() => pomodoroDispatch.publish("setPomodoro"))
+    .then(() => elapsedTime);
+}
 
 export default function Intention({
   intention,
@@ -60,6 +97,7 @@ export default function Intention({
 }) {
   const duration = useRef(initialSeconds);
   const isEditAwaitingInput = useRef(true);
+  const pomodoroSpans = useRef<number[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [activeDuration, setActiveDuration] = useState<number>(initialSeconds);
@@ -86,26 +124,13 @@ export default function Intention({
       }
       if (!e.data.duration && e.data.intention === intention) {
         playAudioCallback();
-        const storage = Storage["localStorage"](localStorage);
-        const time = dayjs();
-        const pomodoro: CreatePomodoroRequest = {
-          uri: "/api/pomodoro",
-          data: {
-            pomodoros: [
-              {
-                label: intention,
-                seconds: duration.current,
-                id: uuid(),
-                year: time.year(),
-                month: time.month(),
-                date: time.date(),
-                hour: time.hour(),
-              },
-            ],
-          },
-        };
-        storage.set<CreatePomodoroRequest>(pomodoro).then((v) => {
-          pomodoroDispatch.publish("setPomodoro");
+        createPomodoroRequest({
+          label: intention,
+          duration: duration.current,
+          activeDuration: 0,
+          pomodoroSpans: pomodoroSpans.current,
+        }).then(() => {
+          pomodoroSpans.current = [];
         });
       }
       document.title = renderActiveTimer(e.data.duration);
@@ -157,6 +182,14 @@ export default function Intention({
     if (newTimerAction === "stop" && inputRef.current) {
       inputRef.current.value = secondsToInputValue(activeDuration);
       worker.postMessage({ action: "stopTimer", packet: { intention } });
+      createPomodoroRequest({
+        label: intention,
+        duration: duration.current,
+        activeDuration,
+        pomodoroSpans: pomodoroSpans.current,
+      }).then((elapsedTime) => {
+        pomodoroSpans.current = [...pomodoroSpans.current, elapsedTime];
+      });
     }
     if (audioRef.current) {
       audioRef.current.src = "time-up.m4a";
@@ -216,7 +249,6 @@ export default function Intention({
       const newValue = isEditAwaitingInput.current
         ? "0"
         : value.substring(value.length - 1, 0);
-      setActiveDuration(timerArrayToSeconds(timerInputToTimerArray(newValue)));
       isEditAwaitingInput.current = false;
       onChange(`${newValue}`);
     }
@@ -233,6 +265,7 @@ export default function Intention({
     setIsEditMode(false);
     setSubmitButtonText("Start");
     setTimerAction("stop");
+    pomodoroSpans.current = [];
     if (inputRef.current) {
       inputRef.current.value = secondsToInputValue(duration.current);
     }
@@ -274,7 +307,6 @@ export default function Intention({
   const onClickDeleteIntention: MouseEventHandler<
     HTMLButtonElement
   > = async () => {
-    if (!window) return;
     const s = Storage["localStorage"](localStorage);
     await s.delete({
       uri: "/api/pomodoro/delete/intention",

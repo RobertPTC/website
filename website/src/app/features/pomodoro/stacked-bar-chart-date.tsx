@@ -90,7 +90,7 @@ export default function StackedBarChartDate() {
       x={x}
       y={y}
       xScaleRange={xScaleRange}
-      type="month"
+      type="date"
       svgWidth={svgWidth}
       setSVGWidth={setSVGWidth}
     />

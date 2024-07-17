@@ -14,6 +14,7 @@ import {
   bandWidthModifer,
   svgHeight,
   marginBottom,
+  yAxisLegendOffset,
 } from "./stacked-bar-chart-utils";
 import { Bars, ChartTypes } from "./types";
 
@@ -131,7 +132,7 @@ export default function StackedBarChart({
           />
           <Box
             component="text"
-            transform={`translate(${-marginLeft + 20}, ${
+            transform={`translate(${-marginLeft + yAxisLegendOffset}, ${
               (svgHeight - marginBottom) / 2
             }) rotate(270)`}
             fill="var(--accent)"
@@ -184,7 +185,8 @@ export default function StackedBarChart({
                     fill="var(--accent)"
                     sx={{
                       fontFamily: theme.typography.fontFamily,
-                      display: i ? "block" : "none",
+                      display:
+                        i % 12 || (!(i % 12) && i < 23) ? "block" : "none",
                     }}
                   >
                     {i === 12 ? i : i % 12}

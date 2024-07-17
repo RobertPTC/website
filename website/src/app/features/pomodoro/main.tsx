@@ -39,9 +39,10 @@ export default function Main() {
       <Box mb={5}>
         <Intentions />
       </Box>
-      <FormControl>
+      <FormControl sx={{ width: "411px" }}>
         <InputLabel id="chart-type-select-label">Chart Type</InputLabel>
         <Select<ChartTypes>
+          fullWidth
           labelId="chart-type-select-label"
           value={chartType}
           onChange={onChangeChartType}
