@@ -1,31 +1,11 @@
-class Timer {
-  constructor() {}
-  start() {
-    this.start = Date.now();
-  }
-  stop() {
-    this.elapsedTimer = Date.now() - this.start;
-  }
-  printElapsedTime() {
-    console.log("this.elapsedTime ", this.elapsedTimer);
-  }
+function wrapper() {
+  const inner = () => {};
+  return inner;
 }
 
-const timer = new Timer();
+const inner = wrapper();
 
-function wrapper(f) {
-  console.log("wrapper");
-  return () => {
-    f();
-  };
-}
+console.log("inner ", inner.name);
+console.log("wraper() ", wrapper().name);
 
-setTimeout(
-  wrapper(() => {
-    console.log("timeout");
-    timer.stop();
-    timer.printElapsedTime();
-  }),
-  1000
-);
-timer.start();
+console.log("===", inner.name === wrapper().name);

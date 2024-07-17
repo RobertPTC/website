@@ -40,7 +40,6 @@ export default function StackedBarChart({
   setSVGWidth,
 }: StackedBarChartProps) {
   const svgRef = useRef<HTMLDivElement | null>(null);
-
   const colorInterpolator = scaleOrdinal()
     .domain(bars.allLabels)
     .range(schemeRdYlBu[bars.allLabels.length < 3 ? 3 : bars.allLabels.length]);

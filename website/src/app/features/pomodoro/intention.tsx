@@ -216,6 +216,14 @@ export default function Intention({
       inputRef.current.blur();
       return;
     }
+    createPomodoroRequest({
+      label: intention,
+      duration: duration.current,
+      activeDuration,
+      pomodoroSpans: pomodoroSpans.current,
+    }).then((elapsedTime) => {
+      pomodoroSpans.current = [...pomodoroSpans.current, elapsedTime];
+    });
     if (inputRef.current) {
       inputRef.current.focus();
       inputRef.current.value = parseTimerInput(renderedInput);
@@ -226,6 +234,7 @@ export default function Intention({
   };
   const onChange = (value: string, e?: ChangeEvent<HTMLInputElement>) => {
     let newValue = value;
+    pomodoroSpans.current = [];
     if (isEditMode && isEditAwaitingInput.current) {
       newValue = value[value.length - 1];
       isEditAwaitingInput.current = false;
@@ -249,14 +258,23 @@ export default function Intention({
       const newValue = isEditAwaitingInput.current
         ? "0"
         : value.substring(value.length - 1, 0);
+
       isEditAwaitingInput.current = false;
-      onChange(`${newValue}`);
+      onChange(newValue);
     }
     if (isNaN(Number(e.key))) {
       e.preventDefault();
     }
   };
   const onReset: MouseEventHandler<HTMLButtonElement> = () => {
+    createPomodoroRequest({
+      label: intention,
+      duration: duration.current,
+      activeDuration,
+      pomodoroSpans: pomodoroSpans.current,
+    }).then(() => {
+      pomodoroSpans.current = [];
+    });
     setActiveDuration(duration.current);
     worker.postMessage({
       action: "resetTimer",
@@ -265,7 +283,6 @@ export default function Intention({
     setIsEditMode(false);
     setSubmitButtonText("Start");
     setTimerAction("stop");
-    pomodoroSpans.current = [];
     if (inputRef.current) {
       inputRef.current.value = secondsToInputValue(duration.current);
     }

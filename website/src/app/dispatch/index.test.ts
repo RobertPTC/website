@@ -19,4 +19,15 @@ describe("dispatch", () => {
     pomodoroDispatch.publish("pomodoroCountdownEnd");
     expect(pomodoroDispatch.publish).toThrow();
   });
+  it("unsubscribes wrapped functions", () => {
+    function wrapper() {
+      const inner = jest.fn();
+      return inner;
+    }
+    const inner = wrapper();
+    pomodoroDispatch.subscribe("setPomodoro", inner);
+    pomodoroDispatch.unsubscribe("setPomodoro", inner);
+    pomodoroDispatch.publish("setPomodoro");
+    expect(inner).not.toHaveBeenCalled();
+  });
 });
