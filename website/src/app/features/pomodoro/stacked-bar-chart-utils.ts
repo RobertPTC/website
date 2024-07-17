@@ -1,9 +1,14 @@
 import { index, union } from "d3-array";
 import { stack } from "d3-shape";
+import { Dayjs } from "dayjs";
 
-import { PomodorosForMonth, PomodorosForDate } from "app/storage";
+import Storage, {
+  PomodorosForMonth,
+  PomodorosForDate,
+  PomodorosForMonthRequest,
+} from "app/storage";
 
-import { Pomodoro, MonthRect } from "./types";
+import { Pomodoro, MonthRect, GetPomodorosForTimeWrapper } from "./types";
 
 export function rollup(pomodoros: Pomodoro[], date: string): MonthRect[] {
   const labelsToSeconds: { [key: string]: number } = {};

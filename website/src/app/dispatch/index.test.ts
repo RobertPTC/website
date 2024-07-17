@@ -20,10 +20,10 @@ describe("dispatch", () => {
     expect(pomodoroDispatch.publish).toThrow();
   });
   it("unsubscribes wrapped functions", () => {
-    function wrapper() {
+    const wrapper = () => {
       const inner = jest.fn();
       return inner;
-    }
+    };
     const inner = wrapper();
     pomodoroDispatch.subscribe("setPomodoro", inner);
     pomodoroDispatch.unsubscribe("setPomodoro", inner);

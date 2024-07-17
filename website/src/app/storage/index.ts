@@ -68,7 +68,7 @@ export type CreateMomentRequest = {
   data: FormMoment;
 };
 
-type GetRequests =
+export type GetRequests =
   | MomentsRequest
   | MomentsNavRequest
   | PomodorosForMonthRequest
@@ -82,24 +82,26 @@ type SetRequests =
 
 type DeleteRequests = DeletePomodoroRequest;
 
-interface DataStore {
-  get<T extends GetRequests>(
-    r: T
-  ): Promise<
-    T extends PomodoroIntentionRequest
-      ? string[]
-      : T extends MomentsRequest
-      ? Moments
-      : T extends PomodorosForMonthRequest
-      ? PomodorosForMonth
-      : T extends PomodorosForDateRequest
-      ? PomodorosForDate
-      : T extends AllPomodorosRequest
-      ? AllPomodoros
-      : T extends MomentsNavRequest
-      ? MomentNav
-      : null
-  >;
+export type GetResponse<T> = Promise<
+  T extends PomodoroIntentionRequest
+    ? string[]
+    : T extends MomentsRequest
+    ? Moments
+    : T extends PomodorosForMonthRequest
+    ? PomodorosForMonth
+    : T extends PomodorosForDateRequest
+    ? PomodorosForDate
+    : T extends AllPomodorosRequest
+    ? AllPomodoros
+    : T extends MomentsNavRequest
+    ? MomentNav
+    : null
+>;
+
+export type Get = <T extends GetRequests>(r: T) => GetResponse<T>;
+
+export interface DataStore {
+  get: Get;
   set<T extends SetRequests>(
     r: T
   ): Promise<

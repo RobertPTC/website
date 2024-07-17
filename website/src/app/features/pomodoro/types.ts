@@ -1,5 +1,8 @@
+import { Dispatch, SetStateAction } from "react";
+
 import { InternMap } from "d3-array";
 import { Series } from "d3-shape";
+import { Dayjs } from "dayjs";
 
 import Pomodoro from "app/pomodoro-timer/page";
 
@@ -47,3 +50,9 @@ export type Bars = {
 };
 
 export type ChartTypes = "date" | "month";
+
+export type GetPomodorosForTimeWrapper = (
+  setMax: Dispatch<SetStateAction<number>>,
+  setBars: Dispatch<SetStateAction<Bars | undefined>>,
+  date: Dayjs
+) => Function;
