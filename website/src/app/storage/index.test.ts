@@ -273,8 +273,8 @@ describe("Storage", () => {
         pomodoros: [
           {
             year: 2024,
-            date: 3,
-            month: 6,
+            date: 4,
+            month: 7,
             hour: 12,
             label: "foo",
             seconds: 60,
@@ -287,13 +287,13 @@ describe("Storage", () => {
             hour: 12,
             label: "bar",
             seconds: 60,
-            id: "0",
+            id: "20240603",
           },
           {
             year: 2025,
             date: 4,
             month: 7,
-            hour: 12,
+            hour: 11,
             label: "foo",
             seconds: 60,
             id: "20250704",
@@ -308,7 +308,9 @@ describe("Storage", () => {
     });
     const pomodoros = await localStorage.get({ uri: "/api/pomodoro" });
     expect(pomodoros).toStrictEqual({
-      2024: { 6: { 3: { 12: [{ label: "bar", seconds: 60, id: "0" }] } } },
+      2024: {
+        6: { 3: { 12: [{ label: "bar", seconds: 60, id: "20240603" }] } },
+      },
     });
   });
 });

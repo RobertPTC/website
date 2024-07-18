@@ -181,7 +181,6 @@ const Storage = {
         const parsed: Partial<AllPomodoros> = JSON.parse(value ? value : "{}");
         const { pomodoros } = data;
         let currentPoms = { ...parsed };
-
         const newPomodoros = pomodoros.reduce((p, c) => {
           const { year, month, date, hour } = c;
           const yearPoms = p[year];
@@ -189,18 +188,7 @@ const Storage = {
           const datePoms = monthPoms?.[date];
           const hourPoms = datePoms?.[hour];
           const pomodoro = { label: c.label, id: c.id, seconds: c.seconds };
-          if (!yearPoms) {
-            return {
-              ...p,
-              [year]: {
-                [month]: {
-                  [date]: { [hour]: [pomodoro] },
-                },
-              },
-            };
-          }
-
-          if (monthPoms && datePoms && hourPoms) {
+          if (yearPoms && monthPoms && datePoms && hourPoms) {
             return {
               ...p,
               [year]: {
@@ -215,35 +203,60 @@ const Storage = {
               },
             };
           }
-
-          if (monthPoms && datePoms) {
+          if (yearPoms && monthPoms && datePoms) {
             return {
               ...p,
               [year]: {
                 ...yearPoms,
                 [month]: {
                   ...monthPoms,
-                  [date]: { ...datePoms, [hour]: [pomodoro] },
+                  [date]: {
+                    ...datePoms,
+                    [hour]: [pomodoro],
+                  },
                 },
               },
             };
           }
-
-          if (monthPoms) {
+          if (yearPoms && monthPoms) {
             return {
               ...p,
               [year]: {
                 ...yearPoms,
                 [month]: {
                   ...monthPoms,
-                  [date]: { [hour]: [pomodoro] },
+                  [date]: {
+                    [hour]: [pomodoro],
+                  },
                 },
               },
             };
           }
-          return p;
+
+          if (yearPoms) {
+            return {
+              ...p,
+              [year]: {
+                ...yearPoms,
+                [month]: {
+                  [date]: {
+                    [hour]: [pomodoro],
+                  },
+                },
+              },
+            };
+          }
+          return {
+            ...p,
+            [year]: {
+              [month]: {
+                [date]: {
+                  [hour]: [pomodoro],
+                },
+              },
+            },
+          };
         }, currentPoms);
-
         storage.setItem(uri, JSON.stringify(newPomodoros));
         return pomodoros as any;
       }
@@ -289,8 +302,11 @@ const Storage = {
                   ].filter((p: Pomodoro) => {
                     return p.label !== intention;
                   });
-                  pomodoros[year][month][date][hour] = newPomodoros;
+
                   if (!newPomodoros.length) {
+                    delete pomodoros[year][month][date][hour];
+                  }
+                  if (!Object.keys(pomodoros[year][month][date]).length) {
                     delete pomodoros[year][month][date];
                   }
                   if (!Object.keys(pomodoros[year][month]).length) {
