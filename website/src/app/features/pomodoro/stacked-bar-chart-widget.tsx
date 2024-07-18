@@ -112,7 +112,7 @@ export default function StackedBarChartWidget() {
   }, [type, date]);
   useEffect(() => {
     if (type === "month") {
-      setXScaleRange(date.daysInMonth());
+      setXScaleRange(date.daysInMonth() + 1);
     }
     if (type === "date") {
       setXScaleRange(numberOfHours);
@@ -124,7 +124,7 @@ export default function StackedBarChartWidget() {
     [marginLeft, svgWidth - bandWidthModifer]
   );
   const x = scaleLinear(
-    [0, xScaleRange],
+    [type === "month" ? 1 : 0, xScaleRange],
     [marginLeft, svgWidth - bands.bandwidth()]
   );
   const y = scaleLinear()
