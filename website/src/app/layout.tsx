@@ -23,6 +23,7 @@ export default function RootLayout({
                   top: 0,
                   background: "rgb(var(--background-start-rgb))",
                   p: 2,
+                  zIndex: 300,
                 }}
               >
                 <Nav />

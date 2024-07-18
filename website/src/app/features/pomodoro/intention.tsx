@@ -40,7 +40,7 @@ import {
   secondsToInputValue,
 } from "./seconds-to-timer-array";
 import Timer from "./timer";
-import { PomodoroInput, TimerAction } from "./types";
+import { TimerAction } from "./types";
 
 const initialInput = "000500";
 const initialSeconds = timerArrayToSeconds(
@@ -267,14 +267,16 @@ export default function Intention({
     }
   };
   const onReset: MouseEventHandler<HTMLButtonElement> = () => {
-    createPomodoroRequest({
-      label: intention,
-      duration: duration.current,
-      activeDuration,
-      pomodoroSpans: pomodoroSpans.current,
-    }).then(() => {
-      pomodoroSpans.current = [];
-    });
+    if (activeDuration) {
+      createPomodoroRequest({
+        label: intention,
+        duration: duration.current,
+        activeDuration,
+        pomodoroSpans: pomodoroSpans.current,
+      }).then(() => {
+        pomodoroSpans.current = [];
+      });
+    }
     setActiveDuration(duration.current);
     worker.postMessage({
       action: "resetTimer",
@@ -356,6 +358,7 @@ export default function Intention({
           flexDirection="column"
           height="100%"
           justifyContent="space-between"
+          sx={{ position: "relative" }}
           onSubmit={(e) => {
             onSubmit(e);
           }}
