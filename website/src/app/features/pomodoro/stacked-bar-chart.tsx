@@ -42,7 +42,7 @@ export default function StackedBarChart({
   const svgRef = useRef<HTMLDivElement | null>(null);
   const colorInterpolator = scaleOrdinal()
     .domain(bars.allLabels)
-    .range(schemeRdYlBu[bars.allLabels.length < 3 ? 3 : bars.allLabels.length]);
+    .range(schemeRdYlBu[11]);
   useEffect(() => {
     function onWindowResize() {
       if (svgRef.current) {
@@ -175,7 +175,7 @@ export default function StackedBarChart({
             stroke="var(--accent)"
             strokeWidth="1"
           />
-          {new Array(xScaleRange + 1).fill(0).map((_, i) => {
+          {new Array(xScaleRange).fill(0).map((_, i) => {
             return (
               <Box component="g" key={i} transform={`translate(${x(i)},15)`}>
                 {type === "date" && (
@@ -184,8 +184,6 @@ export default function StackedBarChart({
                     fill="var(--accent)"
                     sx={{
                       fontFamily: theme.typography.fontFamily,
-                      display:
-                        i % 12 || (!(i % 12) && i < 23) ? "block" : "none",
                     }}
                   >
                     {i === 12 ? i : i % 12}
@@ -207,7 +205,6 @@ export default function StackedBarChart({
                     fill="var(--accent)"
                     sx={{
                       fontFamily: theme.typography.fontFamily,
-                      display: i ? "block" : "none",
                     }}
                   >
                     {i}
