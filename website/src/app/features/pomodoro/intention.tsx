@@ -10,6 +10,7 @@ import {
   useCallback,
   SetStateAction,
   Dispatch,
+  FormEventHandler,
 } from "react";
 
 import VolumeOffIcon from "@mui/icons-material/VolumeOff";
@@ -60,8 +61,10 @@ function createPomodoroRequest({
 }): Promise<number> {
   const storage = Storage["localStorage"](localStorage);
   const elapsedTime =
-    duration - activeDuration - pomodoroSpans.reduce((p, c) => p + c, 0);
-  console.log("createPomodoroRequestElapsedTime ", elapsedTime);
+    duration - pomodoroSpans.reduce((p, c) => p + c, activeDuration);
+  if (elapsedTime < 0) {
+    throw new Error(`elapsed time cannot be negative ${elapsedTime}`);
+  }
   const time = dayjs();
   const request: CreatePomodoroRequest = {
     uri: "/api/pomodoro",
@@ -98,7 +101,6 @@ export default function Intention({
 }) {
   const duration = useRef(initialSeconds);
   const isEditAwaitingInput = useRef(true);
-
   const pomodoroSpans = useRef<number[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -106,6 +108,7 @@ export default function Intention({
   const [timerInput, setTimerInput] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
   const [timerAction, setTimerAction] = useState<TimerAction>("stop");
+  const [resetCounter, setResetCounter] = useState(0);
   const [submitButtonText, setSubmitButtonText] = useState<"Start" | "Stop">(
     "Start"
   );
@@ -175,7 +178,6 @@ export default function Intention({
       activeIntention === intention &&
       duration.current !== activeDuration
     ) {
-      console.log("create pomodoro stop ", activeDuration);
       createPomodoroRequest({
         label: intention,
         duration: duration.current,
@@ -187,6 +189,15 @@ export default function Intention({
       return;
     }
   }, [activeDuration, activeIntention, intention, timerAction]);
+
+  useEffect(() => {
+    if (activeIntention === intention) {
+      setActiveDuration(duration.current);
+      pomodoroSpans.current = [];
+    }
+    if (activeIntention === intention && inputRef.current) {
+    }
+  }, [resetCounter, intention, activeIntention]);
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     const newTimerAction = timerAction === "stop" ? "start" : "stop";
@@ -284,8 +295,12 @@ export default function Intention({
     }
   };
 
-  const onReset: MouseEventHandler<HTMLButtonElement> = () => {
-    setActiveDuration(duration.current);
+  const onReset = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (inputRef.current) {
+      inputRef.current.value = secondsToInputValue(duration.current);
+    }
+    setResetCounter(resetCounter + 1);
     worker.postMessage({
       action: "resetTimer",
       packet: { intention, duration: duration.current },
@@ -293,9 +308,6 @@ export default function Intention({
     setIsEditMode(false);
     setSubmitButtonText("Start");
     setTimerAction("stop");
-    if (inputRef.current) {
-      inputRef.current.value = secondsToInputValue(duration.current);
-    }
   };
 
   const onClickTogglePlayback: MouseEventHandler<HTMLButtonElement> = () => {
@@ -348,6 +360,7 @@ export default function Intention({
     ? 360 - (activeDuration / duration.current) * 360 - 0.0001
     : 0;
   const isMuted = !!togglePlaybackVolume;
+
   return (
     <Card variant="outlined">
       <Box display="flex" alignItems="center" justifyContent="space-between">
@@ -370,9 +383,8 @@ export default function Intention({
           height="100%"
           justifyContent="space-between"
           sx={{ position: "relative" }}
-          onSubmit={(e) => {
-            onSubmit(e);
-          }}
+          onSubmit={onSubmit}
+          onReset={onReset}
         >
           <Box
             component="input"
@@ -467,7 +479,6 @@ export default function Intention({
             <Button
               type="reset"
               variant="outlined"
-              onClick={onReset}
               disabled={duration.current === activeDuration}
             >
               Reset
