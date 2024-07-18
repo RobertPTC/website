@@ -61,6 +61,7 @@ function createPomodoroRequest({
   const storage = Storage["localStorage"](localStorage);
   const elapsedTime =
     duration - activeDuration - pomodoroSpans.reduce((p, c) => p + c, 0);
+  console.log("createPomodoroRequestElapsedTime ", elapsedTime);
   const time = dayjs();
   const request: CreatePomodoroRequest = {
     uri: "/api/pomodoro",
@@ -97,6 +98,7 @@ export default function Intention({
 }) {
   const duration = useRef(initialSeconds);
   const isEditAwaitingInput = useRef(true);
+
   const pomodoroSpans = useRef<number[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -122,30 +124,26 @@ export default function Intention({
       if (e.data.intention === intention) {
         setActiveDuration(e.data.duration);
       }
-      if (!e.data.duration && e.data.intention === intention) {
-        playAudioCallback();
-        createPomodoroRequest({
-          label: intention,
-          duration: duration.current,
-          activeDuration: 0,
-          pomodoroSpans: pomodoroSpans.current,
-        }).then(() => {
-          pomodoroSpans.current = [];
-        });
-      }
-      document.title = renderActiveTimer(e.data.duration);
     }
     worker.addEventListener("message", onWorkerMessage);
     return () => {
       worker.removeEventListener("message", onWorkerMessage);
     };
-  }, [worker, intention, playAudioCallback]);
+  }, [worker, intention]);
 
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.value = initialInput;
     }
   }, [inputRef]);
+
+  useEffect(() => {
+    if (!activeDuration && activeIntention === intention) {
+      playAudioCallback();
+    }
+    document.title = renderActiveTimer(activeDuration);
+  }, [activeDuration, playAudioCallback, intention, activeIntention]);
+
   useEffect(() => {
     if (intention !== activeIntention) {
       worker.postMessage({
@@ -159,6 +157,36 @@ export default function Intention({
       }
     }
   }, [activeIntention, worker, intention, activeDuration]);
+
+  useEffect(() => {
+    if (!activeDuration && activeIntention === intention) {
+      createPomodoroRequest({
+        label: intention,
+        duration: duration.current,
+        activeDuration: 0,
+        pomodoroSpans: pomodoroSpans.current,
+      }).then(() => {
+        pomodoroSpans.current = [];
+      });
+      return;
+    }
+    if (
+      timerAction === "stop" &&
+      activeIntention === intention &&
+      duration.current !== activeDuration
+    ) {
+      console.log("create pomodoro stop ", activeDuration);
+      createPomodoroRequest({
+        label: intention,
+        duration: duration.current,
+        activeDuration,
+        pomodoroSpans: pomodoroSpans.current,
+      }).then((elapsedTime) => {
+        pomodoroSpans.current = [...pomodoroSpans.current, elapsedTime];
+      });
+      return;
+    }
+  }, [activeDuration, activeIntention, intention, timerAction]);
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     const newTimerAction = timerAction === "stop" ? "start" : "stop";
@@ -182,14 +210,6 @@ export default function Intention({
     if (newTimerAction === "stop" && inputRef.current) {
       inputRef.current.value = secondsToInputValue(activeDuration);
       worker.postMessage({ action: "stopTimer", packet: { intention } });
-      createPomodoroRequest({
-        label: intention,
-        duration: duration.current,
-        activeDuration,
-        pomodoroSpans: pomodoroSpans.current,
-      }).then((elapsedTime) => {
-        pomodoroSpans.current = [...pomodoroSpans.current, elapsedTime];
-      });
     }
     if (audioRef.current) {
       audioRef.current.src = "time-up.m4a";
@@ -197,16 +217,18 @@ export default function Intention({
     setTimerAction(newTimerAction);
     setSubmitButtonText(submitButtonText === "Stop" ? "Start" : "Stop");
   };
+
   const onClickDurationContainer = () => {
-    setIsEditMode(!isEditMode);
+    const newIsEditMode = !isEditMode;
+    setIsEditMode(newIsEditMode);
     const renderedInput = renderInactiveTimer(activeDuration);
     setTimerInput(renderedInput);
     setActiveIntention(intention);
     isEditAwaitingInput.current = true;
-    if (isEditMode && inputRef.current) {
+    if (!newIsEditMode && inputRef.current) {
       worker.postMessage({
         action: "setTimerDuration",
-        packet: { intention, duration: duration.current },
+        packet: { intention, duration: activeDuration },
       });
       worker.postMessage({
         action: "startTimer",
@@ -217,14 +239,6 @@ export default function Intention({
       inputRef.current.blur();
       return;
     }
-    createPomodoroRequest({
-      label: intention,
-      duration: duration.current,
-      activeDuration,
-      pomodoroSpans: pomodoroSpans.current,
-    }).then((elapsedTime) => {
-      pomodoroSpans.current = [...pomodoroSpans.current, elapsedTime];
-    });
     if (inputRef.current) {
       inputRef.current.focus();
       inputRef.current.value = parseTimerInput(renderedInput);
@@ -233,6 +247,7 @@ export default function Intention({
     setTimerAction("stop");
     setSubmitButtonText("Start");
   };
+
   const onChange = (value: string, e?: ChangeEvent<HTMLInputElement>) => {
     let newValue = value;
     pomodoroSpans.current = [];
@@ -251,6 +266,7 @@ export default function Intention({
     }
     setTimerInput(s);
   };
+
   const onKeydown: KeyboardEventHandler<HTMLInputElement> = (e) => {
     const isDeleteKey = e.key === "Backspace" || e.key === "Delete";
     if (inputRef.current && isDeleteKey) {
@@ -267,17 +283,8 @@ export default function Intention({
       e.preventDefault();
     }
   };
+
   const onReset: MouseEventHandler<HTMLButtonElement> = () => {
-    if (activeDuration) {
-      createPomodoroRequest({
-        label: intention,
-        duration: duration.current,
-        activeDuration,
-        pomodoroSpans: pomodoroSpans.current,
-      }).then(() => {
-        pomodoroSpans.current = [];
-      });
-    }
     setActiveDuration(duration.current);
     worker.postMessage({
       action: "resetTimer",
@@ -290,6 +297,7 @@ export default function Intention({
       inputRef.current.value = secondsToInputValue(duration.current);
     }
   };
+
   const onClickTogglePlayback: MouseEventHandler<HTMLButtonElement> = () => {
     const volume = togglePlaybackVolume ? 0 : 1;
     setTogglePlaybackVolume(volume);
@@ -300,6 +308,7 @@ export default function Intention({
       audioRef.current.muted = false;
     }
   };
+
   const onClickPlayAudio = () => playAudio();
   const onClickCreatePomodoro = () => {
     const storage = Storage["localStorage"](localStorage);
@@ -324,6 +333,7 @@ export default function Intention({
       pomodoroDispatch.publish("setPomodoro");
     });
   };
+
   const onClickDeleteIntention: MouseEventHandler<
     HTMLButtonElement
   > = async () => {
