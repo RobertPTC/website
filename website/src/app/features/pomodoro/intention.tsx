@@ -201,6 +201,7 @@ export default function Intention({
     setIsEditMode(!isEditMode);
     const renderedInput = renderInactiveTimer(activeDuration);
     setTimerInput(renderedInput);
+    setActiveIntention(intention);
     isEditAwaitingInput.current = true;
     if (isEditMode && inputRef.current) {
       worker.postMessage({
