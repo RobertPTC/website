@@ -103,7 +103,7 @@ export default function StackedBarChart({
                 return (
                   <Box
                     component="rect"
-                    height={y(element[1]) - y(element[0])}
+                    height={`${y(element[1]) - y(element[0])}px`}
                     y={y(element[0])}
                     width={bands.bandwidth()}
                     id={d.key}

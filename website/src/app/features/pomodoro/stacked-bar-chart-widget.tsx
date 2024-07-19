@@ -109,6 +109,13 @@ export default function StackedBarChartWidget() {
       getPomodorosForTimeFrame
     );
     pomodoroDispatch.subscribe("setPomodoro", getPomodorosForTimeFrame);
+    return () => {
+      pomodoroDispatch.unsubscribe(
+        "deletePomodoroIntention",
+        getPomodorosForTimeFrame
+      );
+      pomodoroDispatch.unsubscribe("setPomodoro", getPomodorosForTimeFrame);
+    };
   }, [type, date]);
   useEffect(() => {
     if (type === "month") {

@@ -302,7 +302,7 @@ const Storage = {
                   ].filter((p: Pomodoro) => {
                     return p.label !== intention;
                   });
-
+                  pomodoros[year][month][date][hour] = newPomodoros;
                   if (!newPomodoros.length) {
                     delete pomodoros[year][month][date][hour];
                   }

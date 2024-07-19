@@ -10,7 +10,6 @@ import {
   useCallback,
   SetStateAction,
   Dispatch,
-  FormEventHandler,
 } from "react";
 
 import VolumeOffIcon from "@mui/icons-material/VolumeOff";
@@ -108,7 +107,6 @@ export default function Intention({
   const [timerInput, setTimerInput] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
   const [timerAction, setTimerAction] = useState<TimerAction>("stop");
-  const [resetCounter, setResetCounter] = useState(0);
   const [submitButtonText, setSubmitButtonText] = useState<"Start" | "Stop">(
     "Start"
   );
@@ -189,15 +187,6 @@ export default function Intention({
       return;
     }
   }, [activeDuration, activeIntention, intention, timerAction]);
-
-  useEffect(() => {
-    if (activeIntention === intention) {
-      setActiveDuration(duration.current);
-      pomodoroSpans.current = [];
-    }
-    if (activeIntention === intention && inputRef.current) {
-    }
-  }, [resetCounter, intention, activeIntention]);
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     const newTimerAction = timerAction === "stop" ? "start" : "stop";
@@ -297,10 +286,11 @@ export default function Intention({
 
   const onReset = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setActiveDuration(duration.current);
+    pomodoroSpans.current = [];
     if (inputRef.current) {
       inputRef.current.value = secondsToInputValue(duration.current);
     }
-    setResetCounter(resetCounter + 1);
     worker.postMessage({
       action: "resetTimer",
       packet: { intention, duration: duration.current },
@@ -345,7 +335,6 @@ export default function Intention({
       pomodoroDispatch.publish("setPomodoro");
     });
   };
-
   const onClickDeleteIntention: MouseEventHandler<
     HTMLButtonElement
   > = async () => {

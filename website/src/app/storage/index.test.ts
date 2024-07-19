@@ -253,6 +253,66 @@ describe("Storage", () => {
     });
   });
 
+  it("deletes pomodoros from local storage 2", async () => {
+    const localStorage = Storage["localStorage"](mockLocalStorage);
+    await localStorage.set({
+      uri: "/api/pomodoro-intention",
+      data: {
+        intention: "foo",
+      },
+    });
+    await localStorage.set({
+      uri: "/api/pomodoro-intention",
+      data: {
+        intention: "bar",
+      },
+    });
+    await localStorage.set({
+      uri: "/api/pomodoro",
+      data: {
+        pomodoros: [
+          {
+            year: 2024,
+            month: 6,
+            date: 18,
+            hour: 22,
+            label: "programming",
+            id: "f7b85e59-9036-4d24-8b74-fa6c9268b21b",
+            seconds: 10,
+          },
+          {
+            year: 2024,
+            month: 6,
+            date: 18,
+            hour: 22,
+            label: "writing",
+            id: "375bb4f7-a526-46fd-929c-b0fb479dbcc0",
+            seconds: 2,
+          },
+        ],
+      },
+    });
+    await localStorage.delete({
+      uri: "/api/pomodoro/delete/intention",
+      data: { intention: "writing" },
+    });
+    const pomodoros = await localStorage.get({ uri: "/api/pomodoro" });
+    expect(pomodoros).toStrictEqual({
+      2024: {
+        6: {
+          18: {
+            22: [
+              {
+                label: "programming",
+                seconds: 10,
+                id: "f7b85e59-9036-4d24-8b74-fa6c9268b21b",
+              },
+            ],
+          },
+        },
+      },
+    });
+  });
   it("deletes pomodoros from local storage", async () => {
     const localStorage = Storage["localStorage"](mockLocalStorage);
     await localStorage.set({
@@ -301,7 +361,6 @@ describe("Storage", () => {
         ],
       },
     });
-
     await localStorage.delete({
       uri: "/api/pomodoro/delete/intention",
       data: { intention: "foo" },
