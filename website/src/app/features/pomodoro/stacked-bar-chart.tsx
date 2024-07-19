@@ -82,7 +82,7 @@ export default function StackedBarChart({
       <Box
         component="svg"
         id="stacked-bar-chart"
-        width="100%"
+        width="calc(100% - 100px)"
         height={`${svgHeight}px`}
         ref={svgRef}
       >
@@ -150,7 +150,6 @@ export default function StackedBarChart({
             Minutes
           </Box>
           {y.ticks(9).map((t) => {
-            const value = t / 60;
             return (
               <Box
                 key={t}
@@ -161,7 +160,7 @@ export default function StackedBarChart({
                 })`}
                 sx={{
                   fontFamily: theme.typography.fontFamily,
-                  display: value ? "block" : "none",
+                  display: t ? "block" : "none",
                   fontSize: "14px",
                 }}
               >

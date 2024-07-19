@@ -36,7 +36,7 @@ export function renderInactiveTimer(seconds: number) {
 }
 
 export function renderActiveTimer(seconds: number) {
-  if (seconds <= 0) return "0s";
+  if (seconds <= 59) return `${seconds}s`;
   const timeString = renderInactiveTimer(seconds);
   const firstDigitIndex = timeString.search(/[1-9]/);
   return timeString.slice(firstDigitIndex);

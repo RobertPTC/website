@@ -7,7 +7,15 @@ import {
   Select,
   MenuItem,
   SelectChangeEvent,
+  Box,
 } from "@mui/material";
+import {
+  DatePicker,
+  DateValidationError,
+  PickerChangeHandlerContext,
+} from "@mui/x-date-pickers";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { scaleBand, scaleLinear } from "d3-scale";
 import dayjs, { Dayjs } from "dayjs";
 
@@ -48,23 +56,21 @@ export default function StackedBarChartWidget() {
   const [chartHeading, setChartHeading] = useState("Container");
   const [xScaleRange, setXScaleRange] = useState(0);
   const [type, setType] = useState<ChartTypes>("month");
-  const [date, setDate] = useState<Dayjs>(dayjs());
+  const [date, setDate] = useState<Dayjs | null>(dayjs());
   useEffect(() => {
     if (!window) return;
     const storage = s(localStorage);
     function responseHandler(v: any) {
       return new Promise((resolve, reject) => {
         if (!v) {
-          setMax(0);
-          setBars(undefined);
-          resolve(undefined);
+          reject();
           return;
         }
         resolve(v);
       });
     }
     function getPomodorosForTimeFrame() {
-      if (type === "month") {
+      if (type === "month" && date) {
         storage
           .get({
             uri: `/api/pomodoro?year=${date.year()}&month=${date.month()}`,
@@ -83,7 +89,7 @@ export default function StackedBarChartWidget() {
             setBars(undefined);
           });
       }
-      if (type === "date") {
+      if (type === "date" && date) {
         storage
           .get({
             uri: `/api/pomodoro?year=${date.year()}&month=${date.month()}&date=${date.date()}`,
@@ -118,14 +124,16 @@ export default function StackedBarChartWidget() {
     };
   }, [type, date]);
   useEffect(() => {
-    if (type === "month") {
+    if (type === "month" && date) {
       setXScaleRange(date.daysInMonth() + 1);
+      setChartHeading(date.format("MMMM YYYY"));
     }
-    if (type === "date") {
+    if (type === "date" && date) {
       setXScaleRange(numberOfHours);
+      setChartHeading(date.format("MMMM DD, YYYY"));
     }
   }, [type, date]);
-  if (!max || !bars) return <></>;
+
   const bands = scaleBand(
     new Array(xScaleRange).fill(0).map((_, i) => i),
     [marginLeft, svgWidth - bandWidthModifer]
@@ -143,32 +151,56 @@ export default function StackedBarChartWidget() {
   ) => void = (e) => {
     setType(e.target.value as ChartTypes);
   };
+  const onDateChange: (
+    value: dayjs.Dayjs | null,
+    context: PickerChangeHandlerContext<DateValidationError>
+  ) => void = (v) => {
+    setDate(v);
+  };
   return (
     <>
-      <FormControl sx={{ width: "411px" }}>
-        <InputLabel id="chart-type-select-label">Chart Type</InputLabel>
-        <Select<ChartTypes>
-          fullWidth
-          labelId="chart-type-select-label"
-          value={type}
-          onChange={onChangeChartType}
-          label="Chart Type"
-          MenuProps={{ disableScrollLock: true }}
-        >
-          <MenuItem value="month">Month</MenuItem>
-          <MenuItem value="date">Date</MenuItem>
-        </Select>
-      </FormControl>
-      <StackedBarChart
-        chartHeading={chartHeading}
-        bars={bars}
-        x={x}
-        y={y}
-        xScaleRange={xScaleRange}
-        type={type}
-        svgWidth={svgWidth}
-        setSVGWidth={setSVGWidth}
-      />
+      <Box mb={2}>
+        <FormControl sx={{ width: "411px", mr: 2 }}>
+          <InputLabel id="chart-type-select-label">Chart Type</InputLabel>
+          <Select<ChartTypes>
+            fullWidth
+            labelId="chart-type-select-label"
+            value={type}
+            onChange={onChangeChartType}
+            label="Chart Type"
+            MenuProps={{ disableScrollLock: true }}
+          >
+            <MenuItem value="month">Month</MenuItem>
+            <MenuItem value="date">Date</MenuItem>
+          </Select>
+        </FormControl>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker
+            label="Date"
+            value={date}
+            slotProps={{
+              textField: {
+                fullWidth: true,
+                sx: { maxWidth: { md: "500px" } },
+              },
+            }}
+            onChange={onDateChange}
+          />
+        </LocalizationProvider>
+      </Box>
+
+      {!!(max && bars) && (
+        <StackedBarChart
+          chartHeading={chartHeading}
+          bars={bars}
+          x={x}
+          y={y}
+          xScaleRange={xScaleRange}
+          type={type}
+          svgWidth={svgWidth}
+          setSVGWidth={setSVGWidth}
+        />
+      )}
     </>
   );
 }
