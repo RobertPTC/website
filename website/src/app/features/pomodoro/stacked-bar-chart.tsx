@@ -2,13 +2,13 @@
 
 import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 
-import { Box, Typography } from "@mui/material";
+import { Box, Tooltip, Typography } from "@mui/material";
 import { scaleBand, ScaleLinear, scaleOrdinal } from "d3-scale";
 import { schemeRdYlBu } from "d3-scale-chromatic";
 
 import theme from "app/theme";
 
-import { renderActiveTimer } from "./seconds-to-timer-array";
+import { renderActiveTimer, secondsToInputValue } from "./intention-utils";
 import {
   marginLeft,
   bandWidthModifer,
@@ -101,15 +101,25 @@ export default function StackedBarChart({
               {series.map((d, i) => {
                 const element = d[0];
                 return (
-                  <Box
-                    component="rect"
-                    height={`${y(element[1]) - y(element[0])}px`}
-                    y={y(element[0])}
-                    width={bands.bandwidth()}
-                    id={d.key}
+                  <Tooltip
                     key={d.key}
-                    fill={colorInterpolator(d.key) as string}
-                  />
+                    title={
+                      <>
+                        {d.key} {renderActiveTimer(element[1] - element[0])}
+                      </>
+                    }
+                    placement="right"
+                    arrow
+                  >
+                    <Box
+                      component="rect"
+                      height={`${y(element[1]) - y(element[0])}px`}
+                      y={y(element[0])}
+                      width={bands.bandwidth()}
+                      id={d.key}
+                      fill={colorInterpolator(d.key) as string}
+                    />
+                  </Tooltip>
                 );
               })}
             </Box>

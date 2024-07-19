@@ -1,7 +1,4 @@
-import {
-  secondsToTimerArray,
-  renderActiveTimer,
-} from "./seconds-to-timer-array";
+import { secondsToTimerArray, renderActiveTimer } from "./intention-utils";
 describe("pomodoro functions", () => {
   it("computes array for 3600s", () => {
     const array = secondsToTimerArray(3600);

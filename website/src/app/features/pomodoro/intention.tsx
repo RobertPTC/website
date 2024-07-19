@@ -38,7 +38,7 @@ import {
   timerInputToTimerArray,
   interpolateTimeDivisions,
   secondsToInputValue,
-} from "./seconds-to-timer-array";
+} from "./intention-utils";
 import Timer from "./timer";
 import { TimerAction } from "./types";
 
