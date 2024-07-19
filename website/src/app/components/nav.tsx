@@ -50,7 +50,7 @@ export function Nav() {
               </Link>
               <Link href="/pomodoro-timer">
                 <Typography variant="body1" sx={{ mb: 1 }}>
-                  Pomodoro Timer (WIP)
+                  Pomodoro Timer
                 </Typography>
               </Link>
             </Box>
@@ -159,7 +159,7 @@ export function Nav() {
             </Grid>
             <Grid item xs={6}>
               <Link href="/pomodoro-timer">
-                <Typography variant="body1">Pomodoro Timer (WIP)</Typography>
+                <Typography variant="body1">Pomodoro Timer</Typography>
               </Link>
             </Grid>
           </Grid>

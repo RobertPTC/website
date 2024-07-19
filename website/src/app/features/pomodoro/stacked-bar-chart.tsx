@@ -8,7 +8,7 @@ import { schemeRdYlBu } from "d3-scale-chromatic";
 
 import theme from "app/theme";
 
-import { renderActiveTimer, secondsToInputValue } from "./intention-utils";
+import { renderActiveTimer } from "./intention-utils";
 import {
   marginLeft,
   bandWidthModifer,
