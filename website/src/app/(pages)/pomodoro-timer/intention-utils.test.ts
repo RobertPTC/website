@@ -1,4 +1,10 @@
-import { secondsToTimerArray, renderActiveTimer } from "./intention-utils";
+import dayjs from "dayjs";
+
+import {
+  secondsToTimerArray,
+  renderActiveTimer,
+  determinePomodoroTimeSegments,
+} from "./intention-utils";
 describe("pomodoro functions", () => {
   it("computes array for 3600s", () => {
     const array = secondsToTimerArray(3600);
@@ -38,5 +44,12 @@ describe("pomodoro functions", () => {
   });
   it("renders 10h00m00s when duration is 36000", () => {
     expect(renderActiveTimer(36000)).toEqual("10h00m00s");
+  });
+  it("determines pomodoro segments correctly", () => {
+    const start = dayjs(new Date(2024, 6, 20, 14, 33, 30));
+    const end = dayjs(new Date(2024, 6, 20, 15, 2, 30));
+    expect(determinePomodoroTimeSegments(30 * 60, start, end)).toStrictEqual(
+      []
+    );
   });
 });

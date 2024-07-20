@@ -1,3 +1,7 @@
+import dayjs, { Dayjs } from "dayjs";
+
+import { Pomodoro } from "./types";
+
 export const secondsInMinute = 60;
 export const secondsInHour = secondsInMinute * 60;
 
@@ -73,6 +77,23 @@ export function interpolateTimeDivisions(input: string): string {
 
 export function secondsToInputValue(seconds: number): string {
   return parseTimerInput(renderInactiveTimer(seconds));
+}
+
+export function determinePomodoroTimeSegments(
+  seconds: number,
+  startDate: Dayjs,
+  endDate: Dayjs
+): Pomodoro[] {
+  const secondsToEndOfStartHour =
+    60 * 60 - startDate.minute() * 60 + startDate.second();
+  const remainingSeconds = seconds - secondsToEndOfStartHour;
+  if (remainingSeconds < 0) {
+    throw new Error("remaining seconds cannot be negative");
+  }
+  if (!remainingSeconds) {
+    return [{ seconds, label: "foo", id: "1" }];
+  }
+  return [{ seconds: secondsToEndOfStartHour, label: "foo", id: "1" }];
 }
 
 export const timeGroups = ["h", "m", "s"];

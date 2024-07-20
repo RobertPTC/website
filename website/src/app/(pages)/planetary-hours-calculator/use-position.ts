@@ -1,8 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
-import { Position } from "app/features/planetary-hours/types";
-
 import { SessionStorageKeys } from "./constants";
+import { Position } from "./types";
 
 function getSessionStorage(key: string) {
   if (typeof window !== "undefined") {

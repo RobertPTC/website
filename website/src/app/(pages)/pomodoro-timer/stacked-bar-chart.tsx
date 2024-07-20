@@ -214,6 +214,7 @@ export default function StackedBarChart({
                     fill="var(--accent)"
                     sx={{
                       fontFamily: theme.typography.fontFamily,
+                      display: i ? "block" : "none",
                     }}
                   >
                     {i}
