@@ -20,7 +20,11 @@ import { scaleBand, scaleLinear } from "d3-scale";
 import dayjs, { Dayjs } from "dayjs";
 
 import { pomodoroDispatch } from "app/dispatch";
-import Storage, { PomodorosForDate, PomodorosForMonth } from "app/storage";
+import Storage, {
+  PomodoroIntentionRequest,
+  PomodorosForDate,
+  PomodorosForMonth,
+} from "app/storage";
 
 import StackedBarChart from "./stacked-bar-chart";
 import {
@@ -57,6 +61,8 @@ export default function StackedBarChartWidget() {
   const [xScaleRange, setXScaleRange] = useState(0);
   const [type, setType] = useState<ChartTypes>("month");
   const [date, setDate] = useState<Dayjs | null>(dayjs());
+  const [hasPomodoros, setHasPomodoros] = useState(false);
+
   useEffect(() => {
     if (!window) return;
     const storage = s(localStorage);
@@ -108,6 +114,18 @@ export default function StackedBarChartWidget() {
             setBars(undefined);
           });
       }
+      storage
+        .get({
+          uri: `/api/pomodoro?year=${dayjs().year()}&month=${dayjs().month()}&date=${dayjs().date()}`,
+        })
+        .then(responseHandler)
+        .then((v) => {
+          console.log("v ", v);
+          setHasPomodoros(true);
+        })
+        .catch((e) => {
+          setHasPomodoros(false);
+        });
     }
     getPomodorosForTimeFrame();
     pomodoroDispatch.subscribe(
@@ -115,6 +133,7 @@ export default function StackedBarChartWidget() {
       getPomodorosForTimeFrame
     );
     pomodoroDispatch.subscribe("setPomodoro", getPomodorosForTimeFrame);
+
     return () => {
       pomodoroDispatch.unsubscribe(
         "deletePomodoroIntention",
@@ -157,6 +176,7 @@ export default function StackedBarChartWidget() {
   ) => void = (v) => {
     setDate(v);
   };
+  if (!hasPomodoros) return <></>;
   return (
     <>
       <Box mb={2}>
