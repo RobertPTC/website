@@ -7,15 +7,15 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 
 import { Loading } from "app/components/loading";
-import useDate from "app/features/planetary-hours/use-date";
-import usePosition from "app/features/planetary-hours/use-position";
 
 import Countdown from "./countdown";
 import CurrentHour from "./current-hour";
 import LocationAutocomplete from "./location-autocomplete";
 import PlanetaryHourCard from "./planetary-hour-card";
 import { LocationAutocompleteOption, SearchParams } from "./types";
+import useDate from "./use-date";
 import useGetPlanetaryHours from "./use-get-planetary-hours";
+import usePosition from "./use-position";
 import useSearchParams from "./use-search-params";
 
 export default function PlanetaryHours() {

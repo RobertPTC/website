@@ -1,7 +1,9 @@
 import { Box } from "@mui/material";
 import { Metadata } from "next";
 
-import PlanetaryHours from "app/features/planetary-hours";
+import MainLayoutWithPadding from "app/components/main-layout-with-padding";
+
+import PlanetaryHours from "./";
 
 export const metadata: Metadata = {
   description: "Created by Robert P. Cunningham",
@@ -10,8 +12,8 @@ export const metadata: Metadata = {
 
 export default function PlanetaryHoursCalculator() {
   return (
-    <Box component="main" sx={{ p: 2 }}>
+    <MainLayoutWithPadding>
       <PlanetaryHours />
-    </Box>
+    </MainLayoutWithPadding>
   );
 }

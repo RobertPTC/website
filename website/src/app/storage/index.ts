@@ -1,5 +1,5 @@
+import { Pomodoro, PomodoroInput } from "app/(pages)/pomodoro-timer/types";
 import { FormMoment, Moment, MomentNav, Moments } from "app/api/types";
-import { Pomodoro, PomodoroInput } from "app/features/pomodoro/types";
 
 // Pomodoros
 export type PomodorosForMonthRequest = {

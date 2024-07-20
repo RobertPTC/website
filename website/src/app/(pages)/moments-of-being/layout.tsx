@@ -2,12 +2,13 @@ import { ReactNode } from "react";
 
 import { Box, Grid, Typography } from "@mui/material";
 
-import ActionsDrawer from "app/features/moments-of-being/actions-drawer";
-import ActionsMenu from "app/features/moments-of-being/actions-menu";
+import ActionsDrawer from "app/(pages)/moments-of-being/actions-drawer";
+import ActionsMenu from "app/(pages)/moments-of-being/actions-menu";
+import MainLayoutWithPadding from "app/components/main-layout-with-padding";
 
 export default function MOBLayout({ children }: { children: ReactNode }) {
   return (
-    <Box component="main" sx={{ p: 2 }}>
+    <MainLayoutWithPadding>
       <Box display="flex" mb={1}>
         <Box sx={{ display: ["block", "none"] }}>
           <ActionsDrawer />
@@ -24,6 +25,6 @@ export default function MOBLayout({ children }: { children: ReactNode }) {
           {children}
         </Grid>
       </Grid>
-    </Box>
+    </MainLayoutWithPadding>
   );
 }

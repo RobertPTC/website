@@ -4,8 +4,6 @@ import { InternMap } from "d3-array";
 import { Series } from "d3-shape";
 import { Dayjs } from "dayjs";
 
-import Pomodoro from "app/pomodoro-timer/page";
-
 export type TimerPrimaryButtonText = "Start" | "Stop";
 
 export type TimerAction = "start" | "stop" | "restart" | "reset" | null;

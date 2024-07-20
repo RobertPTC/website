@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import { Metadata } from "next";
 
-import { GhostWriter } from "./features/main/ghost-writer";
+import { GhostWriter } from "./components/ghost-writer";
 
 export const metadata: Metadata = {
   title: "Robert P Cunningham",

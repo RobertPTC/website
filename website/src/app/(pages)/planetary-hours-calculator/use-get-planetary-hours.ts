@@ -3,16 +3,15 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import suncalc from "suncalc";
 
+import { Days, planetaryHoursMap } from "./constants";
 import {
   HourMetadata,
   Position,
   PlanetaryHour,
   DateInput,
   PositionSuccess,
-} from "app/features/planetary-hours/types";
-import { calculatePlanetaryHourLength } from "app/features/planetary-hours/utils";
-
-import { Days, planetaryHoursMap } from "./constants";
+} from "./types";
+import { calculatePlanetaryHourLength } from "./utils";
 
 dayjs.extend(timezone);
 dayjs.extend(utc);

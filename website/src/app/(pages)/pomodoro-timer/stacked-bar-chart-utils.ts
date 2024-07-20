@@ -109,7 +109,7 @@ export function makeDateBars(d: PomodorosForDate) {
 
 export const svgHeight = 360;
 export const marginBottom = 20;
-export const marginLeft = 110;
+export const marginLeft = 140;
 export const bandWidthModifer = 80;
 export const numberOfHours = 24;
-export const yAxisLegendOffset = 30;
+export const yAxisLegendOffset = 40;
