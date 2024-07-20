@@ -5,6 +5,7 @@ import {
   renderActiveTimer,
   determinePomodoroTimeSegments,
 } from "./intention-utils";
+
 describe("pomodoro functions", () => {
   it("computes array for 3600s", () => {
     const array = secondsToTimerArray(3600);
@@ -47,9 +48,25 @@ describe("pomodoro functions", () => {
   });
   it("determines pomodoro segments correctly", () => {
     const start = dayjs(new Date(2024, 6, 20, 14, 33, 30));
-    const end = dayjs(new Date(2024, 6, 20, 15, 2, 30));
-    expect(determinePomodoroTimeSegments(30 * 60, start, end)).toStrictEqual(
-      []
-    );
+    expect(
+      determinePomodoroTimeSegments(15 * 60, start, "foo").map(
+        ({ label, seconds }) => ({ label, seconds })
+      )
+    ).toStrictEqual([
+      {
+        label: "foo",
+        seconds: 15 * 60,
+      },
+    ]);
+    const start2 = dayjs(new Date(2024, 6, 20, 14, 33, 30));
+    expect(
+      determinePomodoroTimeSegments(140 * 60, start2, "foo").map(
+        ({ label, seconds }) => ({ label, seconds })
+      )
+    ).toStrictEqual([
+      { label: "foo", seconds: 27 * 60 - 30 },
+      { label: "foo", seconds: 60 * 60 },
+      { label: "foo", seconds: 53 * 60 + 30 },
+    ]);
   });
 });

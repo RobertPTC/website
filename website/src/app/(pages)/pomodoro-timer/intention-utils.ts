@@ -1,4 +1,5 @@
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
+import { v4 as uuid } from "uuid";
 
 import { Pomodoro } from "./types";
 
@@ -82,18 +83,29 @@ export function secondsToInputValue(seconds: number): string {
 export function determinePomodoroTimeSegments(
   seconds: number,
   startDate: Dayjs,
-  endDate: Dayjs
+  intention: string
 ): Pomodoro[] {
   const secondsToEndOfStartHour =
-    60 * 60 - startDate.minute() * 60 + startDate.second();
-  const remainingSeconds = seconds - secondsToEndOfStartHour;
-  if (remainingSeconds < 0) {
-    throw new Error("remaining seconds cannot be negative");
+    60 * 60 - startDate.minute() * 60 - (60 - startDate.second());
+  if (seconds <= secondsToEndOfStartHour) {
+    return [{ label: intention, seconds, id: uuid() }];
   }
-  if (!remainingSeconds) {
-    return [{ seconds, label: "foo", id: "1" }];
+  let date = startDate;
+  let incrementedDate = startDate;
+  let counter = 0;
+  let p: Pomodoro[] = [];
+  while (seconds) {
+    seconds -= 1;
+    counter += 1;
+    incrementedDate = incrementedDate.add(1, "second");
+    if (incrementedDate.hour() !== date.hour()) {
+      p = [...p, { label: intention, seconds: counter, id: uuid() }];
+      counter = 0;
+      date = incrementedDate;
+    }
   }
-  return [{ seconds: secondsToEndOfStartHour, label: "foo", id: "1" }];
+  p = [...p, { label: intention, seconds: counter, id: uuid() }];
+  return p;
 }
 
 export const timeGroups = ["h", "m", "s"];
