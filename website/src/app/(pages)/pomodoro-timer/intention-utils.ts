@@ -1,7 +1,7 @@
 import { Dayjs } from "dayjs";
 import { v4 as uuid } from "uuid";
 
-import { Pomodoro } from "./types";
+import { Pomodoro, PomodoroInput } from "./types";
 
 export const secondsInMinute = 60;
 export const secondsInHour = secondsInMinute * 60;
@@ -84,27 +84,59 @@ export function determinePomodoroTimeSegments(
   seconds: number,
   startDate: Dayjs,
   intention: string
-): Pomodoro[] {
+): PomodoroInput[] {
   const secondsToEndOfStartHour =
     60 * 60 - startDate.minute() * 60 - (60 - startDate.second());
   if (seconds <= secondsToEndOfStartHour) {
-    return [{ label: intention, seconds, id: uuid() }];
+    return [
+      {
+        label: intention,
+        seconds,
+        id: uuid(),
+        hour: startDate.hour(),
+        month: startDate.month(),
+        year: startDate.year(),
+        date: startDate.date(),
+      },
+    ];
   }
   let date = startDate;
   let incrementedDate = startDate;
   let counter = 0;
-  let p: Pomodoro[] = [];
+  let p: PomodoroInput[] = [];
   while (seconds) {
     seconds -= 1;
     counter += 1;
     incrementedDate = incrementedDate.add(1, "second");
     if (incrementedDate.hour() !== date.hour()) {
-      p = [...p, { label: intention, seconds: counter, id: uuid() }];
+      p = [
+        ...p,
+        {
+          label: intention,
+          seconds: counter,
+          id: uuid(),
+          hour: date.hour(),
+          month: date.month(),
+          year: date.year(),
+          date: date.date(),
+        },
+      ];
       counter = 0;
       date = incrementedDate;
     }
   }
-  p = [...p, { label: intention, seconds: counter, id: uuid() }];
+  p = [
+    ...p,
+    {
+      label: intention,
+      seconds: counter,
+      id: uuid(),
+      hour: date.hour(),
+      month: date.month(),
+      year: date.year(),
+      date: date.date(),
+    },
+  ];
   return p;
 }
 
