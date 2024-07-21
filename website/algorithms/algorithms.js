@@ -69,28 +69,3 @@ export function maxDuffelBagValue(itemTypes, capacity) {
   });
   return total;
 }
-
-/**
- * @param {number[][]} intervals
- * @return {number[][]}
- */
-export function merge(intervals) {
-  if (intervals.length === 1) return intervals;
-  let stack = [];
-  let currentInterval = intervals[0];
-  intervals.forEach((interval, i) => {
-    if (
-      currentInterval[1] >= interval[0] &&
-      currentInterval[1] <= interval[1]
-    ) {
-      currentInterval = [currentInterval[0], interval[1]];
-    } else {
-      stack = [...stack, currentInterval];
-      currentInterval = interval;
-    }
-    if (i === intervals.length - 1) {
-      stack = [...stack, currentInterval];
-    }
-  });
-  return stack;
-}

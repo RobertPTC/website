@@ -30,29 +30,4 @@ describe("interview cake", () => {
     expect(maxDuffelBagValue(itemTypes, 6)).toBe(180);
     expect(maxDuffelBagValue(itemTypes, 21)).toBe(630);
   });
-  it("merge", () => {
-    expect(
-      merge([
-        [1, 3],
-        [4, 6],
-        [6, 10],
-        [11, 18],
-        [19, 130],
-        [130, 145],
-        [148, 190],
-      ])
-    ).toStrictEqual([
-      [1, 3],
-      [4, 10],
-      [11, 18],
-      [19, 145],
-      [148, 190],
-    ]);
-    // expect(
-    //   merge([
-    //     [1, 4],
-    //     [0, 4],
-    //   ])
-    // ).toStrictEqual([[0.4]]);
-  });
 });
