@@ -69,3 +69,34 @@ export function maxDuffelBagValue(itemTypes, capacity) {
   });
   return total;
 }
+
+/**
+ * @param {number[][]} intervals
+ * @return {number[][]}
+ */
+export function merge(intervals) {
+  if (intervals.length === 1) return intervals;
+  intervals.sort(([a, b], [c, d]) => {
+    return a - c;
+  });
+
+  const result = [];
+
+  let currStart = intervals[0][0];
+  let currEnd = intervals[0][1];
+
+  for (let i = 1; i < intervals.length; i++) {
+    const [nextStart, nextEnd] = intervals[i];
+
+    if (nextStart <= currEnd && nextEnd >= currStart) {
+      currEnd = Math.max(currEnd, nextEnd);
+    } else {
+      result.push([currStart, currEnd]);
+      currStart = nextStart;
+      currEnd = nextEnd;
+    }
+  }
+  result.push([currStart, currEnd]);
+
+  return result;
+}
