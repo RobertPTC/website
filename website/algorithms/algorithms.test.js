@@ -31,8 +31,7 @@ describe("interview cake", () => {
     expect(maxDuffelBagValue(itemTypes, 21)).toBe(630);
   });
   it("merge", () => {
-    console.log(
-      "merge ",
+    expect(
       merge([
         [1, 3],
         [4, 6],
@@ -42,6 +41,18 @@ describe("interview cake", () => {
         [130, 145],
         [148, 190],
       ])
-    );
+    ).toStrictEqual([
+      [1, 3],
+      [4, 10],
+      [11, 18],
+      [19, 145],
+      [148, 190],
+    ]);
+    expect(
+      merge([
+        [1, 4],
+        [0, 4],
+      ])
+    ).toStrictEqual([[0.4]]);
   });
 });

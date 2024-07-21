@@ -1,7 +1,9 @@
 import { Dayjs } from "dayjs";
 import { v4 as uuid } from "uuid";
 
-import { Pomodoro, PomodoroInput } from "./types";
+import { CreatePomodoroRequest, DataStore } from "app/storage";
+
+import { PomodoroInput } from "./types";
 
 export const secondsInMinute = 60;
 export const secondsInHour = secondsInMinute * 60;
@@ -141,3 +143,39 @@ export function determinePomodoroTimeSegments(
 }
 
 export const timeGroups = ["h", "m", "s"];
+
+export function createPomodoroRequest({
+  label,
+  activeDuration,
+  duration,
+  pomodoroSpans,
+  storage,
+  startDate,
+}: {
+  label: string;
+  duration: number;
+  activeDuration: number;
+  pomodoroSpans: number[];
+  storage: DataStore;
+  startDate: Dayjs;
+}): Promise<{ elapsedTime: number; timeSegments: PomodoroInput[] }> {
+  const elapsedTime =
+    duration - pomodoroSpans.reduce((p, c) => p + c, activeDuration);
+  const timeSegments = determinePomodoroTimeSegments(
+    elapsedTime,
+    startDate,
+    label
+  );
+  if (elapsedTime < 0) {
+    throw new Error(`elapsed time cannot be negative ${elapsedTime}`);
+  }
+  const request: CreatePomodoroRequest = {
+    uri: "/api/pomodoro",
+    data: {
+      pomodoros: timeSegments,
+    },
+  };
+  return storage
+    .set<CreatePomodoroRequest>(request)
+    .then(() => ({ elapsedTime, timeSegments }));
+}

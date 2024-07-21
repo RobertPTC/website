@@ -4,7 +4,31 @@ import {
   secondsToTimerArray,
   renderActiveTimer,
   determinePomodoroTimeSegments,
+  createPomodoroRequest,
 } from "./intention-utils";
+
+import Storage from "../../storage";
+
+let storage: { [key: string]: any } = {};
+
+const mockLocalStorage: Storage = {
+  getItem(key) {
+    return storage[key];
+  },
+  length: 0,
+  clear: function (): void {
+    storage = {};
+  },
+  key: function (index: number): string | null {
+    throw new Error("Function not implemented.");
+  },
+  removeItem: function (key: string): void {
+    throw new Error("Function not implemented.");
+  },
+  setItem: function (key: string, value: string): void {
+    storage[key] = value;
+  },
+};
 
 describe("pomodoro functions", () => {
   it("computes array for 3600s", () => {
@@ -140,5 +164,26 @@ describe("pomodoro functions", () => {
         date: p2.date(),
       },
     ]);
+  });
+  it("creates pomodoro request ", async () => {
+    const duration = 60 * 30;
+    const activeDuration = 0;
+    const storage = Storage["localStorage"](mockLocalStorage);
+    const startDate = dayjs(new Date(2024, 6, 21, 16, 50, 30));
+    const pomodoroSpans = [5 * 60, 3 * 60];
+    const label = "foo";
+    const output = await createPomodoroRequest({
+      label,
+      activeDuration,
+      duration,
+      pomodoroSpans,
+      storage,
+      startDate,
+    });
+    expect(output.elapsedTime).toEqual(1320);
+    expect(output.timeSegments[0].seconds).toEqual(570);
+    expect(output.timeSegments[0].hour).toEqual(16);
+    expect(output.timeSegments[1].seconds).toEqual(750);
+    expect(output.timeSegments[1].hour).toEqual(17);
   });
 });

@@ -23,7 +23,7 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { v4 as uuid } from "uuid";
 
 import { pomodoroDispatch } from "app/dispatch";
@@ -38,6 +38,7 @@ import {
   timerInputToTimerArray,
   interpolateTimeDivisions,
   secondsToInputValue,
+  createPomodoroRequest,
 } from "./intention-utils";
 import Timer from "./timer";
 import { TimerAction } from "./types";
@@ -46,46 +47,6 @@ const initialInput = "000500";
 const initialSeconds = timerArrayToSeconds(
   timerInputToTimerArray(initialInput)
 );
-
-function createPomodoroRequest({
-  label,
-  activeDuration,
-  duration,
-  pomodoroSpans,
-}: {
-  label: string;
-  duration: number;
-  activeDuration: number;
-  pomodoroSpans: number[];
-}): Promise<number> {
-  const storage = Storage["localStorage"](localStorage);
-  const elapsedTime =
-    duration - pomodoroSpans.reduce((p, c) => p + c, activeDuration);
-  if (elapsedTime < 0) {
-    throw new Error(`elapsed time cannot be negative ${elapsedTime}`);
-  }
-  const time = dayjs();
-  const request: CreatePomodoroRequest = {
-    uri: "/api/pomodoro",
-    data: {
-      pomodoros: [
-        {
-          label,
-          seconds: elapsedTime,
-          id: uuid(),
-          year: time.year(),
-          month: time.month(),
-          date: time.date(),
-          hour: time.hour(),
-        },
-      ],
-    },
-  };
-  return storage
-    .set<CreatePomodoroRequest>(request)
-    .then(() => pomodoroDispatch.publish("setPomodoro"))
-    .then(() => elapsedTime);
-}
 
 export default function Intention({
   intention,
@@ -103,6 +64,7 @@ export default function Intention({
   const pomodoroSpans = useRef<number[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const startDate = useRef<Dayjs>(dayjs());
   const [activeDuration, setActiveDuration] = useState<number>(initialSeconds);
   const [timerInput, setTimerInput] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
@@ -160,14 +122,18 @@ export default function Intention({
   }, [activeIntention, worker, intention, activeDuration]);
 
   useEffect(() => {
+    const storage = Storage["localStorage"](localStorage);
     if (!activeDuration && activeIntention === intention) {
       createPomodoroRequest({
         label: intention,
         duration: duration.current,
         activeDuration: 0,
         pomodoroSpans: pomodoroSpans.current,
+        storage,
+        startDate: startDate.current,
       }).then(() => {
         pomodoroSpans.current = [];
+        pomodoroDispatch.publish("setPomodoro");
       });
       return;
     }
@@ -181,12 +147,22 @@ export default function Intention({
         duration: duration.current,
         activeDuration,
         pomodoroSpans: pomodoroSpans.current,
-      }).then((elapsedTime) => {
-        pomodoroSpans.current = [...pomodoroSpans.current, elapsedTime];
+        storage,
+        startDate: startDate.current,
+      }).then((res) => {
+        pomodoroSpans.current = [...pomodoroSpans.current, res.elapsedTime];
+        pomodoroDispatch.publish("setPomodoro");
       });
       return;
     }
   }, [activeDuration, activeIntention, intention, timerAction]);
+
+  useEffect(() => {
+    if (timerAction === "start") {
+      const now = dayjs();
+      startDate.current = now;
+    }
+  }, [timerAction]);
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     const newTimerAction = timerAction === "stop" ? "start" : "stop";
