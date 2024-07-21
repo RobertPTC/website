@@ -20,11 +20,7 @@ import { scaleBand, scaleLinear } from "d3-scale";
 import dayjs, { Dayjs } from "dayjs";
 
 import { pomodoroDispatch } from "app/dispatch";
-import Storage, {
-  PomodoroIntentionRequest,
-  PomodorosForDate,
-  PomodorosForMonth,
-} from "app/storage";
+import Storage, { PomodorosForDate, PomodorosForMonth } from "app/storage";
 
 import StackedBarChart from "./stacked-bar-chart";
 import {
@@ -120,7 +116,6 @@ export default function StackedBarChartWidget() {
         })
         .then(responseHandler)
         .then((v) => {
-          console.log("v ", v);
           setHasPomodoros(true);
         })
         .catch((e) => {

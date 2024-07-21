@@ -69,6 +69,37 @@ describe("pomodoro functions", () => {
         date: start.date(),
       },
     ]);
+    const start1 = dayjs(new Date(2024, 6, 20, 14, 33, 25));
+    const p = start1.add(27 * 60 - 25, "seconds");
+    expect(
+      determinePomodoroTimeSegments(27 * 60, start1, "foo").map(
+        ({ label, seconds, month, year, date, hour }) => ({
+          label,
+          seconds,
+          month,
+          year,
+          date,
+          hour,
+        })
+      )
+    ).toStrictEqual([
+      {
+        label: "foo",
+        seconds: 27 * 60 - 25,
+        hour: start.hour(),
+        month: start.month(),
+        year: start.year(),
+        date: start.date(),
+      },
+      {
+        label: "foo",
+        seconds: 25,
+        hour: p.hour(),
+        month: p.month(),
+        year: p.year(),
+        date: p.date(),
+      },
+    ]);
     const start2 = dayjs(new Date(2024, 6, 20, 14, 33, 30));
     const p1 = start2.add(27 * 60 - 30, "seconds");
     const p2 = p1.add(60 * 60, "seconds");
