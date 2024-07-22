@@ -98,10 +98,10 @@ export default function TrieFactory<T>(): Trie<T> {
           return l;
         });
         if (n.data) {
-          searchResults = [
-            ...searchResults,
-            { data: n.data, value: capitalizedResult.join("") },
-          ];
+          searchResults.push({
+            data: n.data,
+            value: capitalizedResult.join(""),
+          });
         }
       }
       for (let child in n.children) {

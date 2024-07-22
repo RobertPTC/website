@@ -15,5 +15,11 @@ describe("trie", () => {
       { value: "ash", data: { name: "ash" } },
       { value: "Ashley", data: { name: "Ashley" } },
     ]);
+    expect(t.findWords("a")).toStrictEqual([
+      { value: "apple", data: { name: "apple" } },
+      { value: "ash", data: { name: "ash" } },
+      { value: "Ashley", data: { name: "Ashley" } },
+      { value: "abracadbra", data: { name: "abracadabra" } },
+    ]);
   });
 });
