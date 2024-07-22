@@ -8,6 +8,7 @@ import {
   MenuItem,
   SelectChangeEvent,
   Box,
+  Grid,
 } from "@mui/material";
 import {
   DatePicker,
@@ -112,7 +113,7 @@ export default function StackedBarChartWidget() {
       }
       storage
         .get({
-          uri: `/api/pomodoro?year=${dayjs().year()}&month=${dayjs().month()}&date=${dayjs().date()}`,
+          uri: `/api/pomodoro`,
         })
         .then(responseHandler)
         .then((v) => {
@@ -174,35 +175,38 @@ export default function StackedBarChartWidget() {
   if (!hasPomodoros) return <></>;
   return (
     <>
-      <Box mb={2}>
-        <FormControl sx={{ width: "411px", mr: 2 }}>
-          <InputLabel id="chart-type-select-label">Chart Type</InputLabel>
-          <Select<ChartTypes>
-            fullWidth
-            labelId="chart-type-select-label"
-            value={type}
-            onChange={onChangeChartType}
-            label="Chart Type"
-            MenuProps={{ disableScrollLock: true }}
-          >
-            <MenuItem value="month">Month</MenuItem>
-            <MenuItem value="date">Date</MenuItem>
-          </Select>
-        </FormControl>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker
-            label="Date"
-            value={date}
-            slotProps={{
-              textField: {
-                fullWidth: true,
-                sx: { maxWidth: { md: "500px" } },
-              },
-            }}
-            onChange={onDateChange}
-          />
-        </LocalizationProvider>
-      </Box>
+      <Grid mb={2} container spacing={2}>
+        <Grid item md={6} lg={3}>
+          <FormControl sx={{ mr: 2, width: "100%" }}>
+            <InputLabel id="chart-type-select-label">Chart Type</InputLabel>
+            <Select<ChartTypes>
+              fullWidth
+              labelId="chart-type-select-label"
+              value={type}
+              onChange={onChangeChartType}
+              label="Chart Type"
+              MenuProps={{ disableScrollLock: true }}
+            >
+              <MenuItem value="month">Month</MenuItem>
+              <MenuItem value="date">Date</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item md={6} lg={3}>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label="Date"
+              value={date}
+              slotProps={{
+                textField: {
+                  fullWidth: true,
+                },
+              }}
+              onChange={onDateChange}
+            />
+          </LocalizationProvider>
+        </Grid>
+      </Grid>
 
       {!!(max && bars) && (
         <StackedBarChart

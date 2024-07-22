@@ -50,7 +50,7 @@ export default function Intentions() {
       <Grid container columns={4} spacing={1}>
         {intentions.map((i) => {
           return (
-            <Grid key={i} mb={1} item xs={4} sm={2} md={1}>
+            <Grid key={i} mb={1} item xs={4} sm={2} lg={1}>
               <Intention
                 intention={i}
                 activeIntention={activeIntention}

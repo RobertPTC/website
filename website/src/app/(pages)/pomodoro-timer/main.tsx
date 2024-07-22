@@ -20,7 +20,9 @@ export default function Main() {
       <Box mb={5}>
         <Intentions />
       </Box>
-      <StackedBarChartWidget />
+      <Box sx={{ display: ["none", "none", "block", "block", "block"] }}>
+        <StackedBarChartWidget />
+      </Box>
     </>
   );
 }
