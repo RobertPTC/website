@@ -80,6 +80,11 @@ export default function Intention({
       });
     }
   }
+  function setAudioSource() {
+    if (audioRef.current) {
+      audioRef.current.src = "time-up.m4a";
+    }
+  }
   const playAudioCallback = useCallback(playAudio, []);
 
   useEffect(() => {
@@ -165,8 +170,8 @@ export default function Intention({
   }, [timerAction]);
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
-    const newTimerAction = timerAction === "stop" ? "start" : "stop";
     e.preventDefault();
+    const newTimerAction = timerAction === "stop" ? "start" : "stop";
     setIsEditMode(false);
     if (newTimerAction === "start" && inputRef.current) {
       const seconds = timerArrayToSeconds(
@@ -187,9 +192,7 @@ export default function Intention({
       inputRef.current.value = secondsToInputValue(activeDuration);
       worker.postMessage({ action: "stopTimer", packet: { intention } });
     }
-    if (audioRef.current) {
-      audioRef.current.src = "time-up.m4a";
-    }
+    setAudioSource();
     setTimerAction(newTimerAction);
     setSubmitButtonText(submitButtonText === "Stop" ? "Start" : "Stop");
   };
@@ -271,6 +274,7 @@ export default function Intention({
       action: "resetTimer",
       packet: { intention, duration: duration.current },
     });
+    setAudioSource();
     setIsEditMode(false);
     setSubmitButtonText("Start");
     setTimerAction("stop");
