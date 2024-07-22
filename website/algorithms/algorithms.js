@@ -76,27 +76,22 @@ export function maxDuffelBagValue(itemTypes, capacity) {
  */
 export function merge(intervals) {
   if (intervals.length === 1) return intervals;
-  intervals.sort(([a, b], [c, d]) => {
-    return a - c;
+  intervals.sort((a, b) => {
+    return a[0] - b[0];
   });
 
-  const result = [];
+  let result = [];
 
-  let currStart = intervals[0][0];
-  let currEnd = intervals[0][1];
+  let current = intervals[0];
 
-  for (let i = 1; i < intervals.length; i++) {
-    const [nextStart, nextEnd] = intervals[i];
-
-    if (nextStart <= currEnd && nextEnd >= currStart) {
-      currEnd = Math.max(currEnd, nextEnd);
-    } else {
-      result.push([currStart, currEnd]);
-      currStart = nextStart;
-      currEnd = nextEnd;
+  intervals.forEach((interval) => {
+    if (interval[0] > current[1]) {
+      result.push(current);
+      current = interval;
+      return;
     }
-  }
-  result.push([currStart, currEnd]);
-
+    current[1] = Math.max(interval[1], current[1]);
+  });
+  result.push(current);
   return result;
 }
