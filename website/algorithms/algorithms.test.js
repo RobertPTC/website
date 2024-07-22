@@ -9,6 +9,7 @@ describe("interview cake", () => {
     expect(bracketValidator("{ [ ] ( ) }")).toBe(true);
     expect(bracketValidator("{ [ ( ] ) }")).toBe(false);
     expect(bracketValidator("{ [ }")).toBe(false);
+    expect(bracketValidator("((")).toBe(false);
   });
   it("nthFibonacci", () => {
     expect(nthFibonnaci(0)).toBe(0);

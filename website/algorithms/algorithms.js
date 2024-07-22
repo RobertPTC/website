@@ -13,17 +13,23 @@ export function bracketValidator(s) {
   };
   let stack = [];
   let isValid = true;
+  let openersCount = 0;
+  let closersCount = 0;
   s.split("").forEach((v) => {
     if (!isValid) return;
     if (openers.has(v)) {
-      stack = [...stack, v];
+      stack.push(v);
+      openersCount++;
     }
     if (closers.has(v)) {
-      const latestOpener = stack[stack.length - 1];
-      stack = stack.slice(0, stack.length - 1);
+      const latestOpener = stack.pop();
       isValid = openersToClosers[latestOpener] === v;
+      closersCount++;
     }
   });
+  if (isValid) {
+    return openersCount === closersCount;
+  }
   return isValid;
 }
 /**
