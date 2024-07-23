@@ -16,3 +16,9 @@ const a = [0, 1, 3];
 for (let v in a) {
   console.log("v ", a[v]);
 }
+
+let obj = {
+  a: 1,
+};
+// works to increment
+obj["a"]++;

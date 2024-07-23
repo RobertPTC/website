@@ -101,3 +101,22 @@ export function merge(intervals) {
   result.push(current);
   return result;
 }
+
+/**
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number[]}
+ */
+export function twoSum(nums, target) {
+  let result = [];
+  let numbers = {};
+  for (let i = 0; i < nums.length; i++) {
+    const element = nums[i];
+    const difference = target - element;
+    if (numbers.hasOwnProperty(element)) {
+      return [i, numbers[element]];
+    }
+    numbers[difference] = i;
+  }
+  return result;
+}
