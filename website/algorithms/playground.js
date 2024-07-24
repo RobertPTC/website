@@ -22,3 +22,11 @@ let obj = {
 };
 // works to increment
 obj["a"]++;
+
+const numberOfRequests = 10000;
+let stack = [];
+
+console.log("integer ", 16 * 600 + 400);
+console.log("modulus ", numberOfRequests % 600);
+
+function makeRequest() {}
