@@ -145,7 +145,8 @@ export default function Intention({
     if (
       timerAction === "stop" &&
       activeIntention === intention &&
-      duration.current !== activeDuration
+      duration.current !== activeDuration &&
+      activeDuration
     ) {
       createPomodoroRequest({
         label: intention,

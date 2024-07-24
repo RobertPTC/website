@@ -4,6 +4,7 @@ import {
   maxDuffelBagValue,
   merge,
   twoSum,
+  lengthOfLongestSubstring,
 } from "./algorithms";
 describe("algorithms", () => {
   it("bracketsValidator", () => {
@@ -72,5 +73,15 @@ describe("algorithms", () => {
     expect(twoSum([2, 7, 11, 15], 9)).toStrictEqual([1, 0]);
     expect(twoSum([3, 2, 4], 6)).toStrictEqual([2, 1]);
     expect(twoSum([-3, 4, 3, 90], 0)).toStrictEqual([2, 0]);
+  });
+  it("lengthOfLongestSubstring", () => {
+    expect(lengthOfLongestSubstring("abcabcbb")).toEqual(3);
+    expect(lengthOfLongestSubstring("bbbbb")).toEqual(1);
+    expect(lengthOfLongestSubstring("pwwkew")).toEqual(3);
+    expect(lengthOfLongestSubstring("au")).toEqual(2);
+    expect(lengthOfLongestSubstring(" ")).toEqual(1);
+    expect(lengthOfLongestSubstring("")).toEqual(0);
+    expect(lengthOfLongestSubstring("dvdf")).toEqual(3);
+    expect(lengthOfLongestSubstring("anviaj")).toEqual(5);
   });
 });

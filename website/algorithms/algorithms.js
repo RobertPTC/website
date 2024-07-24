@@ -120,3 +120,32 @@ export function twoSum(nums, target) {
   }
   return result;
 }
+
+/**
+ * @param {string} s
+ * @return {number}
+ */
+export function lengthOfLongestSubstring(s) {
+  if (!s.length) return 0;
+  let seen = {};
+  let max = 1;
+  let stringToSearch = s;
+  let counter = 0;
+  while (stringToSearch[counter]) {
+    if (stringToSearch[counter] in seen) {
+      stringToSearch = stringToSearch.slice(
+        seen[stringToSearch[counter]] + 1,
+        stringToSearch.length
+      );
+      // console.log("stringToSearch ", stringToSearch);
+      // console.log("counter ", counter);
+      // console.log("stringToSearch[counter] ", stringToSearch[counter]);
+      max = Math.max(counter, max);
+      seen = {};
+      counter = 0;
+    }
+    seen[stringToSearch[counter]] = counter;
+    counter++;
+  }
+  return Math.max(max, Object.keys(seen).length);
+}
