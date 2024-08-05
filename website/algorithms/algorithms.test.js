@@ -5,6 +5,7 @@ import {
   merge,
   twoSum,
   lengthOfLongestSubstring,
+  mergeSortedArray,
 } from "./algorithms";
 describe("algorithms", () => {
   it("bracketsValidator", () => {
@@ -84,4 +85,9 @@ describe("algorithms", () => {
     expect(lengthOfLongestSubstring("dvdf")).toEqual(3);
     expect(lengthOfLongestSubstring("anviaj")).toEqual(5);
   });
+});
+it("mergeSortedArray", () => {
+  expect(mergeSortedArray([1, 2, 3], 3, [2, 5, 6], 3)).toStrictEqual([
+    1, 2, 2, 3, 5, 6,
+  ]);
 });

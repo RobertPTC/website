@@ -24,9 +24,20 @@ let obj = {
 obj["a"]++;
 
 const numberOfRequests = 10000;
-let stack = [];
+const rateLimit = 600;
+let pages = {};
 
-console.log("integer ", 16 * 600 + 400);
-console.log("modulus ", numberOfRequests % 600);
+function numberToArray() {}
+
+const numberOfWholeRequestPages = Math.floor(numberOfRequests / rateLimit);
+const requestsOnLastPage = numberOfRequests % rateLimit;
+for (let i = 0; i < numberOfWholeRequestPages; i++) {
+  pages[i] = (i + 1) * rateLimit;
+}
+if (requestsOnLastPage) {
+  pages[numberOfWholeRequestPages] = requestsOnLastPage;
+}
+
+console.log("pages ", pages);
 
 function makeRequest() {}

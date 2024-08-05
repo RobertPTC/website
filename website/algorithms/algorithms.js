@@ -137,9 +137,6 @@ export function lengthOfLongestSubstring(s) {
         seen[stringToSearch[counter]] + 1,
         stringToSearch.length
       );
-      // console.log("stringToSearch ", stringToSearch);
-      // console.log("counter ", counter);
-      // console.log("stringToSearch[counter] ", stringToSearch[counter]);
       max = Math.max(counter, max);
       seen = {};
       counter = 0;
@@ -148,4 +145,32 @@ export function lengthOfLongestSubstring(s) {
     counter++;
   }
   return Math.max(max, Object.keys(seen).length);
+}
+
+/**
+ * @param {number[]} nums1
+ * @param {number} m
+ * @param {number[]} nums2
+ * @param {number} n
+ * @return {number[]}
+ */
+export function mergeSortedArray(nums1, m, nums2, n) {
+  let pointer1 = 0;
+  let pointer2 = 0;
+  let pos = 0;
+  let merged = [];
+  while (pos < n + m) {
+    const num1 = nums1[pointer1];
+    const num2 = nums2[pointer2];
+    if (num1 < num2) {
+      merged[pos] = num1;
+      pointer1 += 1;
+    } else {
+      merged[pos] = num2;
+      pointer2 += 1;
+    }
+    pos += 1;
+  }
+  console.log("merged ", merged);
+  return merged;
 }
