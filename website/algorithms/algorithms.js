@@ -162,15 +162,41 @@ export function mergeSortedArray(nums1, m, nums2, n) {
   while (pos < n + m) {
     const num1 = nums1[pointer1];
     const num2 = nums2[pointer2];
+    pos += 1;
+    if (num2 === undefined) {
+      merged[pos - 1] = num1;
+      continue;
+    }
     if (num1 < num2) {
-      merged[pos] = num1;
+      merged[pos - 1] = num1;
       pointer1 += 1;
     } else {
-      merged[pos] = num2;
+      merged[pos - 1] = num2;
       pointer2 += 1;
     }
-    pos += 1;
   }
-  console.log("merged ", merged);
   return merged;
+}
+
+/**
+ * @param {number[]} nums
+ * @param {number} val
+ * @return {number}
+ */
+export function removeElement(nums, val) {
+  let pointer = 0;
+  let pos = 0;
+  let count = 0;
+  while (pos < nums.length) {
+    const num = nums[pointer];
+    pos += 1;
+    if (num !== val) {
+      pointer += 1;
+      count += 1;
+    } else {
+      nums.splice(pointer, 1);
+      pos -= 1;
+    }
+  }
+  return count;
 }

@@ -6,6 +6,7 @@ import {
   twoSum,
   lengthOfLongestSubstring,
   mergeSortedArray,
+  removeElement,
 } from "./algorithms";
 describe("algorithms", () => {
   it("bracketsValidator", () => {
@@ -85,9 +86,16 @@ describe("algorithms", () => {
     expect(lengthOfLongestSubstring("dvdf")).toEqual(3);
     expect(lengthOfLongestSubstring("anviaj")).toEqual(5);
   });
-});
-it("mergeSortedArray", () => {
-  expect(mergeSortedArray([1, 2, 3], 3, [2, 5, 6], 3)).toStrictEqual([
-    1, 2, 2, 3, 5, 6,
-  ]);
+  it("mergeSortedArray", () => {
+    expect(mergeSortedArray([1], 1, [], 0)).toStrictEqual([1]);
+    expect(mergeSortedArray([1, 2, 3], 3, [2, 5, 6], 3)).toStrictEqual([
+      1, 2, 2, 3, 5, 6,
+    ]);
+  });
+  it("removeElement", () => {
+    let nums = [3, 2, 2, 3];
+    expect(removeElement(nums, 3)).toEqual(2);
+    let nums2 = [0, 1, 2, 2, 3, 0, 4, 2];
+    expect(removeElement(nums2, 2)).toEqual(5);
+  });
 });
