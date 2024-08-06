@@ -148,37 +148,6 @@ export function lengthOfLongestSubstring(s) {
 }
 
 /**
- * @param {number[]} nums1
- * @param {number} m
- * @param {number[]} nums2
- * @param {number} n
- * @return {number[]}
- */
-export function mergeSortedArray(nums1, m, nums2, n) {
-  let pointer1 = 0;
-  let pointer2 = 0;
-  let pos = 0;
-  let merged = [];
-  while (pos < n + m) {
-    const num1 = nums1[pointer1];
-    const num2 = nums2[pointer2];
-    pos += 1;
-    if (num2 === undefined) {
-      merged[pos - 1] = num1;
-      continue;
-    }
-    if (num1 < num2) {
-      merged[pos - 1] = num1;
-      pointer1 += 1;
-    } else {
-      merged[pos - 1] = num2;
-      pointer2 += 1;
-    }
-  }
-  return merged;
-}
-
-/**
  * @param {number[]} nums
  * @param {number} val
  * @return {number}
@@ -194,4 +163,20 @@ export function removeElement(nums, val) {
     count += 1;
   }
   return count;
+}
+
+/**
+ * @param {string} s
+ * @param {string} t
+ * @return {boolean}
+ */
+export function isSubsequence(s, t) {
+  let pointer = 0;
+  for (let index = 0; index < t.length; index++) {
+    const element = t[index];
+    if (element === s[pointer]) {
+      pointer += 1;
+    }
+  }
+  return pointer === s.length;
 }

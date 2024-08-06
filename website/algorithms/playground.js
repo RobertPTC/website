@@ -1,22 +1,3 @@
-function* idGenerator() {
-  let i = 0;
-  while (true) {
-    yield i++;
-  }
-}
-
-const ids = idGenerator();
-
-console.log(ids.next().value); // 0
-console.log(ids.next().value); // 1
-console.log(ids.next().value); // 2
-console.log(ids.next().value); // 3
-console.log(ids.next().value); // 4
-const a = [0, 1, 3];
-for (let v in a) {
-  console.log("v ", a[v]);
-}
-
 let obj = {
   a: 1,
 };
@@ -38,6 +19,31 @@ if (requestsOnLastPage) {
   pages[numberOfWholeRequestPages] = requestsOnLastPage;
 }
 
-console.log("pages ", pages);
-
-function makeRequest() {}
+function mergeSortedArray(nums1, m, nums2, n) {
+  if (!n) return;
+  if (!m) {
+    nums1[0] = nums2[0];
+    return;
+  }
+  let pos = 0;
+  let pointer1 = 0;
+  let pointer2 = 0;
+  while (pos < m + n) {
+    const num1 = nums1[pointer1];
+    const num2 = nums2[pointer2];
+    if (pos > m) {
+      num1[pos] = num2;
+    }
+    if (num2 < num1) {
+      nums1[pointer1] = num2;
+      pointer2 += 1;
+    } else {
+      pointer1 += 1;
+    }
+    pos += 1;
+  }
+  console.log("nums1 ", nums1);
+}
+mergeSortedArray([1, 2, 3, 0, 0, 0], 3, [2, 5, 6], 3);
+mergeSortedArray([1], 1, [], 0);
+mergeSortedArray([0], 0, [1], 1);
