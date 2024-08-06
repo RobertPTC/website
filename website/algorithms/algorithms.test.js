@@ -7,6 +7,7 @@ import {
   lengthOfLongestSubstring,
   removeElement,
   isSubsequence,
+  removeDuplicates,
 } from "./algorithms";
 describe("algorithms", () => {
   it("bracketsValidator", () => {
@@ -96,5 +97,9 @@ describe("algorithms", () => {
   it("isSubsequence", () => {
     expect(isSubsequence("abc", "ahbgdc")).toBe(true);
     expect(isSubsequence("axc", "ahbgdc")).toBe(false);
+  });
+  it("removeDuplicates", () => {
+    expect(removeDuplicates([1, 1, 2])).toBe(2);
+    expect(removeDuplicates([0, 0, 1, 1, 1, 2, 2, 3, 3, 4])).toBe(5);
   });
 });

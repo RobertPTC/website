@@ -180,3 +180,22 @@ export function isSubsequence(s, t) {
   }
   return pointer === s.length;
 }
+
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+export function removeDuplicates(nums) {
+  let uniquePos = 1;
+  let seen = nums[0];
+  for (let index = 1; index < nums.length; index++) {
+    const element = nums[index];
+    if (element !== seen) {
+      nums[uniquePos] = element;
+      uniquePos += 1;
+      seen = element;
+      continue;
+    }
+  }
+  return uniquePos;
+}
