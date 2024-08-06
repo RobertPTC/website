@@ -184,19 +184,14 @@ export function mergeSortedArray(nums1, m, nums2, n) {
  * @return {number}
  */
 export function removeElement(nums, val) {
-  let pointer = 0;
-  let pos = 0;
   let count = 0;
-  while (pos < nums.length) {
-    const num = nums[pointer];
-    pos += 1;
-    if (num !== val) {
-      pointer += 1;
-      count += 1;
-    } else {
-      nums.splice(pointer, 1);
-      pos -= 1;
+  for (let index = 0; index < nums.length; index++) {
+    const element = nums[index];
+    if (element === val) {
+      continue;
     }
+    nums[count] = element;
+    count += 1;
   }
   return count;
 }
