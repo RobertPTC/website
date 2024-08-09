@@ -1,4 +1,5 @@
 import {
+  Box,
   Card,
   CardActionArea,
   CardContent,
@@ -16,7 +17,16 @@ export default function BlogPreviews() {
           <Card variant="outlined">
             <CardActionArea>
               <CardContent>
-                <Typography variant="h2">{title}</Typography>
+                <Typography variant="h2" sx={{ fontSize: "35px", mb: 1 }}>
+                  {title}
+                </Typography>
+                <Typography
+                  variant="h3"
+                  sx={{ fontSize: "21px", fontWeight: 100 }}
+                >
+                  {previewText}
+                </Typography>
+                <Box component="img" src={imgURL} />
               </CardContent>
             </CardActionArea>
           </Card>
