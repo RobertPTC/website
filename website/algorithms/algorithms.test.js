@@ -8,6 +8,7 @@ import {
   removeElement,
   isSubsequence,
   removeDuplicates,
+  canJump,
 } from "./algorithms";
 describe("algorithms", () => {
   it("bracketsValidator", () => {
@@ -101,5 +102,15 @@ describe("algorithms", () => {
   it("removeDuplicates", () => {
     expect(removeDuplicates([1, 1, 2])).toBe(2);
     expect(removeDuplicates([0, 0, 1, 1, 1, 2, 2, 3, 3, 4])).toBe(5);
+  });
+  it("canJump", () => {
+    expect(canJump([2, 3, 1, 1, 4])).toBe(true);
+    expect(canJump([3, 2, 1, 0, 4])).toBe(false);
+    expect(canJump([0, 2, 3])).toBe(false);
+    expect(canJump([3, 0, 8, 2, 0, 0, 1])).toBe(true);
+    expect(canJump([1, 0, 1, 0])).toBe(false);
+    expect(canJump([2, 3, 1, 1, 4])).toBe(true);
+    expect(canJump([2, 0, 0])).toBe(true);
+    expect(canJump([2, 1, 0, 0])).toBe(false);
   });
 });

@@ -199,3 +199,21 @@ export function removeDuplicates(nums) {
   }
   return uniquePos;
 }
+
+/**
+ * @param {number[]} nums
+ * @return {boolean}
+ */
+export function canJump(nums) {
+  if (nums.length === 1) return true;
+  let maxRange = 0;
+  if (maxRange >= nums.length) return true;
+  let canJump = true;
+  for (let i = 0; i < nums.length; i++) {
+    const element = nums[i];
+    if (!element && i !== nums.length - 1 && maxRange <= i) return false;
+    maxRange = maxRange < element + i ? element + i : maxRange;
+  }
+
+  return canJump;
+}
