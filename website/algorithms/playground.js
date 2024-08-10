@@ -1,50 +1,51 @@
-let obj = {
-  a: 1,
-};
-// works to increment
-obj["a"]++;
+const fs = require("node:fs");
 
-const numberOfRequests = 10000;
-const rateLimit = 600;
-let pages = {};
+const url =
+  "https://file.notion.so/f/f/d0d5787b-ff93-48d4-bb8d-bffd9edc42e4/8c08a999-4b9e-44b8-bc17-bbaf8c219101/dunkin.xml?table=block&id=377557b0-66f2-45d7-a159-b2381391bfa2&spaceId=d0d5787b-ff93-48d4-bb8d-bffd9edc42e4&expirationTimestamp=1723392000000&signature=ezvRCNvl-KJiPFzjlUhtFjjsD8VYUUhONWpxbYA_RDE&downloadName=dunkin.xml";
+const url1 = "https://google.com";
 
-function numberToArray() {}
+function downloadFile(url) {
+  fetch(url)
+    .then((response) => response.body)
+    .then((rb) => {
+      const reader = rb.getReader();
 
-const numberOfWholeRequestPages = Math.floor(numberOfRequests / rateLimit);
-const requestsOnLastPage = numberOfRequests % rateLimit;
-for (let i = 0; i < numberOfWholeRequestPages; i++) {
-  pages[i] = (i + 1) * rateLimit;
+      return new ReadableStream({
+        start(controller) {
+          // The following function handles each data chunk
+          function push() {
+            // "done" is a Boolean and value a "Uint8Array"
+            reader.read().then(({ done, value }) => {
+              // If there is no more data to read
+              if (done) {
+                console.log("done", done);
+                controller.close();
+                return;
+              }
+              // Get the data and send it to the browser via the controller
+              controller.enqueue(value);
+              // Check chunks by logging to the console
+              console.log(done, value);
+              push();
+            });
+          }
+
+          push();
+        },
+      });
+    })
+    .then((stream) =>
+      // Respond with our stream
+      new Response(stream, { headers: { "Content-Type": "text/xml" } }).text()
+    )
+    .then((result) => {
+      // Do things with result
+      fs.writeFile("./f.xml", result, (err) => {
+        if (err) {
+          throw new Error(`error writing file: ${err}`);
+        }
+      });
+    });
 }
-if (requestsOnLastPage) {
-  pages[numberOfWholeRequestPages] = requestsOnLastPage;
-}
 
-function mergeSortedArray(nums1, m, nums2, n) {
-  if (!n) return;
-  if (!m) {
-    nums1[0] = nums2[0];
-    return;
-  }
-  let pos = 0;
-  let pointer1 = 0;
-  let pointer2 = 0;
-  while (pos < m + n) {
-    const num1 = nums1[pointer1];
-    const num2 = nums2[pointer2];
-    if (pos > m) {
-      num1[pos] = num2;
-    }
-    if (num2 < num1) {
-      nums1[pointer1] = num2;
-      pointer2 += 1;
-    } else {
-      pointer1 += 1;
-    }
-    pos += 1;
-  }
-  console.log("nums1 ", nums1);
-}
-mergeSortedArray([1, 2, 3, 0, 0, 0], 3, [2, 5, 6], 3);
-mergeSortedArray([1], 1, [], 0);
-mergeSortedArray([0], 0, [1], 1);
-let x;
+downloadFile(url);
