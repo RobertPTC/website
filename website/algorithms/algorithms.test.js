@@ -9,6 +9,7 @@ import {
   isSubsequence,
   removeDuplicates,
   canJump,
+  jump,
 } from "./algorithms";
 describe("algorithms", () => {
   it("bracketsValidator", () => {
@@ -112,5 +113,10 @@ describe("algorithms", () => {
     expect(canJump([2, 3, 1, 1, 4])).toBe(true);
     expect(canJump([2, 0, 0])).toBe(true);
     expect(canJump([2, 1, 0, 0])).toBe(false);
+  });
+  it("jump", () => {
+    expect(jump([2, 3, 1, 1, 4])).toBe(2);
+    expect(jump([2, 0, 1, 1, 4])).toBe(3);
+    expect(jump([1, 2, 1, 1, 1])).toBe(3);
   });
 });

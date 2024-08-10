@@ -217,3 +217,28 @@ export function canJump(nums) {
 
   return canJump;
 }
+
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+export function jump(nums) {
+  let table = Array(nums.length).fill(null);
+  let jumpNumber = 0;
+  table[nums.length - 1] = nums.length;
+  for (let i = 0; i < nums.length; i++) {
+    const e = nums[i];
+    if (!e) continue;
+    jumpNumber++;
+    for (let j = 1; j <= e; j++) {
+      if (!table[j + i]) {
+        table[j + i] = jumpNumber;
+        continue;
+      }
+      if (table[j + i] > jumpNumber) {
+        table[j + i] = jumpNumber;
+      }
+    }
+  }
+  return table[nums.length - 1];
+}
