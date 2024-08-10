@@ -224,19 +224,16 @@ export function canJump(nums) {
  */
 export function jump(nums) {
   let table = Array(nums.length).fill(null);
-  let jumpNumber = 0;
-  table[nums.length - 1] = nums.length;
+  table[0] = 0;
   for (let i = 0; i < nums.length; i++) {
     const e = nums[i];
     if (!e) continue;
-    jumpNumber++;
     for (let j = 1; j <= e; j++) {
-      const jn = table[i + j];
-      if (jn) {
-        table[i + j] = jn < jumpNumber ? jn : jumpNumber;
-        continue;
+      const c = table[i];
+      const n = table[i + j];
+      if (!n) {
+        table[i + j] = c + 1;
       }
-      table[i + j] = table[i] < jumpNumber ? table[i] : jumpNumber;
     }
   }
   return table[nums.length - 1];
