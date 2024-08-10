@@ -231,13 +231,12 @@ export function jump(nums) {
     if (!e) continue;
     jumpNumber++;
     for (let j = 1; j <= e; j++) {
-      if (!table[j + i]) {
-        table[j + i] = jumpNumber;
+      const jn = table[i + j];
+      if (jn) {
+        table[i + j] = jn < jumpNumber ? jn : jumpNumber;
         continue;
       }
-      if (table[j + i] > jumpNumber) {
-        table[j + i] = jumpNumber;
-      }
+      table[i + j] = table[i] < jumpNumber ? table[i] : jumpNumber;
     }
   }
   return table[nums.length - 1];
