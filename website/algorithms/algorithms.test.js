@@ -10,6 +10,7 @@ import {
   removeDuplicates,
   canJump,
   jump,
+  maxProfit,
 } from "./algorithms";
 describe("algorithms", () => {
   it("bracketsValidator", () => {
@@ -118,5 +119,9 @@ describe("algorithms", () => {
     expect(jump([2, 3, 1, 1, 4])).toBe(2);
     expect(jump([2, 0, 1, 1, 4])).toBe(3);
     expect(jump([1, 2, 1, 1, 1])).toBe(3);
+  });
+  it("maxProfit", () => {
+    expect(maxProfit([7, 1, 5, 3, 6, 4])).toBe(5);
+    expect(maxProfit([7, 6, 4, 3, 1])).toBe(0);
   });
 });

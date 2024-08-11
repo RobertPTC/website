@@ -238,3 +238,22 @@ export function jump(nums) {
   }
   return table[nums.length - 1];
 }
+
+/**
+ * @param {number[]} prices
+ * @return {number}
+ */
+export function maxProfit(prices) {
+  let lowestPrice = prices[0];
+  let profit = 0;
+  prices.forEach((p) => {
+    let newProfit = p - lowestPrice;
+    if (newProfit > profit) {
+      profit = newProfit;
+    }
+    if (p < lowestPrice) {
+      lowestPrice = p;
+    }
+  });
+  return profit;
+}
