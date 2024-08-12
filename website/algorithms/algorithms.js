@@ -257,3 +257,26 @@ export function maxProfit(prices) {
   });
   return profit;
 }
+
+/**
+ * @param {number[]} citations
+ * @return {number}
+ */
+export function hIndex(citations) {
+  const l = citations.length;
+  let citationIndex = {};
+  let max = 0;
+  for (let i = 0; i < l; i++) {
+    const cur = citations[i];
+    if (!citationIndex[cur]) {
+      citationIndex[cur] = 0;
+    }
+    Object.entries(citationIndex).forEach(([c, count]) => {
+      if (cur >= c) {
+        citationIndex[c] = count + 1;
+      }
+    });
+  }
+  console.log("citationIndex ", citationIndex);
+  return max;
+}

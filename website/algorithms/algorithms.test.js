@@ -11,6 +11,7 @@ import {
   canJump,
   jump,
   maxProfit,
+  hIndex,
 } from "./algorithms";
 describe("algorithms", () => {
   it("bracketsValidator", () => {
@@ -123,5 +124,15 @@ describe("algorithms", () => {
   it("maxProfit", () => {
     expect(maxProfit([7, 1, 5, 3, 6, 4])).toBe(5);
     expect(maxProfit([7, 6, 4, 3, 1])).toBe(0);
+  });
+  it("hIndex", () => {
+    // expect(hIndex([3, 0, 6, 1, 5])).toBe(3);
+    // expect(hIndex([3, 0, 1, 1, 5])).toBe(1);
+    // expect(hIndex([3, 0, 1, 2, 5])).toBe(2);
+    // expect(hIndex([0, 0, 0, 0, 5])).toBe(1);
+    // expect(hIndex([1, 3, 1])).toBe(1);
+    // expect(hIndex([1])).toBe(1);
+    // expect(hIndex([100])).toBe(1);
+    // expect(hIndex([11, 15])).toBe(2);
   });
 });
