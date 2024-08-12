@@ -12,6 +12,7 @@ import {
   jump,
   maxProfit,
   hIndex,
+  longestCommonPrefix,
 } from "./algorithms";
 describe("algorithms", () => {
   it("bracketsValidator", () => {
@@ -134,5 +135,11 @@ describe("algorithms", () => {
     // expect(hIndex([1])).toBe(1);
     // expect(hIndex([100])).toBe(1);
     // expect(hIndex([11, 15])).toBe(2);
+  });
+  it("longestCommonPrefix", () => {
+    expect(longestCommonPrefix(["care", "dog", "cat"])).toBe("");
+    expect(longestCommonPrefix(["flower", "flow", "flight"])).toBe("fl");
+    expect(longestCommonPrefix(["dog", "racecar", "car"])).toBe("");
+    expect(longestCommonPrefix(["glimmer", "glim", "glitch"])).toBe("gli");
   });
 });

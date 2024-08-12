@@ -280,3 +280,23 @@ export function hIndex(citations) {
   console.log("citationIndex ", citationIndex);
   return max;
 }
+
+/**
+ * @param {string[]} strs
+ * @return {string}
+ */
+export function longestCommonPrefix(strs) {
+  const s = strs[0];
+  let prefix = "";
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    for (let j = 1; j < strs.length; j++) {
+      const str = strs[j];
+      if (c !== str[i]) {
+        return prefix;
+      }
+    }
+    prefix = `${prefix}${c}`;
+  }
+  return prefix;
+}
