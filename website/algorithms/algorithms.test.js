@@ -135,6 +135,7 @@ describe("algorithms", () => {
     // expect(hIndex([1])).toBe(1);
     // expect(hIndex([100])).toBe(1);
     // expect(hIndex([11, 15])).toBe(2);
+    // expect(hIndex([0, 0, 0])).toBe(0);
   });
   it("longestCommonPrefix", () => {
     expect(longestCommonPrefix(["care", "dog", "cat"])).toBe("");
