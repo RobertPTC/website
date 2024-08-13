@@ -1,3 +1,4 @@
+"use client";
 import type {} from "@mui/x-date-pickers/themeAugmentation";
 
 import { inputLabelClasses, outlinedInputClasses } from "@mui/material";
