@@ -13,6 +13,7 @@ import {
   maxProfit,
   hIndex,
   longestCommonPrefix,
+  lastWord,
 } from "./algorithms";
 describe("algorithms", () => {
   it("bracketsValidator", () => {
@@ -142,5 +143,9 @@ describe("algorithms", () => {
     expect(longestCommonPrefix(["flower", "flow", "flight"])).toBe("fl");
     expect(longestCommonPrefix(["dog", "racecar", "car"])).toBe("");
     expect(longestCommonPrefix(["glimmer", "glim", "glitch"])).toBe("gli");
+  });
+  it("lastWord", () => {
+    expect(lastWord("a a b a b b c d e", 1)).toBe("e");
+    expect(lastWord("a b b a a c d d c c e f f e e g g", 3)).toBe("e");
   });
 });
