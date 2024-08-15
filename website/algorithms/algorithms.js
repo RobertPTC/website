@@ -314,3 +314,28 @@ export function lastWord(s, c) {
   }
   return stack[stack.length - 1];
 }
+
+/**
+ * @param {string} s
+ * @param {string} t
+ * @return {boolean}
+ */
+export function isIsomorphic(s, t) {
+  let sIndex = {};
+  let tIndex = {};
+  for (let i = 0; i < s.length; i++) {
+    const sChar = s[i];
+    const tChar = t[i];
+    if (!sIndex[sChar] && tIndex[tChar]) return false;
+    if (!tIndex[tChar] && sIndex[sChar]) return false;
+    if (!sIndex[sChar]) {
+      sIndex[sChar] = tChar;
+    }
+    if (!tIndex[tChar]) {
+      tIndex[tChar] = sChar;
+    }
+    if (sIndex[sChar] !== tChar) return false;
+    if (tIndex[tChar] !== sChar) return false;
+  }
+  return true;
+}

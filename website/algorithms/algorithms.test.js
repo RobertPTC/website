@@ -14,6 +14,7 @@ import {
   hIndex,
   longestCommonPrefix,
   lastWord,
+  isIsomorphic,
 } from "./algorithms";
 describe("algorithms", () => {
   it("bracketsValidator", () => {
@@ -147,5 +148,11 @@ describe("algorithms", () => {
   it("lastWord", () => {
     expect(lastWord("a a b a b b c d e", 1)).toBe("e");
     expect(lastWord("a b b a a c d d c c e f f e e g g", 3)).toBe("e");
+  });
+  it("isIsomorphic", () => {
+    expect(isIsomorphic("egg", "add")).toBe(true);
+    expect(isIsomorphic("foo", "bar")).toBe(false);
+    expect(isIsomorphic("paper", "title")).toBe(true);
+    expect(isIsomorphic("badc", "baba")).toBe(false);
   });
 });
