@@ -15,6 +15,7 @@ import {
   longestCommonPrefix,
   lastWord,
   isIsomorphic,
+  minDistance,
 } from "./algorithms";
 describe("algorithms", () => {
   it("bracketsValidator", () => {
@@ -154,5 +155,10 @@ describe("algorithms", () => {
     expect(isIsomorphic("foo", "bar")).toBe(false);
     expect(isIsomorphic("paper", "title")).toBe(true);
     expect(isIsomorphic("badc", "baba")).toBe(false);
+  });
+  it("minDistance", () => {
+    expect(minDistance("jrok", "trek")).toBe(2);
+    expect(minDistance("horse", "ros")).toBe(3);
+    expect(minDistance("intention", "execution")).toBe(5);
   });
 });
