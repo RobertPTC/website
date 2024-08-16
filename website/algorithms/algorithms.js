@@ -339,3 +339,13 @@ export function isIsomorphic(s, t) {
   }
   return true;
 }
+
+/**
+ * @param {number[]} prices
+ * @return {number}
+ */
+function maxProfit2(prices) {
+  if (prices.length === 2) {
+    return Math.max(prices[0] - prices[0], prices[1] - prices[0]);
+  }
+}

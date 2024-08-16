@@ -53,3 +53,15 @@ function downloadFile(url) {
 }
 
 // downloadFile(url);
+
+function flattenArray(array) {
+  let flattened = [];
+  for (let e of array) {
+    if (typeof e === "number") {
+      flattened.push(e);
+      continue;
+    }
+    flattened = [...flattened, ...flattenArray(e)];
+  }
+  return flattened;
+}
