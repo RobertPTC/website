@@ -16,12 +16,10 @@ const actions = [
   "cooking",
   "jogging",
   "napping",
-  "painting",
+  "studying",
   "praying",
   "programming",
   "reading",
-  "trolling",
-  "writing",
 ];
 
 export function GhostWriter() {
