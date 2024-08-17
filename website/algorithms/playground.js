@@ -35,7 +35,6 @@ function downloadFile(url) {
     })
     .then(
       (stream) => {
-        console.log("RESPONSE");
         return new Response(stream, {
           headers: { "Content-Type": "text/xml" },
         }).text();
@@ -65,3 +64,42 @@ function flattenArray(array) {
   }
   return flattened;
 }
+
+/**
+ * @typedef File
+ * @property {string} path
+ * @property {string} content
+ */
+
+/**
+ *
+ * @param {File[]} files
+ */
+function buildFileTree(files) {
+  let tree = {};
+  files.forEach((f) => {
+    const pathParts = f.path.split("/");
+    let subtree = tree;
+    pathParts.forEach((p, i) => {
+      if (!subtree[p]) {
+        subtree[p] = {};
+      }
+      if (i === pathParts.length - 1) {
+        subtree[p] = f;
+      }
+      subtree = subtree[p];
+    });
+  });
+  console.log("tree ", tree);
+}
+
+const files = [
+  { path: "src/app/(pages)/blog/page.tsx" },
+  { path: "src/app/api/routes.js" },
+  { path: "src/globals.css" },
+  { path: "src/icon.jpg" },
+  { path: "src/app/(pages)/blog/blogs.ts" },
+  { path: "src/app/(pages)/moments-of-being/layout.tsx" },
+];
+
+buildFileTree(files);
