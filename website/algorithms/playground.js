@@ -76,10 +76,9 @@ function flattenArray(array) {
  * @param {File[]} files
  */
 function buildFileTree(files) {
-  let tree = {};
-  files.forEach((f) => {
+  return files.reduce((p, f) => {
     const pathParts = f.path.split("/");
-    let subtree = tree;
+    let subtree = p;
     pathParts.forEach((p, i) => {
       if (!subtree[p]) {
         subtree[p] = {};
@@ -89,8 +88,8 @@ function buildFileTree(files) {
       }
       subtree = subtree[p];
     });
-  });
-  console.log("tree ", tree);
+    return p;
+  }, {});
 }
 
 const files = [
