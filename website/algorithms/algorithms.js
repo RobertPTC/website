@@ -378,3 +378,15 @@ export function minDistance(word1, word2) {
   }
   return matrix[word1.length][word2.length];
 }
+
+/**
+ *
+ * @param {string} s
+ * @returns boolean
+ */
+
+export function isPalindrome(s) {
+  if (!s) return true;
+  if (s[0] !== s[s.length - 1]) return false;
+  return isPalindrome(s.slice(1, s.length - 1));
+}

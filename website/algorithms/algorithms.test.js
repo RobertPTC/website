@@ -16,6 +16,7 @@ import {
   lastWord,
   isIsomorphic,
   minDistance,
+  isPalindrome,
 } from "./algorithms";
 describe("algorithms", () => {
   it("bracketsValidator", () => {
@@ -160,5 +161,10 @@ describe("algorithms", () => {
     expect(minDistance("jrok", "trek")).toBe(2);
     expect(minDistance("horse", "ros")).toBe(3);
     expect(minDistance("intention", "execution")).toBe(5);
+  });
+  it("isPalindrome", () => {
+    expect(isPalindrome("racecar")).toBe(true);
+    expect(isPalindrome("cool")).toBe(false);
+    expect(isPalindrome("amanaplanacanalpanama")).toBe(true);
   });
 });
