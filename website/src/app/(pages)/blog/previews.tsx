@@ -69,15 +69,16 @@ function buildDirectoryDOM(graph: FileTreeNode[]) {
     });
     return rootNode;
   }
-  return document.createElement("div");
+  return null;
 }
 
 export default function BlogPreviews() {
+  const fileTreeNode = buildDirectoryDOM(buildFileTree(paths));
   return (
     <>
       <div
         dangerouslySetInnerHTML={{
-          __html: buildDirectoryDOM(buildFileTree(paths)).innerHTML,
+          __html: fileTreeNode ? fileTreeNode.innerHTML : "",
         }}
       />
       <Grid container>
