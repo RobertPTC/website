@@ -264,6 +264,18 @@ export function maxProfit(prices) {
  */
 export function hIndex(citations) {
   const l = citations.length;
+  let citationCount = [];
+  for (let i = 0; i < l; i++) {
+    const citation = citations[i];
+    for (let j = 0; j < citation; j++) {
+      const element = citationCount[j];
+      if (!element) {
+        citationCount[j] = 0;
+      }
+      citationCount[j] += 1;
+    }
+  }
+  console.log("citationCount ", citationCount);
 }
 
 /**

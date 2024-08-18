@@ -39,23 +39,25 @@ function buildFileTree(files: string[]) {
 }
 
 function h(root: HTMLElement, node: FileTreeNode) {
-  if (!node.children.length) {
-    const label = document.createElement("a");
-    label.setAttribute("data-path", node.path);
-    label.classList.add("leaf");
+  if (typeof window !== "undefined") {
+    if (!node.children.length) {
+      const label = document.createElement("a");
+      label.setAttribute("data-path", node.path);
+      label.classList.add("leaf");
+      label.innerText = node.label;
+      root.append(label);
+      return;
+    }
+    let label = document.createElement("h2");
     label.innerText = node.label;
+    label.classList.add("directory");
+    let container = document.createElement("div");
     root.append(label);
-    return;
+    root.append(container);
+    node.children.forEach((c) => {
+      h(container, c);
+    });
   }
-  let label = document.createElement("h2");
-  label.innerText = node.label;
-  label.classList.add("directory");
-  let container = document.createElement("div");
-  root.append(label);
-  root.append(container);
-  node.children.forEach((c) => {
-    h(container, c);
-  });
 }
 
 function buildDirectoryDOM(graph: FileTreeNode[]) {
