@@ -275,7 +275,6 @@ export function hIndex(citations) {
       citationCount[j] += 1;
     }
   }
-  let maxNumberOfCitations = 0;
   let maxCitation = 0;
   for (let i = 0; i < citationCount.length; i++) {
     const numberOfCitations = citationCount[i];
