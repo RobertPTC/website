@@ -102,6 +102,10 @@ a {
   overflow-x: clip;
 }
 
+.hide-directory {
+  visibility: hidden;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

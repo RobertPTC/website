@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import {
   Box,
   Card,
@@ -20,6 +22,7 @@ type FileTreeNode = {
 var paths = [
   "engineering/building-the-google-timer.post",
   "engineering/building-the-blog-file-directory.post",
+  "engineering/career/ok.post",
 ];
 
 function buildFileTree(files: string[]) {
@@ -41,7 +44,7 @@ function buildFileTree(files: string[]) {
 function h(root: HTMLElement, node: FileTreeNode) {
   if (typeof window !== "undefined") {
     if (!node.children.length) {
-      const label = document.createElement("a");
+      const label = document.createElement("button");
       label.setAttribute("data-path", node.path);
       label.classList.add("leaf");
       label.innerText = node.label;
@@ -52,6 +55,7 @@ function h(root: HTMLElement, node: FileTreeNode) {
     label.innerText = node.label;
     label.classList.add("directory");
     let container = document.createElement("div");
+    container.setAttribute("data-directory", node.label);
     root.append(label);
     root.append(container);
     node.children.forEach((c) => {
@@ -73,10 +77,30 @@ function buildDirectoryDOM(graph: FileTreeNode[]) {
 }
 
 export default function BlogPreviews() {
-  const fileTreeNode = buildDirectoryDOM(buildFileTree(paths));
+  const [fileTreeNode, setFileTreeNode] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    const fileTreeNode = buildDirectoryDOM(buildFileTree(paths));
+    setFileTreeNode(fileTreeNode);
+  }, []);
+  useEffect(() => {
+    if (fileTreeNode) {
+      const directoryNodes = document.getElementsByClassName("directory");
+      Array.from(directoryNodes).forEach((node) => {
+        node.addEventListener("click", () => {
+          const sibling = node.nextElementSibling;
+          if (sibling) {
+            sibling.classList.toggle("hide-directory");
+            console.log("classList ", sibling.classList);
+          }
+        });
+      });
+      console.log("directoryNodes ", directoryNodes);
+    }
+  }, [fileTreeNode]);
   return (
     <>
       <div
+        data-blog="root"
         dangerouslySetInnerHTML={{
           __html: fileTreeNode ? fileTreeNode.innerHTML : "",
         }}
