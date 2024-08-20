@@ -102,8 +102,16 @@ a {
   overflow-x: clip;
 }
 
-.hide-directory {
+.directory-closed {
   visibility: hidden;
+}
+
+.directory, .leaf {
+  display: block;
+}
+
+.directory ~ div {
+  margin-left: 10px;
 }
 
 @media (prefers-color-scheme: dark) {

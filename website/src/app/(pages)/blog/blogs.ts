@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export type Tags = "Application Development";
 
 export type BlogPreview = {
@@ -5,11 +7,6 @@ export type BlogPreview = {
   date: string;
   previewText: string;
   imgURL: string;
-};
-
-export type Blog = {
-  html: string;
-  tags: Tags[];
 };
 
 export const blogPreviews: BlogPreview[] = [

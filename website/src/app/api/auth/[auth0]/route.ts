@@ -7,19 +7,24 @@ async function afterCallback(
   session: Session,
   state: { [key: string]: any } | undefined
 ): Promise<Session | undefined> {
-  const sql = postgres(process.env.DB_URI || "", {
-    password: process.env.DB_PASSWORD,
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  });
-  const journalist =
-    await sql`SELECT count(1) > 0 FROM journalist WHERE email = ${session.user.email};`;
-  if (journalist[0]["?column?"]) {
+  try {
+    const sql = postgres(process.env.DB_URI || "", {
+      password: process.env.DB_PASSWORD,
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    });
+    const journalist =
+      await sql`SELECT count(1) > 0 FROM journalist WHERE email = ${session.user.email};`;
+    if (journalist[0]["?column?"]) {
+      return session;
+    }
+    await sql`INSERT INTO journalist ${sql({ email: session.user.email })};`;
+    return session;
+  } catch (error) {
+    console.error("afterCallbackError ", error);
     return session;
   }
-  await sql`INSERT INTO journalist ${sql({ email: session.user.email })};`;
-  return session;
 }
 
 export const GET = handleAuth({
