@@ -12,7 +12,7 @@ type FileTreeNode = {
 const paths = [
   "engineering/website/building-the-google-timer.post",
   "engineering/website/building-the-blog-file-directory.post",
-  "engineering/algorithms/hIndex.post",
+  "engineering/systems/prayer-meeting.post",
 ];
 
 function buildFileTree(files: string[]) {
