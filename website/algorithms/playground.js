@@ -102,4 +102,14 @@ const files = [
   { path: "src/app/(pages)/moments-of-being/layout.tsx" },
 ];
 
+const words = ["a", "b", "c", "d"];
+let wordsArray = [];
+let wordsArrayRef = wordsArray;
+words.forEach((w) => {
+  wordsArrayRef[0] = w;
+  wordsArrayRef[1] = [];
+  wordsArrayRef = wordsArrayRef[1];
+});
+console.log("wordsArray ", JSON.stringify(wordsArray));
+
 buildFileTree(files);

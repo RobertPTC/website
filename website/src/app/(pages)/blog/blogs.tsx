@@ -18,9 +18,9 @@ export const blogPosts: { [K in PostNames]: () => ReactNode } = {
     <>Building the Blog File Directory Component</>
   ),
   "building-the-google-timer.post": () => (
-    <>Building the Blog File Directory Component</>
+    <>Building the Google Timer Component</>
   ),
-  "prayer-meeting.post": () => <>Building the Blog File Directory Component</>,
+  "prayer-meeting.post": () => <>Learning System Design from Prayer Meeting</>,
 };
 
 // export const blogPreviews: BlogPreview[] = [
