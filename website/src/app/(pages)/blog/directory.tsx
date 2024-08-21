@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type FileTreeNode = {
@@ -65,13 +66,9 @@ function buildDirectoryDOM(graph: FileTreeNode[]) {
   return null;
 }
 
-export default function Directory({
-  onPostClick,
-}: {
-  onPostClick: (postName: string) => void;
-}) {
+export default function Directory() {
   const [fileTreeNode, setFileTreeNode] = useState<HTMLElement | null>(null);
-
+  const router = useRouter();
   useEffect(() => {
     const fileTreeNode = buildDirectoryDOM(buildFileTree(paths));
     setFileTreeNode(fileTreeNode);
@@ -95,13 +92,13 @@ export default function Directory({
         });
       };
     }
-  }, [fileTreeNode, onPostClick]);
+  }, [fileTreeNode]);
 
   useEffect(() => {
     function postOnClick(this: HTMLElement) {
       const post = this.dataset.path;
       if (post) {
-        onPostClick(post);
+        router.push(`/blog/${post}`);
       }
     }
     if (fileTreeNode) {
@@ -115,7 +112,7 @@ export default function Directory({
         });
       };
     }
-  }, [fileTreeNode, onPostClick]);
+  }, [fileTreeNode]);
 
   return (
     <div
