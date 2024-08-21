@@ -1,7 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+import { useRouter } from "next/navigation";
 
 type FileTreeNode = {
   label: string;
@@ -112,7 +113,7 @@ export default function Directory() {
         });
       };
     }
-  }, [fileTreeNode]);
+  }, [fileTreeNode, router]);
 
   return (
     <div

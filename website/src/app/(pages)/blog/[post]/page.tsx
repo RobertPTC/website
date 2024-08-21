@@ -2,11 +2,10 @@ import { Grid } from "@mui/material";
 
 import MainLayoutWithPadding from "app/components/main-layout-with-padding";
 
-import Directory from "../directory";
 import { blogPosts, PostNames } from "../blogs";
+import Directory from "../directory";
 
 export default function Post({ params }: { params: { post: PostNames } }) {
-  console.log("params.post ", params.post);
   const Component = blogPosts[params.post];
   return (
     <MainLayoutWithPadding>
