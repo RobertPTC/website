@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+
 import { BuildingTheGoogleTimer } from "./building-the-google-timer";
 
 export type Blog = {
@@ -25,5 +26,8 @@ export const blogPosts: { [K in PostNames]: () => ReactNode } = {
 export const blogStyles = {
   h2: {
     fontSize: "2rem",
+  },
+  h3: {
+    fontSize: "1.5rem",
   },
 } as const;

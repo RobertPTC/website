@@ -35,6 +35,9 @@ export default function Intentions() {
     );
     const worker = new Worker("/pomodoro-webworker.js");
     setWorker(worker);
+    return () => {
+      worker.terminate();
+    };
   }, []);
   if (!intentions && loaded)
     return (

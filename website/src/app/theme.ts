@@ -87,6 +87,7 @@ const theme = createTheme({
     },
     allVariants: {
       fontFamily: "var(--roboto-font)",
+      color: "rgb(var(--foreground-rgb))",
     },
   },
 });
