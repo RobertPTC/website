@@ -26,11 +26,11 @@ export function rollup(pomodoros: Pomodoro[], date: string): MonthRect[] {
   }));
 }
 
-function mapFnFactory(
+function makeBarsOutput(
   pomodorosForDates: PomodorosForDate,
   allLabels: { [key: string]: string }
 ) {
-  return ([timeUnit, pomodoros]: [string, PomodorosForHour]) => {
+  const mapFn = ([timeUnit, pomodoros]: [string, PomodorosForHour]) => {
     if (!pomodoros.length) return { timeUnit };
     const rects = rollup(pomodoros, timeUnit);
     const dateIndex = index(
@@ -58,6 +58,8 @@ function mapFnFactory(
       timeUnit,
     };
   };
+  const bars = Object.entries(pomodorosForDates).map(mapFn);
+  return { bars, allLabels: Object.keys(allLabels) };
 }
 
 export function makeMonthBars(d: PomodorosForMonth) {
@@ -71,17 +73,13 @@ export function makeMonthBars(d: PomodorosForMonth) {
       pomodorosForDates[date] = newPomodorosForHour;
     });
   });
-  const mapFn = mapFnFactory(pomodorosForDates, allLabels);
-  const bars = Object.entries(pomodorosForDates).map(mapFn);
-  return { bars, allLabels: Object.keys(allLabels) };
+  return makeBarsOutput(pomodorosForDates, allLabels);
 }
 
 export function makeDateBars(d: PomodorosForDate) {
   const allLabels: { [key: string]: string } = {};
   const pomodorosForDates = { ...d };
-  const mapFn = mapFnFactory(pomodorosForDates, allLabels);
-  const bars = Object.entries(pomodorosForDates).map(mapFn);
-  return { bars, allLabels: Object.keys(allLabels) };
+  return makeBarsOutput(pomodorosForDates, allLabels);
 }
 
 export const svgHeight = 360;
