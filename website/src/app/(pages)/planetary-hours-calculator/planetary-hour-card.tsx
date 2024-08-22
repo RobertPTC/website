@@ -23,15 +23,19 @@ export default function PlanetaryHourCard({ h }: { h: PlanetaryHour }) {
       >
         <Box sx={{ mb: 1 }}>{h.Icon()}</Box>
         <Box>
-          <Typography fontSize="1.2rem">{h.ruler}</Typography>
+          <Typography fontSize="1.2rem" color={useWhite ? "white" : "inherit"}>
+            {h.ruler}
+          </Typography>
         </Box>
         <Box mb={1}>
-          <Typography>
+          <Typography color={useWhite ? "white" : "inherit"}>
             {h.hourStart.format(hourFormat)} – {h.hourEnd.format(hourFormat)}
           </Typography>
         </Box>
         <Box>
-          <Typography>{h.action}</Typography>
+          <Typography color={useWhite ? "white" : "inherit"}>
+            {h.action}
+          </Typography>
         </Box>
       </CardContent>
     </Card>

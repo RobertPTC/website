@@ -23,7 +23,7 @@ export function Nav() {
           display: ["block", "block", "none", "none"],
         }}
       >
-        <Accordion>
+        <Accordion sx={{ background: "rgb(var(--background-start-rgb))" }}>
           <AccordionSummary
             expandIcon={<ExpandMore />}
             aria-controls="panel1-content"

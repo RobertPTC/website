@@ -60,7 +60,6 @@ export function GhostWriter() {
           },
         },
         display: "flex",
-        px: 3,
       }}
     >
       {actions[actionsCounter]

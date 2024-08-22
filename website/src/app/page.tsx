@@ -19,22 +19,23 @@ export default function Home() {
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
-          height: "calc(100vh - 70px)",
+          height: "calc(100vh - 60px)",
         }}
       >
-        <Typography
-          variant="h1"
-          sx={{ color: "white", fontSize: "2.5rem", p: 3 }}
-        >
-          Robert P Cunningham
-        </Typography>
-        <Typography
-          variant="body1"
-          sx={{ color: "white", fontSize: "2.5rem", px: 3 }}
-        >
-          is
-        </Typography>
-        <GhostWriter />
+        <Box sx={{ p: 3 }}>
+          <Typography variant="h1" sx={{ color: "white", fontSize: "2.5rem" }}>
+            Robert P Cunningham
+          </Typography>
+          <Typography
+            variant="body1"
+            sx={{ color: "white", fontSize: "2.5rem", mb: 1 }}
+          >
+            is
+          </Typography>
+          <Box sx={{ mb: 2 }}>
+            <GhostWriter />
+          </Box>
+        </Box>
         <Typography>
           <Box
             component="a"

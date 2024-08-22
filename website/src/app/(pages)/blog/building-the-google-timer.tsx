@@ -1,11 +1,13 @@
 "use client";
-import { CodeBlock, a11yLight } from "react-code-blocks";
+import { CodeBlock, a11yLight, a11yDark } from "react-code-blocks";
 
 import { Box, Typography } from "@mui/material";
 
 import { blogStyles } from "./blogs";
+import useIsDarkMode from "./use-is-dark-mode";
 
 export function BuildingTheGoogleTimer() {
+  const isDarkMode = useIsDarkMode();
   return (
     <Box component="article">
       <Typography variant="h1" sx={{ fontSize: "4rem" }}>
@@ -15,7 +17,7 @@ export function BuildingTheGoogleTimer() {
         <Typography variant="h2" sx={blogStyles.h2}>
           Motivation
         </Typography>
-        <Typography variant="body1">
+        <Typography>
           Time is an elusive beast, and as such must be tracked closely. Toward
           what ends does one spend the minutes of one&apos;s day? Perhaps you
           too have wondered where the day goes. To help us all out, I decided to
@@ -25,7 +27,7 @@ export function BuildingTheGoogleTimer() {
           build this &ldquo;improved&rdquo; timer application, I leveraged a few
           interesting technologies, namely, Web Workers and Local Storage.
         </Typography>
-        <Typography variant="body1">
+        <Typography>
           Concurrent with the question of how to track time is the question of
           how to show time that is tracked. To create a dashboard that would
           allow me to see easily how much time I have spent on which projects, I
@@ -37,7 +39,7 @@ export function BuildingTheGoogleTimer() {
         <Typography variant="h2" sx={blogStyles.h2}>
           Web Workers
         </Typography>
-        <Typography variant="body1">
+        <Typography>
           One might be tempted simply to handle the timer functionality with a
           call to <Box component="code">setTimeout</Box> in the browser, but
           that wouldn&apos;t work. What would work, however, is to use{" "}
@@ -53,7 +55,7 @@ export function BuildingTheGoogleTimer() {
           YouTube, or write articles about building applications. Handily for
           us, there are Web Workers!
         </Typography>
-        <Typography variant="body1">
+        <Typography>
           A Web Worker is a great solution to this problem because, to quote the
           documentation over at MDN, &ldquo;Web Workers are a simple means for
           web content to run scripts in background threads.&rdquo; A Web Worker
@@ -67,7 +69,7 @@ export function BuildingTheGoogleTimer() {
           <Typography variant="h3" sx={blogStyles.h3}>
             Step 1: Create a Web Worker file
           </Typography>
-          <Typography variant="body1">
+          <Typography>
             We will pass the path to this file to our Web Worker instance in our
             React component. Put this file in whichever directory the public
             assets for your website are served.
@@ -76,15 +78,14 @@ export function BuildingTheGoogleTimer() {
             customStyle={{
               backgroundColor: "var(--background-start-rgb)",
               fontFamily: "monospace",
-              padding: "1rem",
               border: "1px solid",
               borderColor: "var(--foreground-rgb)",
+              padding: "1rem",
             }}
             language="typescript"
-            theme={a11yLight}
+            theme={isDarkMode ? a11yDark : a11yLight}
             showLineNumbers={false}
-            text={`
-// @type {Object.<string, NodeJS.Timeout>}
+            text={`// @type {Object.<string, NodeJS.Timeout>}
 let intentionIntervalIDs = {};
 
 //@type {Object.<string, number>}
@@ -126,15 +127,14 @@ function onMessage(e) {
       break;
   }
 }
-self.onmessage = onMessage;
-`}
+self.onmessage = onMessage;`}
           />
         </Box>
         <Box>
           <Typography variant="h3" sx={blogStyles.h3}>
             Step 2: Set up a Web Worker in a React Component
           </Typography>
-          <Typography variant="body1">
+          <Typography>
             In your React component, you will need to set up a piece of state to
             hold a reference to the Web Worker instance, and an effect to load
             the script file.
@@ -143,37 +143,35 @@ self.onmessage = onMessage;
             customStyle={{
               backgroundColor: "var(--background-start-rgb)",
               fontFamily: "monospace",
-              padding: "1rem",
               border: "1px solid",
               borderColor: "var(--foreground-rgb)",
+              padding: "1rem",
             }}
             language="typescript"
-            theme={a11yLight}
+            theme={isDarkMode ? a11yDark : a11yLight}
             showLineNumbers={false}
-            text={`
-    // State to hold reference to Web Worker            
-    const [worker, setWorker] = useState(null);
+            text={`// State to hold reference to Web Worker            
+const [worker, setWorker] = useState(null);
 
-    useEffect(() => {
-    // Create a new Web Worker
-    const myWorker = new Worker('worker.js');
+useEffect(() => {
+// Create a new Web Worker
+const myWorker = new Worker('worker.js');
 
-    // Save the worker instance to state
-    setWorker(myWorker);
+// Save the worker instance to state
+setWorker(myWorker);
 
-    // Clean up the worker when the component unmounts
-    return () => {
-      myWorker.terminate();
-    };
-  }, []); // Run this effect only once when the component mounts
-                `}
+// Clean up the worker when the component unmounts
+return () => {
+  myWorker.terminate();
+};
+}, []); // Run this effect only once when the component mounts`}
           />
         </Box>
         <Box>
           <Typography variant="h3" sx={blogStyles.h3}>
             Step 3: Listen for Events on the Web Worker
           </Typography>
-          <Typography variant="body1">
+          <Typography>
             How you choose to attach listeners to your Web Worker instance will
             vary according to the implementation details of your app. In this
             case, because each timer handles its own duration, I attach a
@@ -183,15 +181,14 @@ self.onmessage = onMessage;
             customStyle={{
               backgroundColor: "var(--background-start-rgb)",
               fontFamily: "monospace",
-              padding: "1rem",
               border: "1px solid",
               borderColor: "var(--foreground-rgb)",
+              padding: "1rem",
             }}
             language="typescript"
-            theme={a11yLight}
+            theme={isDarkMode ? a11yDark : a11yLight}
             showLineNumbers={false}
-            text={`
-   useEffect(() => {
+            text={`useEffect(() => {
     function onWorkerMessage(e: MessageEvent) {
     // When the timer card receives a message from the Web Worker, 
     // it checks to see if the intention in the data matches it's intention, and if it does, updates its duration state.
@@ -203,12 +200,11 @@ self.onmessage = onMessage;
     return () => {
       worker.removeEventListener("message", onWorkerMessage);
     };
-  }, [worker, intention]);
-                `}
+  }, [worker, intention]);`}
           />
         </Box>
         <Box>
-          <Typography variant="body1">
+          <Typography>
             So that&apos;s it for Web Worker! Three cheers for this versatile
             class. Although this example used a Dedicated worker (a worker only
             a single script utilizes), there are also Shared workers, which can
@@ -221,7 +217,7 @@ self.onmessage = onMessage;
         <Typography variant="h2" sx={blogStyles.h2}>
           Time Intervals
         </Typography>
-        <Typography variant="body1">
+        <Typography>
           Since a pomodoro duration could span multiple hours, and we want to
           break down how much time is spent per hour on a project, the need for
           an algorithm arose to handle this split. So, whenever an interval is
@@ -233,15 +229,14 @@ self.onmessage = onMessage;
           customStyle={{
             backgroundColor: "var(--background-start-rgb)",
             fontFamily: "monospace",
-            padding: "1rem",
             border: "1px solid",
             borderColor: "var(--foreground-rgb)",
+            padding: "1rem",
           }}
           language="typescript"
-          theme={a11yLight}
+          theme={isDarkMode ? a11yDark : a11yLight}
           showLineNumbers={false}
-          text={`
-function determinePomodoroTimeSegments(
+          text={`function determinePomodoroTimeSegments(
   seconds: number,
   startDate: Dayjs,
   intention: string
@@ -299,15 +294,14 @@ function determinePomodoroTimeSegments(
     },
   ];
   return p;
-}
-                `}
+}`}
         />
       </Box>
-      <Box component="section">
+      <Box component="article" id="schematic">
         <Typography variant="h2" sx={blogStyles.h2}>
           A Schematic
         </Typography>
-        <Typography variant="body1">
+        <Typography>
           Here, you can see how a person might press a button in the browser to
           communicate the state of the timer (&ldquo;start&rdquo;,
           &ldquo;stop&rdquo;, or &ldquo;reset&rdquo;) and how long the timer
@@ -322,13 +316,49 @@ function determinePomodoroTimeSegments(
           establish a new <Box component="code">setInterval</Box> every time the
           Start button is pressed.
         </Typography>
-        <Box component="img" src="/pomodoro-schematic.svg" />
+        {!isDarkMode && <Box component="img" src="/pomodoro-schematic.svg" />}
+        {isDarkMode && (
+          <Box component="img" src="/pomodoro-schematic-dark.svg" />
+        )}
+      </Box>
+      <Box component="article" id="alert">
+        <Typography variant="h2" sx={blogStyles.h2}>
+          Alert
+        </Typography>
+        <Typography>
+          Although I won&apos;t go into the Audio API, which is super fun, there
+          is something worth noting that I learned while putting this project
+          together: In Safari, audio sources must be loaded as a response to
+          user interaction. So, I created a function to do that when a duration
+          is submitted for a given intention:
+        </Typography>
+        <CodeBlock
+          customStyle={{
+            backgroundColor: "var(--background-start-rgb)",
+            fontFamily: "monospace",
+            border: "1px solid",
+            borderColor: "var(--foreground-rgb)",
+            padding: "1rem",
+          }}
+          language="typescript"
+          theme={isDarkMode ? a11yDark : a11yLight}
+          showLineNumbers={false}
+          text={`function setAudioSource() {
+  if (audioRef.current) {
+    audioRef.current.src = "time-up.m4a";
+  }
+}`}
+        />
       </Box>
 
-      <Box component="article">Alert</Box>
-      <Box component="section">
-        Data Visulization
-        <Box component="article">d3</Box>
+      <Box component="article">
+        <Typography variant="h2" sx={blogStyles.h2}>
+          Data Visualization
+        </Typography>
+        <Typography>
+          To give the data an informative and handsome form, I decided to use a
+          stacked bar chart.
+        </Typography>
       </Box>
     </Box>
   );

@@ -1,5 +1,4 @@
 const fs = require("node:fs");
-const { type } = require("node:os");
 
 const url = "";
 const url1 = "https://google.com";
