@@ -371,7 +371,134 @@ return () => {
           domain and range, which are used to scale data points to the view.
         </Typography>
         <Box>
-          <Typography variant="h3">Step 1: </Typography>
+          <Typography variant="h3" sx={blogStyles.h3}>
+            Step 1: Create the Data structure with d3
+          </Typography>
+          <Typography>
+            In this code block, we take our data, an array of Pomodoro objects
+            which look like{" "}
+            <Box component="code">
+              {"{"}label: string, id: string, seconds: number{"}"}
+            </Box>{" "}
+            (label is the name of the timer). Then, we throw it up in the air
+            with JS and it comes down with a nice array of objects we can map
+            over in React to create our bar chart.
+          </Typography>
+          <CodeBlock
+            customStyle={{
+              backgroundColor: "var(--background-start-rgb)",
+              fontFamily: "monospace",
+              border: "1px solid",
+              borderColor: "var(--foreground-rgb)",
+              padding: "1rem",
+            }}
+            language="typescript"
+            theme={isDarkMode ? a11yDark : a11yLight}
+            showLineNumbers={false}
+            text={`function makeBarsOutput(
+  // PomodorosForDate is a map of date to Pomodoro, which is an object with properties id, seconds (length of interval), and intention
+  pomodorosForDates: PomodorosForDate,
+  allLabels: { [key: string]: string }
+) {
+  const mapFn = ([timeUnit, pomodoros]: [string, PomodorosForHour]) => {
+    if (!pomodoros.length) return { timeUnit };
+    // Helper function to add up all seconds associated with an intention
+    const rects = rollup(pomodoros, timeUnit);
+    // Index the data based on date and intention - this way d3 knows how to build the pieces of the stacked bar
+    const dateIndex = index(
+      rects,
+      (r) => r.date,
+      (r) => r.label
+    );
+    // Make a set of labels
+    const labels = union(
+      pomodorosForDates[timeUnit].map((d) => {
+        allLabels[d.label] = d.label;
+        return d.label;
+      })
+    );
+    // d3 magic function that builds the pieces of the stacked bar
+    const series = stack()
+      .keys(labels)
+      // @ts-ignore
+      .value(([, group], key) => group.get(key).seconds)(dateIndex);
+    const barHeight = series?.[series.length - 1]?.[0]?.[1];
+
+    return {
+      rects,
+      dateIndex,
+      series,
+      barHeight,
+      timeUnit,
+    };
+  };
+  const bars = Object.entries(pomodorosForDates).map(mapFn);
+  return { bars, allLabels: Object.keys(allLabels) };
+}`}
+          />
+        </Box>
+        <Box>
+          <Typography variant="h3" sx={blogStyles.h3}>
+            Step 2: Render in React
+          </Typography>
+          <Typography>
+            The next step is pretty simple, but it does require some knowledge
+            of SVG elements and how they are styled. Otherwise, there&apos;s
+            nothing more than mapping over the objects we produced in the first
+            step!
+          </Typography>
+          <CodeBlock
+            customStyle={{
+              backgroundColor: "var(--background-start-rgb)",
+              fontFamily: "monospace",
+              border: "1px solid",
+              borderColor: "var(--foreground-rgb)",
+              padding: "1rem",
+            }}
+            language="typescript"
+            theme={isDarkMode ? a11yDark : a11yLight}
+            showLineNumbers={false}
+            text={`// imagine this map is contained in an SVG element 
+{bars.bars.map((b, i) => {
+  if (!b.barHeight) return <Box component="g" key={b.timeUnit} />;
+  const { series, timeUnit } = b;
+  const barHeight = series[series.length - 1][0][1];
+  return (
+    <Box
+      component="g"
+      key={timeUnit}
+      transform={"translate(x(Number(timeUnit))}, 
+        svgHeight - y(barHeight) - marginBottom
+      })"}
+    >
+      {series.map((d, i) => {
+        const element = d[0];
+        return (
+          <Tooltip
+            key={d.key}
+            title={
+              <>
+                {d.key} {renderActiveTimer(element[1] - element[0])}
+              </>
+            }
+            placement="right"
+            arrow
+          >
+            <Box
+              component="rect"
+              height={y(element[1]) - y(element[0])}px
+              y={y(element[0])}
+              width={bands.bandwidth()}
+              id={d.key}
+              fill={colorInterpolator(d.key) as string}
+            />
+          </Tooltip>
+        );
+      })}
+    </Box>
+  );
+})}`}
+          />
         </Box>
       </Box>
     </Box>

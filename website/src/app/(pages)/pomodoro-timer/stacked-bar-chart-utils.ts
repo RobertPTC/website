@@ -27,23 +27,28 @@ export function rollup(pomodoros: Pomodoro[], date: string): MonthRect[] {
 }
 
 function makeBarsOutput(
+  // PomodorosForDate is a map of date to Pomodoro, which is an object with properties id, seconds (length of interval), and intention
   pomodorosForDates: PomodorosForDate,
   allLabels: { [key: string]: string }
 ) {
   const mapFn = ([timeUnit, pomodoros]: [string, PomodorosForHour]) => {
     if (!pomodoros.length) return { timeUnit };
+    // Helper function to add up all seconds associated with an intention
     const rects = rollup(pomodoros, timeUnit);
+    // Index the data based on date and intention - this way d3 knows how to build the pieces of the stacked bar
     const dateIndex = index(
       rects,
       (r) => r.date,
       (r) => r.label
     );
+    // Make a set of labels
     const labels = union(
       pomodorosForDates[timeUnit].map((d) => {
         allLabels[d.label] = d.label;
         return d.label;
       })
     );
+    // d3 magic function that builds the pieces of the stacked bar
     const series = stack()
       .keys(labels)
       // @ts-ignore
