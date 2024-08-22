@@ -1,14 +1,13 @@
 import { index, union } from "d3-array";
 import { stack } from "d3-shape";
-import { Dayjs } from "dayjs";
 
-import Storage, {
+import {
   PomodorosForMonth,
   PomodorosForDate,
-  PomodorosForMonthRequest,
+  PomodorosForHour,
 } from "app/storage";
 
-import { Pomodoro, MonthRect, GetPomodorosForTimeWrapper } from "./types";
+import { Pomodoro, MonthRect } from "./types";
 
 export function rollup(pomodoros: Pomodoro[], date: string): MonthRect[] {
   const labelsToSeconds: { [key: string]: number } = {};
@@ -27,83 +26,61 @@ export function rollup(pomodoros: Pomodoro[], date: string): MonthRect[] {
   }));
 }
 
+function mapFnFactory(
+  pomodorosForDates: PomodorosForDate,
+  allLabels: { [key: string]: string }
+) {
+  return ([timeUnit, pomodoros]: [string, PomodorosForHour]) => {
+    if (!pomodoros.length) return { timeUnit };
+    const rects = rollup(pomodoros, timeUnit);
+    const dateIndex = index(
+      rects,
+      (r) => r.date,
+      (r) => r.label
+    );
+    const labels = union(
+      pomodorosForDates[timeUnit].map((d) => {
+        allLabels[d.label] = d.label;
+        return d.label;
+      })
+    );
+    const series = stack()
+      .keys(labels)
+      // @ts-ignore
+      .value(([, group], key) => group.get(key).seconds)(dateIndex);
+    const barHeight = series?.[series.length - 1]?.[0]?.[1];
+
+    return {
+      rects,
+      dateIndex,
+      series,
+      barHeight,
+      timeUnit,
+    };
+  };
+}
+
 export function makeMonthBars(d: PomodorosForMonth) {
   const allLabels: { [key: string]: string } = {};
   let pomodorosForDates: PomodorosForDate = {};
   Object.entries(d).forEach(([date, hourPomodoros]) => {
-    Object.entries(hourPomodoros).forEach(([hour, pomodorosForHour]) => {
+    Object.entries(hourPomodoros).forEach(([_, pomodorosForHour]) => {
       const currentPomodorosForHour = pomodorosForDates[date] || [];
       const newPomodorosForHour =
         currentPomodorosForHour.concat(pomodorosForHour);
       pomodorosForDates[date] = newPomodorosForHour;
     });
   });
-  const bars = Object.entries(pomodorosForDates).map(
-    ([timeUnit, pomodoros]) => {
-      if (!pomodoros.length) return { timeUnit };
-      const rects = rollup(pomodoros, timeUnit);
-      const dateIndex = index(
-        rects,
-        (r) => r.date,
-        (r) => r.label
-      );
-      const labels = union(
-        pomodorosForDates[timeUnit].map((d) => {
-          allLabels[d.label] = d.label;
-          return d.label;
-        })
-      );
-      const series = stack()
-        .keys(labels)
-        // @ts-ignore
-        .value(([, group], key) => group.get(key).seconds)(dateIndex);
-      const barHeight = series?.[series.length - 1]?.[0]?.[1];
-
-      return {
-        rects,
-        dateIndex,
-        series,
-        barHeight,
-        timeUnit,
-      };
-    }
-  );
+  const mapFn = mapFnFactory(pomodorosForDates, allLabels);
+  const bars = Object.entries(pomodorosForDates).map(mapFn);
   return { bars, allLabels: Object.keys(allLabels) };
 }
 
 export function makeDateBars(d: PomodorosForDate) {
   const allLabels: { [key: string]: string } = {};
   const pomodorosForDates = { ...d };
-  const bars = Object.entries(pomodorosForDates).map(
-    ([timeUnit, pomodoros]) => {
-      if (!pomodoros.length) return { timeUnit };
-      const rects = rollup(pomodoros, timeUnit);
-      const dateIndex = index(
-        rects,
-        (r) => r.date,
-        (r) => r.label
-      );
-      const labels = union(
-        pomodorosForDates[timeUnit].map((d) => {
-          allLabels[d.label] = d.label;
-          return d.label;
-        })
-      );
-      const series = stack()
-        .keys(labels)
-        // @ts-ignore
-        .value(([, group], key) => group.get(key).seconds)(dateIndex);
-      const barHeight = series?.[series.length - 1]?.[0]?.[1];
-
-      return {
-        rects,
-        dateIndex,
-        series,
-        barHeight,
-        timeUnit,
-      };
-    }
-  );
+  const mapFn = mapFnFactory(pomodorosForDates, allLabels);
+  const bars = Object.entries(pomodorosForDates).map(mapFn);
   return { bars, allLabels: Object.keys(allLabels) };
 }
 

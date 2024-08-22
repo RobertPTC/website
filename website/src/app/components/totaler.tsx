@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type User = {
   id: number;
@@ -7,7 +7,7 @@ type User = {
 
 export default function Totaler() {
   const [users, setUsers] = useState<User[]>([]);
-  const [inputMap, setInputMap] = useState<{ [key: string]: number }>({});
+  const amountMap = useRef<{ [key: string]: number }>({});
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
@@ -18,12 +18,7 @@ export default function Totaler() {
     }
     fetchUsers();
   }, []);
-  useEffect(() => {
-    const t = Object.values(inputMap).reduce((p, amt) => {
-      return p + amt;
-    }, 0);
-    setTotal(t / 100);
-  }, [inputMap]);
+
   return (
     <>
       {users.map((user) => (
@@ -33,12 +28,12 @@ export default function Totaler() {
             type="number"
             id="user"
             onChange={(e) => {
-              setInputMap((inputMap) => {
-                return {
-                  ...inputMap,
-                  [user.id]: Number(e.target.value) * 100,
-                };
-              });
+              amountMap.current[user.id] = Number(e.target.value) * 100;
+              const t = Object.values(amountMap.current).reduce(
+                (p, curr) => p + curr,
+                0
+              );
+              setTotal(t / 100);
             }}
           />
         </div>

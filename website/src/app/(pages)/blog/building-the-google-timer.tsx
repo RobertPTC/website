@@ -350,15 +350,29 @@ return () => {
 }`}
         />
       </Box>
-
-      <Box component="article">
+      <Box component="article" id="datavisualization">
         <Typography variant="h2" sx={blogStyles.h2}>
           Data Visualization
         </Typography>
         <Typography>
           To give the data an informative and handsome form, I decided to use a
-          stacked bar chart.
+          stacked bar chart. This kind of chart will show the total number of
+          minutes spent per project at whatever level of interval granularity is
+          given. So far, I&apos;ve provided &ldquo;date&rdquo; and
+          &ldquo;month&rdquo; options in the app.
         </Typography>
+        <Typography>
+          As I mentioned in the motivation section, d3 is the library of choice
+          to create the data dashboard. d3 on it&apos;s own provides a way to
+          create elements in the DOM, but that fights against the render process
+          of React; I&apos;ll demonstrate how to use React to handle rendering
+          while letting d3 shine as a data transformer. NB I&apos;m assuming a
+          level of familiarity with d3 such that you understand the concepts of
+          domain and range, which are used to scale data points to the view.
+        </Typography>
+        <Box>
+          <Typography variant="h3">Step 1: </Typography>
+        </Box>
       </Box>
     </Box>
   );
