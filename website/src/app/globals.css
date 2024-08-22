@@ -114,6 +114,28 @@ a {
   margin-left: 10px;
 }
 
+.keyword {
+  color: #aa0d91;
+}
+
+.comment {
+  color: #007400;
+}
+
+.string {
+  color: #c41a16;
+}
+
+.params {
+  color: #5c2699;
+}
+
+.tab {
+  display: inline-block;
+  margin-left: 4em;
+}
+
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

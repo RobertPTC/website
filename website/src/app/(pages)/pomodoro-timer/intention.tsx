@@ -24,10 +24,9 @@ import {
   Typography,
 } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
-import { v4 as uuid } from "uuid";
 
 import { pomodoroDispatch } from "app/dispatch";
-import Storage, { CreatePomodoroRequest } from "app/storage";
+import Storage from "app/storage";
 
 import {
   parseTimerInput,
@@ -292,30 +291,6 @@ export default function Intention({
     }
   };
 
-  const onClickPlayAudio = () => playAudio();
-  const onClickCreatePomodoro = () => {
-    const storage = Storage["localStorage"](localStorage);
-    const time = dayjs();
-    const pomodoro: CreatePomodoroRequest = {
-      uri: "/api/pomodoro",
-      data: {
-        pomodoros: [
-          {
-            label: intention,
-            seconds: 30,
-            id: uuid(),
-            year: 2024,
-            month: 6,
-            date: 4,
-            hour: 4,
-          },
-        ],
-      },
-    };
-    storage.set<CreatePomodoroRequest>(pomodoro).then((v) => {
-      pomodoroDispatch.publish("setPomodoro");
-    });
-  };
   const onClickDeleteIntention: MouseEventHandler<
     HTMLButtonElement
   > = async () => {

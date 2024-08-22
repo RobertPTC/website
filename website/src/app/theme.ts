@@ -83,6 +83,7 @@ const theme = createTheme({
   typography: {
     body1: {
       fontWeight: 300,
+      lineHeight: "1.75rem",
     },
     allVariants: {
       fontFamily: "var(--roboto-font)",

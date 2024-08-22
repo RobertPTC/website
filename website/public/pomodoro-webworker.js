@@ -44,7 +44,7 @@ let intentionIntervalIDs = {};
 let intentionDurations = {};
 
 /**
- * Send a moment via email to a journalist
+ *
  * @function onMessage
  * @param {MessageEvent<SetTimerDuration | StartTimer | StopTimer | ResetTimer>} e
  */

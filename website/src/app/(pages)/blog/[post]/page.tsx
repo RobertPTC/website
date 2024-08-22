@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 
 import MainLayoutWithPadding from "app/components/main-layout-with-padding";
 
@@ -17,7 +17,9 @@ export default function Post({ params }: { params: { post: PostNames } }) {
     <MainLayoutWithPadding>
       <Grid container>
         <Grid item xs={3}>
-          <Directory />
+          <Box sx={{ position: "sticky", top: "60px" }}>
+            <Directory />
+          </Box>
         </Grid>
         <Grid item xs={9}>
           <Component />
