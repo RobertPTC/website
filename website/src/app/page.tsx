@@ -36,7 +36,7 @@ export default function Home() {
             <GhostWriter />
           </Box>
           <Box>
-            <Typography sx={{ fontStyle: "italic" }}>
+            <Typography sx={{ fontStyle: "italic", color: "white" }}>
               Ad maiorem Dei gloriam
             </Typography>
           </Box>
