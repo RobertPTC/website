@@ -309,7 +309,10 @@ export default function Intention({
   return (
     <Card variant="outlined">
       <Box display="flex" alignItems="center" justifyContent="space-between">
-        <CardHeader title={intention} />
+        <CardHeader
+          title={intention}
+          sx={{ ".MuiCardHeader-title": { color: "rgb(50, 50, 50)" } }}
+        />
         <Button
           onClick={onClickDeleteIntention}
           variant="contained"

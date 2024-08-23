@@ -10,11 +10,7 @@ type FileTreeNode = {
   path: string;
 };
 
-const paths = [
-  "engineering/website/building-the-google-timer.post",
-  "engineering/website/building-the-blog-file-directory.post",
-  "engineering/systems/prayer-meeting.post",
-];
+const paths = ["engineering/website/building-the-google-timer.post"];
 
 function buildFileTree(files: string[]) {
   let result: FileTreeNode[] = [];
@@ -79,8 +75,10 @@ export default function Directory() {
     function directoryOnClick(this: HTMLElement) {
       const sibling = this.nextElementSibling;
       if (sibling) {
-        sibling.classList.toggle("directory-closed");
+        sibling.classList.toggle("directory-contents-closed");
       }
+      this.classList.toggle("directory");
+      this.classList.toggle("directory-closed");
     }
     if (fileTreeNode) {
       const directoryNodes = document.getElementsByClassName("directory");

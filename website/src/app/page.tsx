@@ -23,17 +23,22 @@ export default function Home() {
         }}
       >
         <Box sx={{ p: 3 }}>
-          <Typography variant="h1" sx={{ color: "white", fontSize: "2.5rem" }}>
+          <Typography
+            variant="h1"
+            sx={{ color: "white", fontSize: "2.5rem", mb: 2 }}
+          >
             Robert P Cunningham
           </Typography>
-          <Typography
-            variant="body1"
-            sx={{ color: "white", fontSize: "2.5rem", mb: 1 }}
-          >
+          <Typography sx={{ color: "white", fontSize: "2.5rem", mb: 1 }}>
             is
           </Typography>
           <Box sx={{ mb: 2 }}>
             <GhostWriter />
+          </Box>
+          <Box>
+            <Typography sx={{ fontStyle: "italic" }}>
+              Ad maiorem Dei gloriam
+            </Typography>
           </Box>
         </Box>
         <Typography>

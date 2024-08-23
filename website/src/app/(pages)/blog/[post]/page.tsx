@@ -21,8 +21,11 @@ export default function Post({ params }: { params: { post: PostNames } }) {
             <Directory />
           </Box>
         </Grid>
-        <Grid item xs={9}>
+        <Grid item xs={7}>
           <Component />
+        </Grid>
+        <Grid item xs={2}>
+          Index
         </Grid>
       </Grid>
     </MainLayoutWithPadding>

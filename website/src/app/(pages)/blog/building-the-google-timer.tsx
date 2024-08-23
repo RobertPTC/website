@@ -13,6 +13,7 @@ export function BuildingTheGoogleTimer() {
       <Typography variant="h1" sx={{ fontSize: "4rem" }}>
         Building the Google Timer
       </Typography>
+      <Box component="img" src="/timer.jpg" width="100%" />
       <Box component="section" id="motivation">
         <Typography variant="h2" sx={blogStyles.h2}>
           Motivation
@@ -316,9 +317,21 @@ return () => {
           establish a new <Box component="code">setInterval</Box> every time the
           Start button is pressed.
         </Typography>
-        {!isDarkMode && <Box component="img" src="/pomodoro-schematic.svg" />}
+        {!isDarkMode && (
+          <Box
+            component="img"
+            src="/pomodoro-schematic.svg"
+            width="100%"
+            alt="schematic of google timer"
+          />
+        )}
         {isDarkMode && (
-          <Box component="img" src="/pomodoro-schematic-dark.svg" />
+          <Box
+            component="img"
+            src="/pomodoro-schematic-dark.svg"
+            width="100%"
+            alt="schematic of google timer"
+          />
         )}
       </Box>
       <Box component="article" id="alert">
