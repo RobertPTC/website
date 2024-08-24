@@ -126,14 +126,14 @@ export default function Intention({
   }, [activeIntention, worker, intention, activeDuration]);
 
   useEffect(() => {
-    const storage = Requests["localStorage"](localStorage);
+    const requests = Requests["localStorage"](localStorage);
     if (!activeDuration && activeIntention === intention) {
       createPomodoroRequest({
         label: intention,
         duration: duration.current,
         activeDuration: 0,
         pomodoroSpans: pomodoroSpans.current,
-        storage,
+        requests,
         startDate: startDate.current,
       }).then(() => {
         pomodoroSpans.current = [];
@@ -152,7 +152,7 @@ export default function Intention({
         duration: duration.current,
         activeDuration,
         pomodoroSpans: pomodoroSpans.current,
-        storage,
+        requests,
         startDate: startDate.current,
       }).then((res) => {
         pomodoroSpans.current = [...pomodoroSpans.current, res.elapsedTime];

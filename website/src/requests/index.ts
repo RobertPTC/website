@@ -100,7 +100,7 @@ export type GetResponse<T> = Promise<
 
 export type Get = <T extends GetRequests>(r: T) => GetResponse<T>;
 
-interface IRequests {
+export interface IRequests {
   get: Get;
   set<T extends SetRequests>(
     r: T

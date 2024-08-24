@@ -168,7 +168,7 @@ describe("pomodoro functions", () => {
   it("creates pomodoro request ", async () => {
     const duration = 60 * 30;
     const activeDuration = 0;
-    const storage = Requests["localStorage"](mockLocalStorage);
+    const requests = Requests["localStorage"](mockLocalStorage);
     const startDate = dayjs(new Date(2024, 6, 21, 16, 50, 30));
     const pomodoroSpans = [5 * 60, 3 * 60];
     const label = "foo";
@@ -177,7 +177,7 @@ describe("pomodoro functions", () => {
       activeDuration,
       duration,
       pomodoroSpans,
-      storage,
+      requests,
       startDate,
     });
     expect(output.elapsedTime).toEqual(1320);

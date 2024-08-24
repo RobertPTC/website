@@ -1,7 +1,7 @@
 import { Dayjs } from "dayjs";
 import { v4 as uuid } from "uuid";
 
-import { CreatePomodoroRequest, DataStore } from "storage";
+import { CreatePomodoroRequest, IRequests } from "requests";
 
 import { PomodoroInput } from "./types";
 
@@ -149,14 +149,14 @@ export function createPomodoroRequest({
   activeDuration,
   duration,
   pomodoroSpans,
-  storage,
+  requests,
   startDate,
 }: {
   label: string;
   duration: number;
   activeDuration: number;
   pomodoroSpans: number[];
-  storage: DataStore;
+  requests: IRequests;
   startDate: Dayjs;
 }): Promise<{ elapsedTime: number; timeSegments: PomodoroInput[] }> {
   const elapsedTime =
@@ -175,7 +175,7 @@ export function createPomodoroRequest({
       pomodoros: timeSegments,
     },
   };
-  return storage
+  return requests
     .set<CreatePomodoroRequest>(request)
     .then(() => ({ elapsedTime, timeSegments }));
 }
