@@ -1,7 +1,6 @@
 import { NextRequest } from "next/server";
 
 import { City } from "app/api/types";
-
 import cities from "app/api/worldcities.json";
 
 function distanceBetweenTwoPoints(

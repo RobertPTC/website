@@ -17,6 +17,6 @@ export default function useColorMode() {
         query.removeEventListener("change", onChange);
       };
     }
-  });
+  }, []);
   return isDarkMode;
 }
