@@ -7,7 +7,6 @@ import {
   Select,
   MenuItem,
   SelectChangeEvent,
-  Box,
   Grid,
 } from "@mui/material";
 import {
@@ -20,8 +19,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { scaleBand, scaleLinear } from "d3-scale";
 import dayjs, { Dayjs } from "dayjs";
 
-import { pomodoroDispatch } from "app/dispatch";
-import Storage, { PomodorosForDate, PomodorosForMonth } from "app/storage";
+import { pomodoroDispatch } from "dispatch";
+import Requests, { PomodorosForDate, PomodorosForMonth } from "requests";
 
 import StackedBarChart from "./stacked-bar-chart";
 import {
@@ -35,7 +34,7 @@ import {
 } from "./stacked-bar-chart-utils";
 import { Bars, ChartTypes } from "./types";
 
-const s = Storage.localStorage;
+const s = Requests.localStorage;
 
 function getMaxSeconds(barsData: Bars) {
   const maxSeconds = barsData.bars

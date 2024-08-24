@@ -12,7 +12,7 @@ import {
 import Link from "next/link";
 
 import { MomentOption, Moments, MonthMoment } from "app/api/types";
-import TrieFactory, { Trie } from "app/trie";
+import TrieFactory, { Trie } from "trie";
 
 const sentenceRegex = /[\w\s;\-–,"]+[\?!\.]/gim;
 function createMomentSearchTrie(

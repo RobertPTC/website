@@ -1,4 +1,4 @@
-import Storage, { AllPomodorosRequest } from ".";
+import Requests, { AllPomodorosRequest } from ".";
 
 let storage: { [key: string]: any } = {};
 
@@ -26,7 +26,7 @@ describe("Storage", () => {
     mockLocalStorage.clear();
   });
   it("sets data in local storage from initially empty data storage", async () => {
-    const localStorage = Storage["localStorage"](mockLocalStorage);
+    const localStorage = Requests["localStorage"](mockLocalStorage);
     await localStorage.set({
       uri: "/api/pomodoro",
       data: {
@@ -51,7 +51,7 @@ describe("Storage", () => {
     });
   });
   it("sets data in local storage when date is initially empty", async () => {
-    const localStorage = Storage["localStorage"](mockLocalStorage);
+    const localStorage = Requests["localStorage"](mockLocalStorage);
     await localStorage.set({
       uri: "/api/pomodoro",
       data: {
@@ -107,7 +107,7 @@ describe("Storage", () => {
     });
   });
   it("sets data in local storage when times are the same", async () => {
-    const localStorage = Storage["localStorage"](mockLocalStorage);
+    const localStorage = Requests["localStorage"](mockLocalStorage);
     await localStorage.set({
       uri: "/api/pomodoro",
       data: {
@@ -155,7 +155,7 @@ describe("Storage", () => {
     });
   });
   it("sets data in local storage when hours are different", async () => {
-    const localStorage = Storage["localStorage"](mockLocalStorage);
+    const localStorage = Requests["localStorage"](mockLocalStorage);
     await localStorage.set({
       uri: "/api/pomodoro",
       data: {
@@ -203,7 +203,7 @@ describe("Storage", () => {
     });
   });
   it("sets data in local storage when date is different", async () => {
-    const localStorage = Storage["localStorage"](mockLocalStorage);
+    const localStorage = Requests["localStorage"](mockLocalStorage);
     await localStorage.set({
       uri: "/api/pomodoro",
       data: {
@@ -254,7 +254,7 @@ describe("Storage", () => {
   });
 
   it("deletes pomodoros from local storage 2", async () => {
-    const localStorage = Storage["localStorage"](mockLocalStorage);
+    const localStorage = Requests["localStorage"](mockLocalStorage);
     await localStorage.set({
       uri: "/api/pomodoro-intention",
       data: {
@@ -314,7 +314,7 @@ describe("Storage", () => {
     });
   });
   it("deletes pomodoros from local storage", async () => {
-    const localStorage = Storage["localStorage"](mockLocalStorage);
+    const localStorage = Requests["localStorage"](mockLocalStorage);
     await localStorage.set({
       uri: "/api/pomodoro-intention",
       data: {

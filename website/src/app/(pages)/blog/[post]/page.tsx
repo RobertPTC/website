@@ -1,6 +1,6 @@
 import { Box, Grid } from "@mui/material";
 
-import MainLayoutWithPadding from "app/components/main-layout-with-padding";
+import MainLayoutWithPadding from "components/main-layout-with-padding";
 
 import { blogPosts, PostNames } from "../blogs";
 import Directory from "../directory";

@@ -5,7 +5,7 @@ import { scaleSequential } from "d3-scale";
 import { interpolateBlues, interpolateInferno } from "d3-scale-chromatic";
 import Link from "next/link";
 
-import { Loading } from "app/components/loading";
+import { Loading } from "components/loading";
 
 import MomentsSearch from "./moments-search";
 import useMoments from "./use-moments";

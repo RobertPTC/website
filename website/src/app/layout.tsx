@@ -4,7 +4,7 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import { Roboto } from "next/font/google";
 
 import "./globals.css";
-import { Nav } from "./components/nav";
+import { Nav } from "../components/nav";
 import theme from "./theme";
 
 const roboto = Roboto({

@@ -1,11 +1,7 @@
 import { index, union } from "d3-array";
 import { stack } from "d3-shape";
 
-import {
-  PomodorosForMonth,
-  PomodorosForDate,
-  PomodorosForHour,
-} from "app/storage";
+import { PomodorosForMonth, PomodorosForDate, PomodorosForHour } from "storage";
 
 import { Pomodoro, MonthRect } from "./types";
 

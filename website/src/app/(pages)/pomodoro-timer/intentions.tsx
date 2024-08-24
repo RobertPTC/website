@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 
 import { Box, Grid, Typography } from "@mui/material";
 
-import { pomodoroDispatch } from "app/dispatch";
-import Storage, { PomodoroIntentionRequest } from "app/storage";
+import { pomodoroDispatch } from "dispatch";
+import Requests, { PomodoroIntentionRequest } from "requests";
 
 import Intention from "./intention";
 
@@ -15,7 +15,7 @@ export default function Intentions() {
   const [activeIntention, setActiveIntention] = useState("");
   useEffect(() => {
     if (!window) return;
-    const storage = Storage["localStorage"](localStorage);
+    const storage = Requests["localStorage"](localStorage);
     function getPomodoroIntentions() {
       storage
         .get<PomodoroIntentionRequest>({ uri: "/api/pomodoro-intention" })

@@ -5,7 +5,7 @@ import { FormEvent, useRef, useState } from "react";
 import { Box, Button, TextField, Snackbar, Alert } from "@mui/material";
 
 import { FormMoment } from "app/api/types";
-import Storage, { CreateMomentRequest } from "app/storage";
+import Storage, { CreateMomentRequest } from "requests";
 
 type SnackbarMetadata = {
   message: string;

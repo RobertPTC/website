@@ -4,7 +4,7 @@ import { Box, Grid, Typography } from "@mui/material";
 
 import ActionsDrawer from "app/(pages)/moments-of-being/actions-drawer";
 import ActionsMenu from "app/(pages)/moments-of-being/actions-menu";
-import MainLayoutWithPadding from "app/components/main-layout-with-padding";
+import MainLayoutWithPadding from "components/main-layout-with-padding";
 
 export default function MOBLayout({ children }: { children: ReactNode }) {
   return (

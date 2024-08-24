@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import { Metadata } from "next";
 
-import MainLayoutWithPadding from "app/components/main-layout-with-padding";
+import MainLayoutWithPadding from "components/main-layout-with-padding";
 
 import PlanetaryHours from "./";
 

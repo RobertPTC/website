@@ -7,7 +7,7 @@ import {
   createPomodoroRequest,
 } from "./intention-utils";
 
-import Storage from "../../storage";
+import Requests from "../../../requests";
 
 let storage: { [key: string]: any } = {};
 
@@ -168,7 +168,7 @@ describe("pomodoro functions", () => {
   it("creates pomodoro request ", async () => {
     const duration = 60 * 30;
     const activeDuration = 0;
-    const storage = Storage["localStorage"](mockLocalStorage);
+    const storage = Requests["localStorage"](mockLocalStorage);
     const startDate = dayjs(new Date(2024, 6, 21, 16, 50, 30));
     const pomodoroSpans = [5 * 60, 3 * 60];
     const label = "foo";

@@ -7,13 +7,13 @@ interface Node<T> {
   data: undefined | T;
 }
 
-export type Trie<T> = {
+export interface Trie<T> {
   addWord(word: string, node: T): void;
   findWords(s: string): {
     value: string;
     data: T;
   }[];
-};
+}
 
 export default function TrieFactory<T>(): Trie<T> {
   const rootNode: Node<T> = {

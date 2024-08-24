@@ -5,10 +5,10 @@ import { getSession } from "@auth0/nextjs-auth0";
 import { NextRequest } from "next/server";
 import { Row } from "postgres";
 
-import SentimentAlyze from "app/sentiment-alyze";
+import SentimentAlyze from "sentiment-alyze";
 
-import sql from "./db";
-import getMoments from "./get-moments";
+import sql from "../../../db/db";
+import getMoments from "../../../db/get-moments";
 
 import { Moment, Moments, UpdateMoment } from "../types";
 
@@ -21,7 +21,7 @@ interface MomentsOfBeing {
 }
 
 const sA = SentimentAlyze();
-
+// TODO create interface for DB
 function MomentsOfBeing(): MomentsOfBeing {
   return {
     CreateMoment(req) {
@@ -48,7 +48,7 @@ function MomentsOfBeing(): MomentsOfBeing {
         }
       });
     },
-    async DownloadMoments(req) {
+    async DownloadMoments() {
       return new Promise(async (resolve, reject) => {
         const session = await getSession();
         if (!session || !sql) {

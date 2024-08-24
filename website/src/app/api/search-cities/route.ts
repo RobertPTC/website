@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 
 import { City } from "app/api/types";
 import cities from "app/api/worldcities.json";
-import Trie from "app/trie";
+import Trie from "trie";
 
 const trie = Trie();
 (cities as City[]).map((c) => {

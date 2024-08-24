@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
 import { Moments } from "app/api/types";
-import Storage, { MomentsRequest } from "app/storage";
+import Requests, { MomentsRequest } from "requests";
 
-const storage = Storage["api"](fetch);
+const storage = Requests["api"](fetch);
 
 export default function useMoments({
   year,

@@ -6,7 +6,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 
-import { Loading } from "app/components/loading";
+import { Loading } from "components/loading";
 
 import Countdown from "./countdown";
 import CurrentHour from "./current-hour";

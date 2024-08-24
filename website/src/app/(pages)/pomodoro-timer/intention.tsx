@@ -25,8 +25,8 @@ import {
 } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 
-import { pomodoroDispatch } from "app/dispatch";
-import Storage from "app/storage";
+import { pomodoroDispatch } from "dispatch";
+import Requests from "requests";
 
 import {
   parseTimerInput,
@@ -126,7 +126,7 @@ export default function Intention({
   }, [activeIntention, worker, intention, activeDuration]);
 
   useEffect(() => {
-    const storage = Storage["localStorage"](localStorage);
+    const storage = Requests["localStorage"](localStorage);
     if (!activeDuration && activeIntention === intention) {
       createPomodoroRequest({
         label: intention,
@@ -294,7 +294,7 @@ export default function Intention({
   const onClickDeleteIntention: MouseEventHandler<
     HTMLButtonElement
   > = async () => {
-    const s = Storage["localStorage"](localStorage);
+    const s = Requests["localStorage"](localStorage);
     await s.delete({
       uri: "/api/pomodoro/delete/intention",
       data: { intention },

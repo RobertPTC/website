@@ -1,7 +1,7 @@
 import { Dayjs } from "dayjs";
 import { v4 as uuid } from "uuid";
 
-import { CreatePomodoroRequest, DataStore } from "app/storage";
+import { CreatePomodoroRequest, DataStore } from "storage";
 
 import { PomodoroInput } from "./types";
 

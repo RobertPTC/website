@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
 import { MomentNav } from "app/api/types";
-import Storage, { MomentsNavRequest } from "app/storage";
+import Requests, { MomentsNavRequest } from "requests";
 
-const storage = Storage["api"](fetch);
+const storage = Requests["api"](fetch);
 
 export default function useNav() {
   const [nav, setNav] = useState<MomentNav | undefined>();

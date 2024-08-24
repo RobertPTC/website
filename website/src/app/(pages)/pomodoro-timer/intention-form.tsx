@@ -3,15 +3,15 @@ import { FormEvent, useRef } from "react";
 
 import { Box, Button, TextField } from "@mui/material";
 
-import { pomodoroDispatch } from "app/dispatch";
-import Storage from "app/storage";
+import { pomodoroDispatch } from "dispatch";
+import Requests from "requests";
 
 export default function PomIntentionForm() {
   const formRef = useRef<HTMLFormElement>(null);
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!window || !formRef.current) return;
-    const storage = Storage["localStorage"](localStorage);
+    const storage = Requests["localStorage"](localStorage);
     const formValues = new FormData(formRef.current);
     const intention = formValues.get("intention") as string;
     if (!intention) {

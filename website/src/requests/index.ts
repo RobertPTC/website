@@ -100,7 +100,7 @@ export type GetResponse<T> = Promise<
 
 export type Get = <T extends GetRequests>(r: T) => GetResponse<T>;
 
-export interface DataStore {
+interface IRequests {
   get: Get;
   set<T extends SetRequests>(
     r: T
@@ -156,8 +156,8 @@ function clearCache(uri?: string) {
   cache[uri] = null;
 }
 
-const Storage = {
-  localStorage: (storage: Storage): DataStore => ({
+const Requests = {
+  localStorage: (storage: Storage): IRequests => ({
     get: async ({ uri }: GetRequests) => {
       const [path, query] = uri.split("?");
       const value = storage.getItem(path);
@@ -280,7 +280,7 @@ const Storage = {
       storage.clear();
     },
     delete: async ({ uri, data }: DeleteRequests) => {
-      const lS = Storage["localStorage"](storage);
+      const lS = Requests["localStorage"](storage);
       if (uri === "/api/pomodoro/delete/intention") {
         const { intention } = data;
         const pomodoros = await lS.get<AllPomodorosRequest>({
@@ -341,7 +341,7 @@ const Storage = {
       }
     },
   }),
-  api: (httpClient: typeof fetch): DataStore => ({
+  api: (httpClient: typeof fetch): IRequests => ({
     get: (request: GetRequests) => ferryGet(request, httpClient),
     clearCache: (uri?: string) => clearCache(uri),
     set: (request: SetRequests) => ferrySet(request, httpClient),
@@ -353,4 +353,4 @@ const Storage = {
   }),
 } as const;
 
-export default Storage;
+export default Requests;

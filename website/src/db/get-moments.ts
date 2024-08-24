@@ -1,6 +1,6 @@
 import postgres from "postgres";
 
-import { Moment } from "../types";
+import { Moment } from "../app/api/types";
 
 export default async function getMoments(
   email: string,

@@ -3,7 +3,7 @@
 import { Box, Typography } from "@mui/material";
 import Link from "next/link";
 
-import { Loading } from "app/components/loading";
+import { Loading } from "components/loading";
 
 import useNav from "./use-nav";
 
