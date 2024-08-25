@@ -23,6 +23,19 @@ export const blogPosts: { [K in PostNames]: () => ReactNode } = {
   "prayer-meeting.post": () => <>Learning System Design from Prayer Meeting</>,
 };
 
+export const blogIndexes: { [K in PostNames]: string[] } = {
+  "building-the-google-timer.post": [
+    "motivation",
+    "webworkers",
+    "timeintervals",
+    "schematic",
+    "alert",
+    "datavisualization",
+  ],
+  "building-the-blog-file-directory.post": [],
+  "prayer-meeting.post": [],
+};
+
 export const blogStyles = {
   h2: {
     fontSize: "2rem",

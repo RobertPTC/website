@@ -309,35 +309,6 @@ export function longestCommonPrefix(strs) {
 }
 
 /**
- *
- * @param {string} s
- * @param {number} c
- * @return {string}
- */
-
-export function lastWord(s, c) {
-  const a = s.split(" ");
-  let index = {};
-  let stack = [];
-  if (!c || !s) return "";
-  for (let w of a) {
-    if (!index[w]) {
-      index[w] = 0;
-    }
-    index[w] += 1;
-    if (index[w] === c) {
-      stack.push(w);
-      continue;
-    }
-    if (index[w] > c) {
-      const i = stack.indexOf(w);
-      stack.splice(i, 1);
-    }
-  }
-  return stack[stack.length - 1];
-}
-
-/**
  * @param {string} s
  * @param {string} t
  * @return {boolean}

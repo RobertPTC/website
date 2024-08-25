@@ -10,12 +10,12 @@ export function BuildingTheGoogleTimer() {
   const isDarkMode = useIsDarkMode();
   return (
     <Box component="article">
-      <Typography variant="h1" sx={{ fontSize: "4rem" }}>
+      <Typography variant="h1" sx={{ fontSize: "4rem", mb: 4 }}>
         Building the Google Timer
       </Typography>
-      <Box component="img" src="/timer.jpg" width="100%" />
-      <Box component="section" id="motivation">
-        <Typography variant="h2" sx={blogStyles.h2}>
+      <Box component="img" src="/timer.jpg" width="100%" sx={{ mb: 2 }} />
+      <Box component="article" id="motivation" sx={{ mb: 2 }}>
+        <Typography variant="h2" sx={{ ...blogStyles.h2, mb: 1 }}>
           Motivation
         </Typography>
         <Typography>
@@ -36,8 +36,8 @@ export function BuildingTheGoogleTimer() {
           functions to shape data into information.
         </Typography>
       </Box>
-      <Box component="article" id="webworkers">
-        <Typography variant="h2" sx={blogStyles.h2}>
+      <Box component="article" id="webworkers" sx={{ mb: 2 }}>
+        <Typography variant="h2" sx={{ ...blogStyles.h2, mb: 1 }}>
           Web Workers
         </Typography>
         <Typography>
@@ -56,7 +56,7 @@ export function BuildingTheGoogleTimer() {
           YouTube, or write articles about building applications. Handily for
           us, there are Web Workers!
         </Typography>
-        <Typography>
+        <Typography sx={{ mb: 2 }}>
           A Web Worker is a great solution to this problem because, to quote the
           documentation over at MDN, &ldquo;Web Workers are a simple means for
           web content to run scripts in background threads.&rdquo; A Web Worker
@@ -67,10 +67,10 @@ export function BuildingTheGoogleTimer() {
         </Typography>
 
         <Box>
-          <Typography variant="h3" sx={blogStyles.h3}>
+          <Typography variant="h3" sx={{ ...blogStyles.h3, mb: 1 }}>
             Step 1: Create a Web Worker file
           </Typography>
-          <Typography>
+          <Typography sx={{ mb: 1 }}>
             We will pass the path to this file to our Web Worker instance in our
             React component. Put this file in whichever directory the public
             assets for your website are served.
@@ -82,6 +82,7 @@ export function BuildingTheGoogleTimer() {
               border: "1px solid",
               borderColor: "var(--foreground-rgb)",
               padding: "1rem",
+              marginBottom: "16px",
             }}
             language="typescript"
             theme={isDarkMode ? a11yDark : a11yLight}
@@ -132,10 +133,10 @@ self.onmessage = onMessage;`}
           />
         </Box>
         <Box>
-          <Typography variant="h3" sx={blogStyles.h3}>
+          <Typography variant="h3" sx={{ ...blogStyles.h3, mb: 1 }}>
             Step 2: Set up a Web Worker in a React Component
           </Typography>
-          <Typography>
+          <Typography sx={{ mb: 1 }}>
             In your React component, you will need to set up a piece of state to
             hold a reference to the Web Worker instance, and an effect to load
             the script file.
@@ -147,6 +148,7 @@ self.onmessage = onMessage;`}
               border: "1px solid",
               borderColor: "var(--foreground-rgb)",
               padding: "1rem",
+              marginBottom: "16px",
             }}
             language="typescript"
             theme={isDarkMode ? a11yDark : a11yLight}
@@ -169,10 +171,10 @@ return () => {
           />
         </Box>
         <Box>
-          <Typography variant="h3" sx={blogStyles.h3}>
+          <Typography variant="h3" sx={{ ...blogStyles.h3, mb: 1 }}>
             Step 3: Listen for Events on the Web Worker
           </Typography>
-          <Typography>
+          <Typography sx={{ mb: 1 }}>
             How you choose to attach listeners to your Web Worker instance will
             vary according to the implementation details of your app. In this
             case, because each timer handles its own duration, I attach a
@@ -185,6 +187,7 @@ return () => {
               border: "1px solid",
               borderColor: "var(--foreground-rgb)",
               padding: "1rem",
+              marginBottom: "8px",
             }}
             language="typescript"
             theme={isDarkMode ? a11yDark : a11yLight}
@@ -215,10 +218,10 @@ return () => {
       </Box>
 
       <Box component="article" id="timeintervals">
-        <Typography variant="h2" sx={blogStyles.h2}>
+        <Typography variant="h2" sx={{ ...blogStyles.h2, mb: 1 }}>
           Time Intervals
         </Typography>
-        <Typography>
+        <Typography sx={{ mb: 1 }}>
           Since a pomodoro duration could span multiple hours, and we want to
           break down how much time is spent per hour on a project, the need for
           an algorithm arose to handle this split. So, whenever an interval is
@@ -233,6 +236,7 @@ return () => {
             border: "1px solid",
             borderColor: "var(--foreground-rgb)",
             padding: "1rem",
+            marginBottom: "16px",
           }}
           language="typescript"
           theme={isDarkMode ? a11yDark : a11yLight}
@@ -298,11 +302,11 @@ return () => {
 }`}
         />
       </Box>
-      <Box component="article" id="schematic">
-        <Typography variant="h2" sx={blogStyles.h2}>
+      <Box component="article" id="schematic" sx={{ mb: 2 }}>
+        <Typography variant="h2" sx={{ ...blogStyles.h2, mb: 1 }}>
           A Schematic
         </Typography>
-        <Typography>
+        <Typography sx={{ mb: 1 }}>
           Here, you can see how a person might press a button in the browser to
           communicate the state of the timer (&ldquo;start&rdquo;,
           &ldquo;stop&rdquo;, or &ldquo;reset&rdquo;) and how long the timer
@@ -317,28 +321,30 @@ return () => {
           establish a new <Box component="code">setInterval</Box> every time the
           Start button is pressed.
         </Typography>
-        {!isDarkMode && (
-          <Box
-            component="img"
-            src="/pomodoro-schematic.svg"
-            width="100%"
-            alt="schematic of google timer"
-          />
-        )}
-        {isDarkMode && (
-          <Box
-            component="img"
-            src="/pomodoro-schematic-dark.svg"
-            width="100%"
-            alt="schematic of google timer"
-          />
-        )}
+        <Box>
+          {!isDarkMode && (
+            <Box
+              component="img"
+              src="/pomodoro-schematic.svg"
+              width="100%"
+              alt="schematic of google timer"
+            />
+          )}
+          {isDarkMode && (
+            <Box
+              component="img"
+              src="/pomodoro-schematic-dark.svg"
+              width="100%"
+              alt="schematic of google timer"
+            />
+          )}
+        </Box>
       </Box>
-      <Box component="article" id="alert">
-        <Typography variant="h2" sx={blogStyles.h2}>
+      <Box component="article" id="alert" sx={{ mb: 2 }}>
+        <Typography variant="h2" sx={{ ...blogStyles.h2, mb: 1 }}>
           Alert
         </Typography>
-        <Typography>
+        <Typography sx={{ mb: 1 }}>
           Although I won&apos;t go into the Audio API, which is super fun, there
           is something worth noting that I learned while putting this project
           together: In Safari, audio sources must be loaded as a response to
@@ -363,8 +369,8 @@ return () => {
 }`}
         />
       </Box>
-      <Box component="article" id="datavisualization">
-        <Typography variant="h2" sx={blogStyles.h2}>
+      <Box component="article" id="datavisualization" sx={{ mb: 2 }}>
+        <Typography variant="h2" sx={{ ...blogStyles.h2, mb: 1 }}>
           Data Visualization
         </Typography>
         <Typography>
@@ -374,7 +380,7 @@ return () => {
           given. So far, I&apos;ve provided &ldquo;date&rdquo; and
           &ldquo;month&rdquo; options in the app.
         </Typography>
-        <Typography>
+        <Typography sx={{ mb: 1 }}>
           As I mentioned in the motivation section, d3 is the library of choice
           to create the data dashboard. d3 on it&apos;s own provides a way to
           create elements in the DOM, but that fights against the render process
@@ -384,10 +390,10 @@ return () => {
           domain and range, which are used to scale data points to the view.
         </Typography>
         <Box>
-          <Typography variant="h3" sx={blogStyles.h3}>
+          <Typography variant="h3" sx={{ ...blogStyles.h3, mb: 1 }}>
             Step 1: Create the Data structure with d3
           </Typography>
-          <Typography>
+          <Typography sx={{ mb: 1 }}>
             In this code block, we take our data, an array of Pomodoro objects
             which look like{" "}
             <Box component="code">
@@ -404,6 +410,7 @@ return () => {
               border: "1px solid",
               borderColor: "var(--foreground-rgb)",
               padding: "1rem",
+              marginBottom: "16px",
             }}
             language="typescript"
             theme={isDarkMode ? a11yDark : a11yLight}
@@ -451,10 +458,10 @@ return () => {
           />
         </Box>
         <Box>
-          <Typography variant="h3" sx={blogStyles.h3}>
+          <Typography variant="h3" sx={{ ...blogStyles.h3, mb: 1 }}>
             Step 2: Render in React
           </Typography>
-          <Typography>
+          <Typography sx={{ mb: 1 }}>
             The next step is pretty simple, but it does require some knowledge
             of SVG elements and how they are styled. Otherwise, there&apos;s
             nothing more than mapping over the objects we produced in the first
@@ -513,6 +520,16 @@ return () => {
 })}`}
           />
         </Box>
+      </Box>
+      <Box>
+        <Typography variant="h2" sx={blogStyles.h2}>
+          Conclusion
+        </Typography>
+        <Typography>
+          And that wraps up this project! There are a few things I may improve
+          later, but overall this was a very fun and interesting problem to
+          solve!
+        </Typography>
       </Box>
     </Box>
   );

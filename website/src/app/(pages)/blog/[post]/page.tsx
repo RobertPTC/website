@@ -2,7 +2,7 @@ import { Box, Grid } from "@mui/material";
 
 import MainLayoutWithPadding from "components/main-layout-with-padding";
 
-import { blogPosts, PostNames } from "../blogs";
+import { blogIndexes, blogPosts, PostNames } from "../blogs";
 import Directory from "../directory";
 
 export async function generateStaticParams() {
@@ -13,6 +13,7 @@ export async function generateStaticParams() {
 
 export default function Post({ params }: { params: { post: PostNames } }) {
   const Component = blogPosts[params.post];
+  const index = blogIndexes[params.post];
   return (
     <MainLayoutWithPadding>
       <Grid container>
@@ -25,7 +26,21 @@ export default function Post({ params }: { params: { post: PostNames } }) {
           <Component />
         </Grid>
         <Grid item xs={2}>
-          Index
+          <Box sx={{ px: 2, position: "sticky", top: "60px" }}>
+            {index.map((id) => {
+              return (
+                <Box key={id} sx={{ mb: 0.5 }}>
+                  <Box
+                    component="a"
+                    href={`#${id}`}
+                    sx={{ textTransform: "capitalize" }}
+                  >
+                    {id}
+                  </Box>
+                </Box>
+              );
+            })}
+          </Box>
         </Grid>
       </Grid>
     </MainLayoutWithPadding>
