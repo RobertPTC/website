@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 import { emailService } from "@app/email";
 import { memoryCache } from "@app/memory-cache";
