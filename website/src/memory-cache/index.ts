@@ -1,6 +1,6 @@
 import client from "./client";
 
-export interface MemoryCache {
+export default interface MemoryCache {
   setVerificationToken(
     email: string,
     token: string,
@@ -8,7 +8,7 @@ export interface MemoryCache {
   ): Promise<null | string>;
 }
 
-const memoryCache: MemoryCache = {
+export const memoryCache: MemoryCache = {
   async setVerificationToken(email, token, ttl) {
     if (client) {
       return client.set(email, token, { EX: ttl });
@@ -16,5 +16,3 @@ const memoryCache: MemoryCache = {
     return null;
   },
 };
-
-export default memoryCache;

@@ -7,7 +7,7 @@ import { Row } from "postgres";
 
 import SentimentAlyze from "sentiment-alyze";
 
-import sql from "../../../db/db";
+import sql from "../../../db";
 import getMoments from "../../../db/get-moments";
 import { Moment, Moments, UpdateMoment } from "../types";
 
