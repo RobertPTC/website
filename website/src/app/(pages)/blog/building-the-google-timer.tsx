@@ -15,7 +15,7 @@ export function BuildingTheGoogleTimer() {
       </Typography>
       <Box
         component="img"
-        src="/timer.jpg"
+        src="/timer.webp"
         width="100%"
         sx={{ mb: 2 }}
         alt="Picture of timer application"

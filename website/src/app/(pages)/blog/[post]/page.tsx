@@ -3,7 +3,7 @@ import { Metadata } from "next";
 
 import MainLayoutWithPadding from "components/main-layout-with-padding";
 
-import { blogIndexes, blogPosts, PostNames } from "../blogs";
+import { blogIndexes, blogPosts, PostNames, blogMetadata } from "../blogs";
 import Directory from "../directory";
 
 export async function generateStaticParams() {
@@ -17,7 +17,7 @@ export async function generateMetadata({
 }: {
   params: { post: PostNames };
 }): Promise<Metadata> {
-  return {};
+  return blogMetadata[params.post];
 }
 
 export default function Post({ params }: { params: { post: PostNames } }) {
