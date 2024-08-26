@@ -9,7 +9,8 @@
         "alphabetize": { "order": "asc", "caseInsensitive": false },
         "pathGroups": [
           { "pattern": "react**", "group": "builtin" },
-          { "pattern": "app/**", "group": "internal" }
+          { "pattern": "app/**", "group": "internal" },
+          { "pattern": "@app/**", "group": "internal" }
         ],
         "pathGroupsExcludedImportTypes": ["react", "react-dom"],
         "newlines-between": "always"

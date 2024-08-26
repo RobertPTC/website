@@ -3,8 +3,8 @@ import { FormEvent, useRef } from "react";
 
 import { Box, Button, TextField } from "@mui/material";
 
-import { pomodoroDispatch } from "dispatch";
-import Requests from "requests";
+import { pomodoroDispatch } from "@app/dispatch";
+import Requests from "@app/requests";
 
 export default function PomIntentionForm() {
   const formRef = useRef<HTMLFormElement>(null);
