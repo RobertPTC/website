@@ -5,7 +5,7 @@ export default interface MemoryCache {
     email: string,
     token: string,
     ttl: number
-  ): Promise<null | string>;
+  ): Promise<string | null>;
 }
 
 export const memoryCache: MemoryCache = {
@@ -13,6 +13,6 @@ export const memoryCache: MemoryCache = {
     if (client) {
       return client.set(email, token, { EX: ttl });
     }
-    return null;
+    throw new Error("redis client not instantiated");
   },
 };

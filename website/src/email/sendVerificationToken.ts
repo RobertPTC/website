@@ -1,8 +1,25 @@
-import { MailtrapClient } from "mailtrap";
+import { getEmailClientInstance } from "./client";
 
-export default async function sendVerificationToken() {
-  const token = process.env.MAILTRAP_API_TOKEN;
-  const endpoint = "https://send.api.mailtrap.io/";
-
-  return "";
+export default async function sendVerificationToken(
+  email: string,
+  verificationToken: string
+) {
+  const client = getEmailClientInstance();
+  if (client) {
+    try {
+      const res = await client.send({
+        from: {
+          email: "mailtrap@robertcunningham.app",
+          name: "robertcunningham.app",
+        },
+        to: [{ email }],
+        subject: "Mailtrap Test",
+        text: `Your verification token: ${verificationToken}`,
+      });
+      return res.success;
+    } catch (error) {
+      console.log("error ", error);
+    }
+  }
+  return null;
 }

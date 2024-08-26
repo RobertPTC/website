@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 
-import { emailService } from "@app/email";
+import { emailService } from "@app/email/service";
 import { memoryCache } from "@app/memory-cache";
 
 import { requestVerificationCode } from "..";

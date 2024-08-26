@@ -22,12 +22,17 @@ export async function requestVerificationCode(
       token,
       5 * 60
     );
-    if (res) {
-      return NextResponse.json({ status: 200, statusText: "OK" });
+    if (!res) {
+      throw new Error("error setting verification token");
     }
-    return NextResponse.json({ status: 500, statusText: "key not set" });
+    const success = await emailService.sendVerificationToken(json.email, token);
+    if (!success) {
+      // delete token?
+      throw new Error("error sending verification token email ");
+    }
+    return NextResponse.json({ status: 200, statusText: "OK" });
   } catch (e) {
-    console.log("e ", e);
+    console.error("requestVerificationCode", e);
     return NextResponse.json({ status: 500, statusText: "key not set" });
   }
 }
