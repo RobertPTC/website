@@ -1,4 +1,3 @@
-import { Box } from "@mui/material";
 import { Metadata } from "next";
 
 import MainLayoutWithPadding from "components/main-layout-with-padding";

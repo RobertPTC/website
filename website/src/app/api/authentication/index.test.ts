@@ -1,6 +1,7 @@
 /**
  * @jest-environment node
  */
+
 import { NextRequest } from "next/server";
 
 import EmailService from "@app/email";
@@ -28,7 +29,13 @@ describe("requestVerificationCode", () => {
       },
     };
     const res = await requestVerificationCode(
-      {} as NextRequest,
+      {
+        async json() {
+          return {
+            email: "not a valid email",
+          };
+        },
+      } as NextRequest,
       mockMemoryCache,
       mockEmailService
     );

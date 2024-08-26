@@ -1,4 +1,4 @@
-import MomentForm from "@app/app/(pages)/moments-of-being/moment-form";
+import MomentForm from "../moment-form";
 
 export default function CreateMoment() {
   return <MomentForm />;

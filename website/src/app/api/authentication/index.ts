@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuid } from "uuid";
 
 import EmailService, { validEmailRegex } from "@app/email";
@@ -7,7 +7,7 @@ import MemoryCache from "@app/memory-cache";
 export interface AuthenticationService {}
 
 export async function requestVerificationCode(
-  req: Request,
+  req: NextRequest,
   memoryCache: MemoryCache,
   emailService: EmailService
 ) {

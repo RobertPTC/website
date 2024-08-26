@@ -2,7 +2,7 @@ import { SyntheticEvent, useEffect, useState } from "react";
 
 import { Autocomplete, TextField } from "@mui/material";
 
-import { LocationAutocompleteOption, Position, PositionSuccess } from "./types";
+import { LocationAutocompleteOption, PositionSuccess } from "./types";
 import useGetClosestCity from "./use-get-closest-city";
 import { debounce } from "./utils";
 
