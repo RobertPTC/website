@@ -383,3 +383,28 @@ export function isPalindrome(s) {
   if (s[0] !== s[s.length - 1]) return false;
   return isPalindrome(s.slice(1, s.length - 1));
 }
+
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+export function lengthOfLIS(nums) {
+  if (nums.length === 1) return 1;
+  let max = 0;
+  let cache = {};
+  function l(i) {
+    if (cache[i]) return cache[i];
+    let result = 1;
+    for (let j = i; j < nums.length; j++) {
+      if (nums[i] < nums[j]) {
+        result = Math.max(result, 1 + l(j));
+      }
+    }
+    cache[i] = result;
+    return result;
+  }
+  for (let i = nums.length - 1; i > -1; i--) {
+    max = Math.max(max, l(i));
+  }
+  return max;
+}
