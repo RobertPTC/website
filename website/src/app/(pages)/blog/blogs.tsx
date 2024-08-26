@@ -11,7 +11,7 @@ export type Blog = {
 };
 
 export type PostNames =
-  | "building-the-google-timer.post"
+  | "building-the-google-timer"
   | "building-the-blog-file-directory.post"
   | "prayer-meeting.post";
 
@@ -19,12 +19,12 @@ export const blogPosts: { [K in PostNames]: () => ReactNode } = {
   "building-the-blog-file-directory.post": () => (
     <>Building the Blog File Directory Component</>
   ),
-  "building-the-google-timer.post": () => <BuildingTheGoogleTimer />,
+  "building-the-google-timer": () => <BuildingTheGoogleTimer />,
   "prayer-meeting.post": () => <>Learning System Design from Prayer Meeting</>,
 };
 
 export const blogIndexes: { [K in PostNames]: string[] } = {
-  "building-the-google-timer.post": [
+  "building-the-google-timer": [
     "motivation",
     "webworkers",
     "timeintervals",

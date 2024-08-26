@@ -10,7 +10,7 @@ type FileTreeNode = {
   path: string;
 };
 
-const paths = ["engineering/website/building-the-google-timer.post"];
+const paths = ["engineering/website/building-the-google-timer"];
 
 function buildFileTree(files: string[]) {
   let result: FileTreeNode[] = [];

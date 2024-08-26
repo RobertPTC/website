@@ -14,6 +14,7 @@ export async function generateStaticParams() {
 export default function Post({ params }: { params: { post: PostNames } }) {
   const Component = blogPosts[params.post];
   const index = blogIndexes[params.post];
+  if (!index || !Component) return <></>;
   return (
     <MainLayoutWithPadding>
       <Grid container>

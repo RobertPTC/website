@@ -53,6 +53,11 @@ export function Nav() {
                   Pomodoro Timer
                 </Typography>
               </Link>
+              <Link href="/blog/building-the-google-timer">
+                <Typography variant="body1" sx={{ mb: 1 }}>
+                  Blog
+                </Typography>
+              </Link>
             </Box>
             <Divider sx={{ mb: 1 }} />
             <Box display="flex" alignItems="center" mb={1}>
@@ -108,7 +113,7 @@ export function Nav() {
         }}
       >
         <Grid container>
-          <Grid item xs={8} display="flex" alignItems="center">
+          <Grid item xs={7} display="flex" alignItems="center">
             <Link href="/" style={{ marginRight: "16px" }}>
               <Typography variant="body1" sx={linkStyles}>
                 Robert P Cunningham
@@ -149,17 +154,22 @@ export function Nav() {
               />
             </Box>
           </Grid>
-          <Grid item container display="flex" alignItems="center" xs={4}>
-            <Grid item xs={6}>
+          <Grid item container display="flex" alignItems="center" xs={5}>
+            <Grid item xs={4}>
               <Link href="/planetary-hours-calculator">
                 <Typography variant="body1">
                   Planetary Hours Calculator
                 </Typography>
               </Link>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <Link href="/pomodoro-timer">
                 <Typography variant="body1">Pomodoro Timer</Typography>
+              </Link>
+            </Grid>
+            <Grid item xs={4}>
+              <Link href="/blog/building-the-google-timer">
+                <Typography variant="body1">Blog</Typography>
               </Link>
             </Grid>
           </Grid>
