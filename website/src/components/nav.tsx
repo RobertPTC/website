@@ -154,24 +154,33 @@ export function Nav() {
               />
             </Box>
           </Grid>
-          <Grid item container display="flex" alignItems="center" xs={5}>
-            <Grid item xs={4}>
+          <Grid
+            item
+            container
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+            }}
+            xs={5}
+          >
+            <Box sx={{ mr: 2 }}>
               <Link href="/planetary-hours-calculator">
                 <Typography variant="body1">
                   Planetary Hours Calculator
                 </Typography>
               </Link>
-            </Grid>
-            <Grid item xs={4}>
+            </Box>
+            <Box sx={{ mr: 2 }}>
               <Link href="/pomodoro-timer">
                 <Typography variant="body1">Pomodoro Timer</Typography>
               </Link>
-            </Grid>
-            <Grid item xs={4}>
+            </Box>
+            <Box>
               <Link href="/blog/building-the-google-timer">
                 <Typography variant="body1">Blog</Typography>
               </Link>
-            </Grid>
+            </Box>
           </Grid>
         </Grid>
       </Box>
