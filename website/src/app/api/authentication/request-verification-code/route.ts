@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuid } from "uuid";
 
+import { EmailService } from "email";
 import memoryCache from "memory-cache";
 
 export async function POST(req: NextRequest) {

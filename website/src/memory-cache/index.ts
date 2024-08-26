@@ -1,6 +1,6 @@
 import client from "./client";
 
-interface MemoryCache {
+export interface MemoryCache {
   setVerificationToken(
     email: string,
     token: string,
