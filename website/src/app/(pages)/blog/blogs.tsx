@@ -1,5 +1,7 @@
 import { ReactNode } from "react";
 
+import { Metadata } from "next";
+
 import { BuildingTheGoogleTimer } from "./building-the-google-timer";
 
 export type Blog = {
@@ -34,6 +36,16 @@ export const blogIndexes: { [K in PostNames]: string[] } = {
   ],
   "building-the-blog-file-directory.post": [],
   "prayer-meeting.post": [],
+};
+
+export const blogMetadata: { [K in PostNames]: Metadata } = {
+  "building-the-google-timer": {
+    title: "Building the Google Timer",
+    description:
+      "Tutorial on building the Google timer using Webworkers, d3.js, and React.",
+  },
+  "building-the-blog-file-directory.post": {},
+  "prayer-meeting.post": {},
 };
 
 export const blogStyles = {

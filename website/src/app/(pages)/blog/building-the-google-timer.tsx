@@ -13,7 +13,13 @@ export function BuildingTheGoogleTimer() {
       <Typography variant="h1" sx={{ fontSize: "4rem", mb: 4 }}>
         Building the Google Timer
       </Typography>
-      <Box component="img" src="/timer.jpg" width="100%" sx={{ mb: 2 }} />
+      <Box
+        component="img"
+        src="/timer.jpg"
+        width="100%"
+        sx={{ mb: 2 }}
+        alt="Picture of timer application"
+      />
       <Box component="article" id="motivation" sx={{ mb: 2 }}>
         <Typography variant="h2" sx={{ ...blogStyles.h2, mb: 1 }}>
           Motivation
