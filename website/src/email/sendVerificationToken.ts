@@ -1,10 +1,10 @@
-import { getEmailClientInstance } from "./client";
+import { getEmailClient } from "./client";
 
 export default async function sendVerificationToken(
   email: string,
   verificationToken: string
 ) {
-  const client = getEmailClientInstance();
+  const client = getEmailClient();
   if (client) {
     try {
       const res = await client.send({

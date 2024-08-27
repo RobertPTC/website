@@ -1,4 +1,5 @@
 const fs = require("node:fs");
+const { EventEmitter } = require("node:stream");
 
 const url = "";
 const url1 = "https://google.com";
@@ -112,3 +113,21 @@ words.forEach((w) => {
 console.log("wordsArray ", JSON.stringify(wordsArray));
 
 buildFileTree(files);
+
+const memoryCacheClient = new EventEmitter();
+
+memoryCacheClient.on("connect", () => {
+  console.log("connected");
+});
+
+memoryCacheClient.on("error", () => {
+  console.error("error");
+});
+
+function connectClient() {
+  setTimeout(() => {
+    memoryCacheClient.emit("connect");
+  }, 1000);
+}
+
+connectClient();

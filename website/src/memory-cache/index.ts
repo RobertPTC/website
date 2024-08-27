@@ -1,4 +1,4 @@
-import client from "./client";
+import { getMemoryCacheClient, connectMemoryCache } from "./client";
 
 export default interface MemoryCache {
   setVerificationToken(
@@ -10,9 +10,13 @@ export default interface MemoryCache {
 
 export const memoryCache: MemoryCache = {
   async setVerificationToken(email, token, ttl) {
-    if (client) {
-      return client.set(email, token, { EX: ttl });
+    const client = await connectMemoryCache(getMemoryCacheClient());
+    try {
+      const res = await client.set(email, token, { EX: ttl });
+      return res;
+    } catch (error) {
+      console.error("error setting verification token ", error);
+      return null;
     }
-    throw new Error("redis client not instantiated");
   },
 };

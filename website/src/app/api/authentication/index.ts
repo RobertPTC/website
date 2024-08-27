@@ -32,7 +32,6 @@ export async function requestVerificationCode(
     }
     return NextResponse.json({ status: 200, statusText: "OK" });
   } catch (e) {
-    console.error("requestVerificationCode", e);
     return NextResponse.json({ status: 500, statusText: "key not set" });
   }
 }

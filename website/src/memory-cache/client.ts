@@ -1,25 +1,29 @@
 import { createClient, RedisClientType } from "redis";
 
 let client: RedisClientType | null = null;
+let isConnected = false;
 
-async function connectMemoryCache() {
+export function getMemoryCacheClient() {
   if (!client) {
     client = createClient({
       url: process.env.REDIS_URL,
     });
+  }
+  return client;
+}
 
-    client.on("error", (err) => {
-      console.log("err ", err);
+export async function connectMemoryCache(client: RedisClientType) {
+  console.log("connectMemoryCache");
+  if (!isConnected) {
+    console.log("isConnected ", isConnected);
+    isConnected = true;
+    client.on("error", (e) => {
+      console.log("memory cache client error ", e);
     });
-
     client.on("connection", () => {
       console.log("connection established");
     });
-
     await client.connect();
   }
+  return client;
 }
-
-connectMemoryCache();
-
-export default client;
