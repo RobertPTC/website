@@ -15,17 +15,17 @@ export default function Login({
     if (sessionID) {
       cookies().set("loginSessionID", sessionID, {
         httpOnly: true,
-        maxAge: 60 * 5,
+        maxAge: 60 * 30,
       });
     }
     if (searchParams.referrer) {
       cookies().set("loginReferrer", searchParams.referrer as string);
     }
-    redirect("/verify-token");
+    redirect("/verify-code");
   }
   return (
     <Box component="form" action={formAction}>
-      <TextField name="email" />
+      <TextField name="email" label="email" />
       <Button type="submit">Submit</Button>
     </Box>
   );

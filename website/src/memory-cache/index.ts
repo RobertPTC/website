@@ -6,6 +6,7 @@ export default interface MemoryCache {
     token: string,
     ttl: number
   ): Promise<string | null>;
+  getLoginSession(id: string): Promise<string | null>;
 }
 
 export const memoryCache: MemoryCache = {
@@ -18,5 +19,9 @@ export const memoryCache: MemoryCache = {
       console.error("error setting verification token ", error);
       return null;
     }
+  },
+  async getLoginSession(id) {
+    const client = await connectMemoryCache(getMemoryCacheClient());
+    return await client.get(id);
   },
 };

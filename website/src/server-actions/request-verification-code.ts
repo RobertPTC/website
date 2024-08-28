@@ -8,7 +8,6 @@ export default async function requestVerificationCode(
   emailService: EmailService,
   formData: FormData
 ) {
-  console.log("formData ", formData);
   try {
     const email = formData.get("email") as string;
     if (!email) {

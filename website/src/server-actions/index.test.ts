@@ -17,16 +17,19 @@ describe("serverActions", () => {
     };
     const mockMemoryCache: MemoryCache = {
       setVerificationToken: mockSetVerificationToken,
+      getLoginSession: function (id: string): Promise<string | null> {
+        throw new Error("Function not implemented.");
+      },
     };
     const withService = dependencyInjector(
+      requestVerificationCode,
       mockMemoryCache,
-      mockEmailService,
-      requestVerificationCode
+      mockEmailService
     );
     const formData = new FormData();
     formData.append("email", "test@test.com");
     const res = await withService(formData);
-    expect(res).toBe(true);
+    expect(typeof res === "string").toBeTruthy();
   });
   it("does not send verification token for invalid email", async () => {
     const mockSendVerificationToken = jest.fn(async () => true);
@@ -36,15 +39,18 @@ describe("serverActions", () => {
     };
     const mockMemoryCache: MemoryCache = {
       setVerificationToken: mockSetVerificationToken,
+      getLoginSession: function (id: string): Promise<string | null> {
+        throw new Error("Function not implemented.");
+      },
     };
     const withService = dependencyInjector(
+      requestVerificationCode,
       mockMemoryCache,
-      mockEmailService,
-      requestVerificationCode
+      mockEmailService
     );
     const formData = new FormData();
     formData.append("email", "invalid email");
     const res = await withService(formData);
-    expect(res).toBe(false);
+    expect(res).toBe("");
   });
 });

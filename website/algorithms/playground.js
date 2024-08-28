@@ -131,3 +131,30 @@ function connectClient() {
 }
 
 connectClient();
+
+/**
+ *
+ * @param {Function} fn
+ * @param {number} timeout
+ * @returns
+ */
+function debounce(fn, timeout) {
+  let timeoutID = null;
+  return function (...args) {
+    clearTimeout(timeoutID);
+    timeoutID = setTimeout(() => {
+      fn(...args);
+    }, timeout);
+  };
+}
+
+// function log() {
+//   console.log("arguments ", arguments);
+//   console.log("args ", ...arguments);
+// }
+
+// const debouncedFn = debounce(log, 1000);
+
+// debouncedFn("first");
+// debouncedFn("second");
+// debouncedFn("a", "b", { bat: "cat" }, [7, 7, 7]);

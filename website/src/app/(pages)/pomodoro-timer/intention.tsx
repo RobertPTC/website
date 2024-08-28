@@ -4,7 +4,6 @@ import {
   useRef,
   useEffect,
   KeyboardEventHandler,
-  ChangeEvent,
   FormEvent,
   MouseEventHandler,
   useCallback,
@@ -127,15 +126,16 @@ export default function Intention({
 
   useEffect(() => {
     const requests = Requests["localStorage"](localStorage);
+    const requestsPayload = {
+      label: intention,
+      duration: duration.current,
+      activeDuration,
+      pomodoroSpans: pomodoroSpans.current,
+      requests,
+      startDate: startDate.current,
+    };
     if (!activeDuration && activeIntention === intention) {
-      createPomodoroRequest({
-        label: intention,
-        duration: duration.current,
-        activeDuration: 0,
-        pomodoroSpans: pomodoroSpans.current,
-        requests,
-        startDate: startDate.current,
-      }).then(() => {
+      createPomodoroRequest(requestsPayload).then(() => {
         pomodoroSpans.current = [];
         pomodoroDispatch.publish("setPomodoro");
       });
@@ -147,14 +147,7 @@ export default function Intention({
       duration.current !== activeDuration &&
       activeDuration
     ) {
-      createPomodoroRequest({
-        label: intention,
-        duration: duration.current,
-        activeDuration,
-        pomodoroSpans: pomodoroSpans.current,
-        requests,
-        startDate: startDate.current,
-      }).then((res) => {
+      createPomodoroRequest(requestsPayload).then((res) => {
         pomodoroSpans.current = [...pomodoroSpans.current, res.elapsedTime];
         pomodoroDispatch.publish("setPomodoro");
       });
@@ -227,7 +220,7 @@ export default function Intention({
     setSubmitButtonText("Start");
   };
 
-  const onChange = (value: string, e?: ChangeEvent<HTMLInputElement>) => {
+  const onChange = (value: string) => {
     let newValue = value;
     pomodoroSpans.current = [];
     if (isEditMode && isEditAwaitingInput.current) {
@@ -350,7 +343,7 @@ export default function Intention({
             pattern="\d*"
             ref={inputRef}
             onKeyDown={onKeydown}
-            onChange={(e) => onChange(e.currentTarget.value, e)}
+            onChange={(e) => onChange(e.currentTarget.value)}
           />
           <Box display="flex" alignItems="center">
             <Box mr={1}>
