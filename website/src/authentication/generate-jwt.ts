@@ -2,7 +2,7 @@ import { createHmac } from "crypto";
 
 export default function generateJWT(sessionID: string, exp: number, iat: Date) {
   try {
-    const secret = process.env.JWT_SECRET;
+    const secret = process.env.JWT_SECRET_KEY;
     if (!secret) {
       throw new Error("JWT secret not set");
     }

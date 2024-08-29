@@ -2,7 +2,7 @@ import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
 import MemoryCache from "@app/memory-cache";
 
-export default async function verifyCode(
+export default async function isValidCode(
   memoryCache: MemoryCache,
   loginSessionID: RequestCookie | undefined,
   formData: FormData

@@ -7,7 +7,7 @@ export default interface MemoryCache {
     ttl: number
   ): Promise<string | null>;
   getLoginSession(id: string): Promise<string | null>;
-  setJWT(email: string, id: string, ttl: number): Promise<string | null>;
+  setSessionID(id: string, email: string, ttl: number): Promise<string | null>;
 }
 
 export const memoryCache: MemoryCache = {
@@ -25,7 +25,7 @@ export const memoryCache: MemoryCache = {
     const client = await connectMemoryCache(getMemoryCacheClient());
     return await client.get(id);
   },
-  async setJWT(email, id, ttl) {
+  async setSessionID(id, email, ttl) {
     try {
       const client = await connectMemoryCache(getMemoryCacheClient());
       const res = await client.set(id, email, { EX: ttl });

@@ -1,9 +1,11 @@
 import { emailService } from "@app/email/service";
 import { memoryCache } from "@app/memory-cache";
 
-import dependencyInjector from "./dependency-injector";
+import isValidCode from "./is-valid-code";
 import requestVerificationCode from "./request-verification-code";
-import verifyCode from "./verify-code";
+import setJWTInCache from "./set-jwt-in-cache";
+
+import dependencyInjector from "../dependency-injector";
 
 export const withServiceRequestVerificationCode = dependencyInjector(
   requestVerificationCode,
@@ -11,7 +13,12 @@ export const withServiceRequestVerificationCode = dependencyInjector(
   emailService
 );
 
-export const withServiceVerifyCode = dependencyInjector(
-  verifyCode,
+export const withServiceIsValidCode = dependencyInjector(
+  isValidCode,
+  memoryCache
+);
+
+export const withServiceSetJWTInCache = dependencyInjector(
+  setJWTInCache,
   memoryCache
 );
