@@ -20,6 +20,13 @@ describe("serverActions", () => {
       getLoginSession: function (id: string): Promise<string | null> {
         throw new Error("Function not implemented.");
       },
+      setJWT: function (
+        email: string,
+        id: string,
+        ttl: number
+      ): Promise<string | null> {
+        throw new Error("Function not implemented.");
+      },
     };
     const withService = dependencyInjector(
       requestVerificationCode,
@@ -40,6 +47,13 @@ describe("serverActions", () => {
     const mockMemoryCache: MemoryCache = {
       setVerificationToken: mockSetVerificationToken,
       getLoginSession: function (id: string): Promise<string | null> {
+        throw new Error("Function not implemented.");
+      },
+      setJWT: function (
+        email: string,
+        id: string,
+        ttl: number
+      ): Promise<string | null> {
         throw new Error("Function not implemented.");
       },
     };

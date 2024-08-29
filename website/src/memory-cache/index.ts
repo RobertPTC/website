@@ -2,18 +2,19 @@ import { getMemoryCacheClient, connectMemoryCache } from "./client";
 
 export default interface MemoryCache {
   setVerificationToken(
-    email: string,
+    id: string,
     token: string,
     ttl: number
   ): Promise<string | null>;
   getLoginSession(id: string): Promise<string | null>;
+  setJWT(email: string, id: string, ttl: number): Promise<string | null>;
 }
 
 export const memoryCache: MemoryCache = {
-  async setVerificationToken(email, token, ttl) {
-    const client = await connectMemoryCache(getMemoryCacheClient());
+  async setVerificationToken(id, token, ttl) {
     try {
-      const res = await client.set(email, token, { EX: ttl });
+      const client = await connectMemoryCache(getMemoryCacheClient());
+      const res = await client.set(id, token, { EX: ttl });
       return res;
     } catch (error) {
       console.error("error setting verification token ", error);
@@ -23,5 +24,15 @@ export const memoryCache: MemoryCache = {
   async getLoginSession(id) {
     const client = await connectMemoryCache(getMemoryCacheClient());
     return await client.get(id);
+  },
+  async setJWT(email, id, ttl) {
+    try {
+      const client = await connectMemoryCache(getMemoryCacheClient());
+      const res = await client.set(email, id, { EX: ttl });
+      return res;
+    } catch (error) {
+      console.error("error", error);
+      return null;
+    }
   },
 };

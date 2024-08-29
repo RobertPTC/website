@@ -2,6 +2,11 @@ import { Box, Button, TextField } from "@mui/material";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+import {
+  loginSessionID,
+  loginSessionIDMaxAge,
+  loginReferrer,
+} from "@app/cookies";
 import { withServiceRequestVerificationCode } from "@app/server-actions";
 
 export default function Login({
@@ -13,13 +18,13 @@ export default function Login({
     "use server";
     const sessionID = await withServiceRequestVerificationCode(formData);
     if (sessionID) {
-      cookies().set("loginSessionID", sessionID, {
+      cookies().set(loginSessionID, sessionID, {
         httpOnly: true,
-        maxAge: 60 * 30,
+        maxAge: loginSessionIDMaxAge,
       });
     }
     if (searchParams.referrer) {
-      cookies().set("loginReferrer", searchParams.referrer as string);
+      cookies().set(loginReferrer, searchParams.referrer as string);
     }
     redirect("/verify-code");
   }
