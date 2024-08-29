@@ -1,8 +1,29 @@
-import { withApiAuthRequired } from "@auth0/nextjs-auth0";
-import { NextRequest } from "next/server";
+import verifyJWT from "@app/authentication/verify-jwt";
+import { jwtSession } from "@app/cookies";
+import { NextRequest, NextResponse } from "next/server";
 
-import requestHandlers from "..";
+function withJWT(callback: (req?: NextRequest) => Promise<NextResponse>) {
+  return async function (request: NextRequest) {
+    try {
+      const jwt = request.cookies.get(jwtSession);
+      if (!jwt) {
+        throw new Error("no jwt");
+      }
+      const isValidJWT = verifyJWT(jwt.value);
+      if (!isValidJWT) {
+        throw new Error("invalid JWT");
+      }
+      return callback(request);
+    } catch (error) {
+      console.error("error ", error);
+      return callback();
+    }
+  };
+}
 
-export const GET = withApiAuthRequired(async (request: NextRequest) => {
-  return requestHandlers.Moments(request);
+export const GET = withJWT(async function (req: NextRequest | undefined) {
+  if (!req) {
+    return NextResponse.json({}, { status: 401 });
+  }
+  return NextResponse.json({}, { status: 200 });
 });

@@ -9,7 +9,7 @@ const trie = Trie();
   trie.addWord(c.city, c);
 });
 
-export function GET(request: NextRequest) {
+export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const q = searchParams.get("q");
   if (q) {
