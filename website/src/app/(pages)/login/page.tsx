@@ -20,7 +20,9 @@ export default function Login({
     if (sessionID) {
       cookies().set(loginSessionID, sessionID, {
         httpOnly: true,
+        secure: true,
         maxAge: loginSessionIDMaxAge,
+        sameSite: "strict",
       });
     }
     if (searchParams.referrer) {

@@ -13,7 +13,7 @@ import {
 } from "@app/cookies";
 import { withServiceVerifyCode } from "@app/server-actions";
 
-export default function VerifyToken() {
+export default function VerifyCode() {
   async function action(formData: FormData) {
     "use server";
     const sessionID = cookies().get(loginSessionID);
@@ -23,9 +23,19 @@ export default function VerifyToken() {
       redirect("/login?prompt=invalid");
     }
     cookies().delete(loginReferrer);
+    cookies().delete(loginSessionID);
     const jwtID = uuid();
     const jwt = generateJWT(jwtID, jwtExp, new Date());
-    cookies().set(jwtSession, jwt, { httpOnly: true, maxAge: jwtMaxAge });
+    cookies().set(jwtSession, jwt, {
+      httpOnly: true,
+      maxAge: jwtMaxAge,
+      secure: true,
+      sameSite: "strict",
+    });
+    if (referrer) {
+      redirect(`/${referrer}`);
+    }
+    redirect("/");
   }
   return (
     <Box component="form" action={action}>

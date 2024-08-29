@@ -28,7 +28,7 @@ export const memoryCache: MemoryCache = {
   async setJWT(email, id, ttl) {
     try {
       const client = await connectMemoryCache(getMemoryCacheClient());
-      const res = await client.set(email, id, { EX: ttl });
+      const res = await client.set(id, email, { EX: ttl });
       return res;
     } catch (error) {
       console.error("error", error);
