@@ -130,7 +130,7 @@ function connectClient() {
   }, 1000);
 }
 
-connectClient();
+// connectClient();
 
 /**
  *
@@ -174,3 +174,46 @@ async function getWP(url) {
   const json = await res.json();
   console.log("json ", json);
 }
+const blogComments = [
+  { id: 1, respondsTo: 0 },
+  { id: 2, respondsTo: 0 },
+  { id: 3, respondsTo: 0 },
+  { id: 4, respondsTo: 1 },
+  { id: 5, respondsTo: 2 },
+  { id: 6, respondsTo: 1 },
+  { id: 7, respondsTo: 3 },
+  { id: 8, respondsTo: 3 },
+  { id: 9, respondsTo: 7 },
+  { id: 10, respondsTo: 7 },
+  { id: 11, respondsTo: 5 },
+  { id: 12, respondsTo: 6 },
+  { id: 13, respondsTo: 0 },
+  { id: 14, respondsTo: 12 },
+];
+
+const blogGraph = { 0: { children: [] } };
+
+blogComments.forEach((c) => {
+  subgraph = blogGraph;
+  if (!subgraph[c.id]) {
+    subgraph[c.id] = {
+      children: [],
+    };
+  }
+  subgraph[c.respondsTo].children.push(c);
+});
+
+function exploreBlogGraph(v) {
+  let seen = {};
+  let lvl = v.respondsTo;
+  blogGraph[v.id].children.forEach((v) => {
+    if (!seen[v.id]) {
+      console.log("lvl, v ", lvl, v.id);
+      seen[v.id] = true;
+      exploreBlogGraph(v);
+    }
+  });
+}
+
+console.log("blogGraph ", JSON.stringify(blogGraph));
+exploreBlogGraph({ id: 0, respondsTo: -1 });
