@@ -14,7 +14,6 @@ import { Moment, Moments, UpdateMoment } from "../types";
 interface MomentsOfBeing {
   CreateMoment(req: NextRequest): Promise<Response>;
   DownloadMoments(req: NextRequest): Promise<Response>;
-
   UpdateMoment(req: NextRequest): Promise<Response>;
   GetNav(req: NextRequest): Promise<Response>;
 }

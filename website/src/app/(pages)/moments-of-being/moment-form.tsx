@@ -53,6 +53,7 @@ export default function MomentForm() {
         month: `${date.getMonth()}`,
         year: `${date.getFullYear()}`,
         date: `${date.getDate()}`,
+        // TODO
         journalist_id: "c3e3bc64-e05e-439a-9159-24f8bf06bd3a",
         moment: (formValues.get("moment") || "") as string,
       };

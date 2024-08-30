@@ -5,9 +5,9 @@ import client from "./client";
 export default interface Database {
   getMoments(
     email: string,
-    year: string | null,
-    month: string | null,
-    date: string | null
+    year?: string | null,
+    month?: string | null,
+    date?: string | null
   ): Promise<Moment[] | null>;
   setMoment(moment: Moment): Promise<string | null>;
   getMomentsNav(email: string): Promise<string[]>;
@@ -16,9 +16,9 @@ export default interface Database {
 export const db: Database = {
   async getMoments(
     email: string,
-    year: string,
-    month: string,
-    date: string
+    year?: string,
+    month?: string,
+    date?: string
   ): Promise<Moment[] | null> {
     try {
       const data = await client<
@@ -28,7 +28,6 @@ export const db: Database = {
       } ${month ? client`AND month = ${month}` : client``} ${
         date ? client`AND date = ${date}` : client``
       } ORDER BY month ASC`;
-      console.log("data ", data);
       return data.map((d) => ({
         moment: d.moment,
         date_string: d.date_string,
