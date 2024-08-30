@@ -1,5 +1,7 @@
-import { jwtSession } from "@app/cookies";
 import { NextRequest, NextResponse } from "next/server";
+
+import { jwtSession } from "@app/cookies";
+
 import verifyJWT from "./verify-jwt";
 
 export default function withJWT(
