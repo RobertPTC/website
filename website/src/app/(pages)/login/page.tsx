@@ -27,7 +27,6 @@ export default function Login({
         maxAge: loginSessionIDMaxAge,
         sameSite: "strict",
       });
-      console.log("res ", res);
       if (searchParams.referrer) {
         cookies().set(loginReferrer, searchParams.referrer as string);
       }

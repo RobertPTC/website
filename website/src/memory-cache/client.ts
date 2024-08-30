@@ -5,6 +5,7 @@ let isConnected = false;
 
 export function getMemoryCacheClient() {
   if (!client) {
+    console.log("process.env.url ", process.env.REDIS_URL);
     client = createClient({
       url: process.env.REDIS_URL,
     });
