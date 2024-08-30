@@ -52,6 +52,7 @@ export function BuildingTheGoogleTimer() {
         if (!seen[v.id]) {
           const node = document.createElement("div");
           node.setAttribute("id", v.id);
+          if (!c) return;
           c.append(node);
           seen[v.id] = true;
           c.append(exploreBlogGraph(v, node));
