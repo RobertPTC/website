@@ -46,14 +46,13 @@ export function BuildingTheGoogleTimer() {
       if (!c) {
         c = document.createElement("div");
       }
-      let seen: any = {};
       c.setAttribute("id", v.id);
+      let seen: any = {};
       blogGraph[v.id].children.forEach((v) => {
         if (!seen[v.id]) {
           const node = document.createElement("div");
           node.setAttribute("id", v.id);
           if (!c) return;
-          c.append(node);
           seen[v.id] = true;
           c.append(exploreBlogGraph(v, node));
         }
