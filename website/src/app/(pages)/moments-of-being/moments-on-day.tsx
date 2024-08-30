@@ -24,7 +24,7 @@ export default function MomentsOnDay({
       </Typography>
       {moments[month].moments.all.map((m) => {
         return (
-          <Box key={m.id} sx={{ maxWidth: ["100%", "100%", "80%"] }}>
+          <Box key={m.moment_id} sx={{ maxWidth: ["100%", "100%", "80%"] }}>
             <Typography sx={{ whiteSpace: "pre-wrap" }}>{m.moment}</Typography>
           </Box>
         );

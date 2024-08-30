@@ -25,10 +25,10 @@ function createMomentSearchTrie(
         if (momentsTrie) {
           momentsTrie.addWord(s, {
             label: v.date_string,
-            url: `/moments-of-being/moment/${v.id}`,
+            url: `/moments-of-being/moment/${v.moment_id}`,
             momentPreviewText:
               v.moment.match(sentenceRegex)?.slice(0, 2).join(" ") || "",
-            id: v.id,
+            id: v.moment_id,
           });
         }
       });

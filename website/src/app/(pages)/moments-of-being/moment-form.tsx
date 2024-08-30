@@ -67,7 +67,7 @@ export default function MomentForm() {
             message: "Your moment was saved successfully",
             severity: "success",
           });
-          momentID.current = json.id;
+          momentID.current = json.moment_id;
           storage.clearCache();
         } catch (e) {
           setSnackbarMeta({

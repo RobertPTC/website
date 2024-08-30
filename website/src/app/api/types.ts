@@ -25,7 +25,7 @@ export type FormMoment = BaseMoment & {
 };
 
 export type Moment = BaseMoment & {
-  id: string;
+  moment_id: string;
   score: number;
 };
 
@@ -38,7 +38,7 @@ export type MomentNav = number[];
 
 export type MonthMoment = {
   moments: {
-    all: Pick<Moment, "id" | "moment" | "date_string">[];
+    all: Pick<Moment, "moment_id" | "moment" | "date_string">[];
     [key: number]: Moment[] | undefined;
   };
   mostImportantWords: string[];

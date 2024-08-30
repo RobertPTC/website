@@ -39,6 +39,9 @@ describe("authentication", () => {
       ): Promise<string | null> {
         throw new Error("Function not implemented.");
       },
+      getEmailForSessionID: function (id: string): Promise<string | null> {
+        throw new Error("Function not implemented.");
+      },
     };
     const withService = dependencyInjector(
       requestVerificationCode,
@@ -66,6 +69,9 @@ describe("authentication", () => {
         id: string,
         ttl: number
       ): Promise<string | null> {
+        throw new Error("Function not implemented.");
+      },
+      getEmailForSessionID: function (id: string): Promise<string | null> {
         throw new Error("Function not implemented.");
       },
     };

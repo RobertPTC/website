@@ -8,6 +8,7 @@ export default interface MemoryCache {
   ): Promise<string | null>;
   getLoginSession(id: string): Promise<string | null>;
   setSessionID(id: string, email: string, ttl: number): Promise<string | null>;
+  getEmailForSessionID(id: string): Promise<string | null>;
 }
 
 export const memoryCache: MemoryCache = {
@@ -34,5 +35,9 @@ export const memoryCache: MemoryCache = {
       console.error("error", error);
       return null;
     }
+  },
+  async getEmailForSessionID(id) {
+    const client = await connectMemoryCache(getMemoryCacheClient());
+    return await client.get(id);
   },
 };

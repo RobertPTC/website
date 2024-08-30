@@ -5,16 +5,16 @@ import { getSession } from "@auth0/nextjs-auth0";
 import { NextRequest } from "next/server";
 import { Row } from "postgres";
 
+import sql from "@app/db/client";
 import SentimentAlyze from "sentiment-alyze";
 
-import sql from "../../../db";
 import getMoments from "../../../db/get-moments";
 import { Moment, Moments, UpdateMoment } from "../types";
 
 interface MomentsOfBeing {
   CreateMoment(req: NextRequest): Promise<Response>;
   DownloadMoments(req: NextRequest): Promise<Response>;
-  Moments(req: NextRequest): Promise<Response>;
+
   UpdateMoment(req: NextRequest): Promise<Response>;
   GetNav(req: NextRequest): Promise<Response>;
 }
@@ -96,99 +96,6 @@ function MomentsOfBeing(): MomentsOfBeing {
           });
         });
       });
-    },
-    async Moments(req) {
-      const year = req.nextUrl.searchParams.get("year");
-      const month = req.nextUrl.searchParams.get("month");
-      const date = req.nextUrl.searchParams.get("date");
-      const session = await getSession();
-      if (!year || !session || !sql) {
-        return Response.json(
-          {},
-          { status: 500, statusText: "Year or session not included" }
-        );
-      }
-      const data = await getMoments(session.user.email, sql, year, month, date);
-      let results: Moments = {};
-      data.forEach((v: Row) => {
-        if (!results[v.month]) {
-          const termFrequency = sA.termFrequency(v.moment);
-          const mostImportantWords = Object.entries(termFrequency)
-            .sort((a, b) => {
-              return b[1] - a[1];
-            })
-            .map(([term]) => term)
-            .slice(0, 5);
-          results[v.month] = {
-            minScore: v.score,
-            maxScore: v.score,
-            moments: {
-              all: [
-                {
-                  moment: v.moment,
-                  id: v.moment_id,
-                  date_string: v.date_string,
-                },
-              ],
-              [v.date]: [
-                {
-                  moment: v.moment,
-                  date: v.date,
-                  date_string: v.date_string,
-                  year: v.year,
-                  month: v.month,
-                  score: v.score,
-                  id: v.moment_id,
-                },
-              ],
-            },
-            mostImportantWords,
-          };
-          return;
-        }
-        if (results[v.month]) {
-          const moments = results[v.month]["moments"];
-          const momentsForDate = moments[v.date];
-          const month = results[v.month];
-          const moment: Moment = {
-            moment: v.moment,
-            date: v.date,
-            date_string: v.date_string,
-            year: v.year,
-            month: v.month,
-            score: v.score,
-            id: v.moment_id,
-          };
-          const allMoments = [
-            ...moments.all,
-            { moment: v.moment, id: v.moment_id, date_string: v.date_string },
-          ];
-          const tfidf = sA.tfidf(allMoments.map((m) => m.moment));
-          const mostImportantWords = Object.entries(tfidf)
-            .map(([word, vectors]) => {
-              return {
-                word,
-                score: vectors.reduce((p, c) => p + c, 0),
-              };
-            })
-            .sort((a, b) => {
-              return b.score - a.score;
-            })
-            .map(({ word }) => word)
-            .slice(0, 5);
-          results[v.month] = {
-            minScore: month.minScore < v.score ? month.minScore : v.score,
-            maxScore: month.maxScore > v.score ? month.maxScore : v.score,
-            moments: {
-              ...moments,
-              all: allMoments,
-              [v.date]: momentsForDate ? [...momentsForDate, moment] : [moment],
-            },
-            mostImportantWords,
-          };
-        }
-      });
-      return Response.json(results, { status: 200 });
     },
     UpdateMoment(req) {
       return req.json().then(async (json: UpdateMoment) => {

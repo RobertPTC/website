@@ -7,6 +7,12 @@ import setJWTInCache from "./set-jwt-in-cache";
 
 import dependencyInjector from "../dependency-injector";
 
+export type JWTPayload = {
+  sub: string;
+  exp: number;
+  iat: number;
+};
+
 export const withServiceRequestVerificationCode = dependencyInjector(
   requestVerificationCode,
   memoryCache,
