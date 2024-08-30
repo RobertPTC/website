@@ -40,7 +40,7 @@ const storage = Storage["api"](fetch);
 
 export default function MomentForm() {
   const formRef = useRef<HTMLFormElement>(null);
-  const momentID = useRef<string | null>(null);
+
   const [snackbarMeta, setSnackbarMeta] = useState<SnackbarMetadata>(null);
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -57,52 +57,26 @@ export default function MomentForm() {
         journalist_id: "c3e3bc64-e05e-439a-9159-24f8bf06bd3a",
         moment: (formValues.get("moment") || "") as string,
       };
-
-      if (!momentID.current) {
-        try {
-          const json = await storage.set<CreateMomentRequest>({
-            uri: "/api/moments-of-being/create-moment",
-            data: values,
-          });
-          setSnackbarMeta({
-            message: "Your moment was saved successfully",
-            severity: "success",
-          });
-          momentID.current = json.moment_id;
-          storage.clearCache();
-        } catch (e) {
-          setSnackbarMeta({
-            message: "Something went wrong saving your moment",
-            severity: "error",
-          });
-        }
-        return;
-      }
       try {
-        const res = await fetch("/api/moments-of-being/update-moment", {
-          method: "PUT",
-          body: JSON.stringify({ id: momentID.current, moment: values.moment }),
+        const json = await storage.set<CreateMomentRequest>({
+          uri: "/api/moments-of-being/create-moment",
+          data: values,
         });
-        if (!res.ok) {
-          throw new Error(res.statusText);
-        }
         setSnackbarMeta({
-          message: "Your moment was updated successfully",
+          message: "Your moment was saved successfully",
           severity: "success",
         });
         storage.clearCache();
-      } catch (error) {
+      } catch (e) {
         setSnackbarMeta({
           message: "Something went wrong saving your moment",
           severity: "error",
         });
       }
+      return;
     }
   }
-  function handleSnackbarClose(
-    event?: React.SyntheticEvent | Event,
-    reason?: string
-  ) {
+  function handleSnackbarClose() {
     setSnackbarMeta(null);
   }
   return (
@@ -137,7 +111,7 @@ export default function MomentForm() {
           "&:hover": { borderColor: "var(--accent)" },
         }}
       >
-        {momentID.current ? "Update" : "Submit"}
+        Submit
       </Button>
       <SB
         snackbarMeta={snackbarMeta}

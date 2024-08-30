@@ -1,4 +1,3 @@
-import { UserProvider } from "@auth0/nextjs-auth0/client";
 import { Box, ThemeProvider } from "@mui/material";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
 import { Roboto } from "next/font/google";
@@ -24,22 +23,20 @@ export default function RootLayout({
     <html lang="en">
       <AppRouterCacheProvider>
         <ThemeProvider theme={theme}>
-          <UserProvider>
-            <Box component="body" sx={{ ...roboto.style }}>
-              <Box
-                sx={{
-                  position: "sticky",
-                  top: 0,
-                  background: "rgb(var(--background-start-rgb))",
-                  p: 2,
-                  zIndex: 300,
-                }}
-              >
-                <Nav />
-              </Box>
-              <Box>{children}</Box>
+          <Box component="body" sx={{ ...roboto.style }}>
+            <Box
+              sx={{
+                position: "sticky",
+                top: 0,
+                background: "rgb(var(--background-start-rgb))",
+                p: 2,
+                zIndex: 300,
+              }}
+            >
+              <Nav />
             </Box>
-          </UserProvider>
+            <Box>{children}</Box>
+          </Box>
         </ThemeProvider>
       </AppRouterCacheProvider>
     </html>
