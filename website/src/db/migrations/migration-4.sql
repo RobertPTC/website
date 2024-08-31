@@ -3,7 +3,6 @@ CREATE TABLE blog_comment(
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     date TEXT NOT NULL,
     text TEXT NOT NULL,
-    blog_id UUID NOT NULL,
     responds_to UUID NOT NULL, 
     journalist_id UUID NOT NULL REFERENCES journalist (journalist_id)
 );

@@ -1,8 +1,12 @@
 const fs = require("node:fs");
 const { EventEmitter } = require("node:stream");
 
+const { v4 } = require("uuid");
+
 const url = "";
 const url1 = "https://google.com";
+
+console.log("uuid ", v4());
 
 function downloadFile(url) {
   fetch(url)

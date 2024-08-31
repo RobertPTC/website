@@ -1,4 +1,4 @@
-import { Moment } from "@app/app/api/types";
+import { BlogComment, Moment } from "@app/app/api/types";
 
 import client from "./client";
 
@@ -11,6 +11,7 @@ export default interface Database {
   ): Promise<Moment[] | null>;
   setMoment(moment: Moment): Promise<string | null>;
   getMomentsNav(email: string): Promise<string[]>;
+  getCommentsForBlog(blogID: string): Promise<BlogComment[] | null>;
 }
 
 export const db: Database = {
@@ -53,5 +54,11 @@ export const db: Database = {
       await client`SELECT DISTINCT year FROM moment WHERE journalist_id IN (SELECT journalist_id FROM journalist WHERE email = ${email}) ORDER BY year DESC`;
     const result = data.map((v) => v.year);
     return result;
+  },
+  async getCommentsForBlog(blogID) {
+    const data =
+      await client`SELECT blog_comment_id, date, text, responds_to from blog_comment where responds_to=${blogID} ORDER BY created_at ASC`;
+    console.log("data ", data);
+    return null;
   },
 };

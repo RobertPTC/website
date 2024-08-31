@@ -4,6 +4,8 @@ import { CodeBlock, a11yLight, a11yDark } from "react-code-blocks";
 import { Box, Typography } from "@mui/material";
 
 import { blogStyles } from "./blogs";
+import Comments from "./comments";
+import CreateComment from "./create-comment";
 import useIsDarkMode from "./use-is-dark-mode";
 
 const blogComments = [
@@ -37,7 +39,7 @@ blogComments.forEach((c) => {
   subgraph[c.respondsTo].children.push(c);
 });
 
-export function BuildingTheGoogleTimer() {
+export function BuildingTheGoogleTimer({ id }: { id: string }) {
   const isDarkMode = useIsDarkMode();
 
   function exploreBlogGraph(v: any, container?: HTMLDivElement) {
@@ -598,6 +600,8 @@ return () => {
           solve!
         </Typography>
       </Box>
+      <CreateComment respondsTo={id} />
+      <Comments blogID={id} />
     </Box>
   );
 }
