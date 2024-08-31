@@ -15,6 +15,7 @@ export default function Home() {
       <Box
         component="video"
         autoPlay
+        playsInline
         loop
         src="/ocean.mp4"
         muted
