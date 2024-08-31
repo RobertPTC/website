@@ -3,7 +3,13 @@ import { Metadata } from "next";
 
 import MainLayoutWithPadding from "components/main-layout-with-padding";
 
-import { blogIndexes, blogPosts, PostNames, blogMetadata } from "../blogs";
+import {
+  blogIndexes,
+  blogPosts,
+  PostNames,
+  blogMetadata,
+  blogPostToID,
+} from "../blogs";
 import Directory from "../directory";
 
 export async function generateStaticParams() {

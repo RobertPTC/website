@@ -17,11 +17,19 @@ export type PostNames =
   | "building-the-blog-file-directory.post"
   | "prayer-meeting.post";
 
+export const blogPostToID: { [K in PostNames]: string } = {
+  "building-the-google-timer": "fe1830dc-5dfe-4108-91f2-15e77e21f90f",
+  "building-the-blog-file-directory.post": "",
+  "prayer-meeting.post": "",
+};
+
 export const blogPosts: { [K in PostNames]: () => ReactNode } = {
   "building-the-blog-file-directory.post": () => (
     <>Building the Blog File Directory Component</>
   ),
-  "building-the-google-timer": () => <BuildingTheGoogleTimer />,
+  "building-the-google-timer": () => (
+    <BuildingTheGoogleTimer id={blogPostToID["building-the-google-timer"]} />
+  ),
   "prayer-meeting.post": () => <>Learning System Design from Prayer Meeting</>,
 };
 
