@@ -16,13 +16,16 @@ export function BuildingTheGoogleTimer() {
         </Typography>
         <Typography>August 30, 2024</Typography>
       </Box>
-      <Box
-        component="img"
-        src="/timer.webp"
-        width="100%"
-        sx={{ mb: 2 }}
-        alt="Picture of timer application"
-      />
+      <Box component="picture">
+        <Box component="source" srcSet="/timer.webp" />
+        <Box
+          component="img"
+          src="/timer.jpg"
+          width="100%"
+          sx={{ mb: 2 }}
+          alt="Picture of timer application"
+        />
+      </Box>
       <Box component="article" id="motivation" sx={{ mb: 2 }}>
         <Typography variant="h2" sx={{ ...blogStyles.h2, mb: 1 }}>
           Motivation
