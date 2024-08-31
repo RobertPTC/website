@@ -13,15 +13,21 @@ export default function Home() {
   return (
     <Box component="main">
       <Box
-        id="backgroundImage"
+        component="video"
+        autoPlay
+        loop
+        src="/ocean.mp4"
+        muted
         sx={{
-          backgroundImage: "url(https://i.ibb.co/X5jSz0K/ocean.gif)",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover",
-          height: "calc(100vh - 60px)",
+          position: "fixed",
+          minWidth: "100%",
+          minHeight: "100%",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
         }}
-      >
+      />
+      <Box sx={{ position: "relative", zIndex: 100 }}>
         <Box sx={{ p: 3 }}>
           <Typography
             variant="h1"
