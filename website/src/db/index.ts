@@ -12,6 +12,8 @@ export default interface Database {
   setMoment(moment: Moment): Promise<string | null>;
   getMomentsNav(email: string): Promise<string[]>;
   getCommentsForBlog(blogID: string): Promise<BlogComment[] | null>;
+  setComment(comment: BlogComment): Promise<string | null>;
+  getJournalistIDForEmail(email: string): Promise<string | null>;
 }
 
 export const db: Database = {
@@ -57,8 +59,38 @@ export const db: Database = {
   },
   async getCommentsForBlog(blogID) {
     const data =
-      await client`SELECT blog_comment_id, date, text, responds_to from blog_comment where responds_to=${blogID} ORDER BY created_at ASC`;
-    console.log("data ", data);
-    return null;
+      await client`SELECT blog_comment_id, date, text, responds_to FROM blog_comment WHERE responds_to=${blogID} ORDER BY created_at ASC`;
+    return data.map((d) => ({
+      responds_to: d.responds_to,
+      text: d.text,
+      blog_comment_id: d.blog_comment_id,
+      date: d.date,
+      journalist_id: "",
+    }));
+  },
+  async setComment(comment: BlogComment): Promise<string | null> {
+    try {
+      const res = await client`INSERT INTO blog_comment ${client(
+        comment
+      )} RETURNING blog_comment_id`;
+      console.log("res ", res);
+      return res[0].blog_comment_id;
+    } catch (error) {
+      console.error("error ", error);
+      return null;
+    }
+  },
+  async getJournalistIDForEmail(email) {
+    try {
+      const journalist =
+        await client`SELECT journalist_id FROM journalist WHERE email = ${email}`;
+      if (!journalist.length) {
+        throw new Error("no journalist for selected email");
+      }
+      return journalist[0].journalist_id;
+    } catch (error) {
+      console.error("error", error);
+      return null;
+    }
   },
 };

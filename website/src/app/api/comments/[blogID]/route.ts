@@ -14,6 +14,7 @@ const withService = dependencyInjector(
       if (!comments) {
         return NextResponse.json([], { status: 200 });
       }
+      return NextResponse.json(comments, { status: 200 });
     } catch (error) {}
   },
   db
