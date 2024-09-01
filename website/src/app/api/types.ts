@@ -64,4 +64,5 @@ export type BlogComment = {
   responds_to: string;
   date: string;
   text: string;
+  journalist_id: string;
 };

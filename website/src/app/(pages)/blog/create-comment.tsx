@@ -6,11 +6,25 @@ import { Box, Button, TextField } from "@mui/material";
 
 import createCommentAction from "./create-comment-action";
 
-export default function CreateComment({ respondsTo }: { respondsTo: string }) {
+export default function CreateComment({
+  respondsTo,
+  blogID,
+}: {
+  respondsTo: string;
+  blogID: string;
+}) {
   return (
-    <ErrorBoundary fallback={<div>Something went wrong</div>}>
+    <ErrorBoundary
+      fallback={<div>Something went wrong. Please try again later!</div>}
+    >
       <Box component="form" action={createCommentAction}>
-        <Box component="input" type="hidden" value={respondsTo} />
+        <Box
+          component="input"
+          type="hidden"
+          name="respondsTo"
+          value={respondsTo}
+        />
+        <Box component="input" type="hidden" name="blogID" value={blogID} />
         <TextField multiline name="text" />
         <Button type="submit">Submit</Button>
       </Box>
