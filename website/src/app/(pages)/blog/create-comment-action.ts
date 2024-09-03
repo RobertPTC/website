@@ -34,7 +34,6 @@ async function createCommentAction(
   if (
     !formData.get("respondsTo") ||
     !formData.get("text") ||
-    !formData.get("respondsTo") ||
     !formData.get("blogID")
   ) {
     throw new Error("Form is invalid");
