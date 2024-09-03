@@ -1,80 +1,193 @@
 "use client";
 import { useEffect, useState } from "react";
 
+import { Typography } from "@mui/material";
+import dayjs from "dayjs";
+
 import { BlogComment } from "@app/app/api/types";
 
-const blogComments = [
-  { id: 1, respondsTo: 0 },
-  { id: 2, respondsTo: 0 },
-  { id: 3, respondsTo: 0 },
-  { id: 4, respondsTo: 1 },
-  { id: 5, respondsTo: 2 },
-  { id: 6, respondsTo: 1 },
-  { id: 7, respondsTo: 3 },
-  { id: 8, respondsTo: 3 },
-  { id: 9, respondsTo: 7 },
-  { id: 10, respondsTo: 7 },
-  { id: 11, respondsTo: 5 },
-  { id: 12, respondsTo: 6 },
-  { id: 13, respondsTo: 0 },
-  { id: 14, respondsTo: 12 },
-];
+// fe1830dc-5dfe-4108-91f2-15e77e21f90f
 
-const blogGraph: { [key: number]: { children: any[] } } = {
-  0: { children: [] },
-};
-
-blogComments.forEach((c) => {
-  if (!blogGraph[c.id]) {
-    blogGraph[c.id] = {
-      children: [],
-    };
+function exploreBlogGraph(
+  v: BlogComment,
+  blogID: string,
+  blogGraph: { [key: string]: { children: BlogComment[] } },
+  container?: HTMLDivElement
+) {
+  if (typeof document === "undefined") return "";
+  let c = container;
+  if (!c) {
+    c = document.createElement("div");
   }
-  blogGraph[c.respondsTo].children.push(c);
-});
+  c.setAttribute("id", v.blog_comment_id);
+  let seen: any = {};
+  blogGraph[v.blog_comment_id].children.forEach((comment) => {
+    if (seen[v.blog_comment_id]) return;
+
+    const node = document.createElement("div");
+    node.setAttribute("id", comment.blog_comment_id);
+
+    const date = document.createElement("p");
+    date.textContent = comment.date;
+
+    const text = document.createElement("p");
+    text.textContent = comment.text;
+
+    const reply = document.createElement("button");
+    reply.classList.add("reply-to-button");
+    reply.setAttribute("data-responds-to", comment.blog_comment_id);
+    reply.textContent = "Reply";
+
+    const replyForm = document.createElement("form");
+    replyForm.setAttribute("data-reply-form", comment.blog_comment_id);
+    replyForm.classList.add("hidden-reply-form");
+
+    const textInput = document.createElement("input");
+    textInput.setAttribute("name", "text");
+    replyForm.appendChild(textInput);
+
+    const respondsToInput = document.createElement("input");
+    respondsToInput.setAttribute("type", "hidden");
+    respondsToInput.setAttribute("value", comment.blog_comment_id);
+    respondsToInput.setAttribute("name", "responds_to");
+    replyForm.appendChild(respondsToInput);
+
+    const submitButton = document.createElement("button");
+    submitButton.setAttribute("type", "submit");
+    submitButton.textContent = "Reply";
+    replyForm.appendChild(submitButton);
+
+    const replyContainer = document.createElement("div");
+    replyContainer.setAttribute("data-reply", comment.blog_comment_id);
+
+    const repliesContainer = document.createElement("div");
+    repliesContainer.setAttribute("data-replies-for", comment.blog_comment_id);
+
+    replyContainer.appendChild(date);
+    replyContainer.appendChild(text);
+    replyContainer.appendChild(reply);
+    replyContainer.appendChild(replyForm);
+
+    // if (v.blog_comment_id !== blogID) {
+    //   const repliesContainer = document.createElement("div");
+    //   const repliesButton = document.createElement("button");
+    //   repliesButton.setAttribute("data-replies-for", comment.blog_comment_id);
+    //   const children = blogGraph[v.blog_comment_id].children;
+    //   repliesButton.textContent = `${children.length} ${
+    //     children.length > 1 ? "replies" : "reply"
+    //   }`;
+    //   repliesContainer.appendChild(repliesButton);
+    //   node.appendChild(repliesContainer);
+    // }
+    node.appendChild(replyContainer);
+    node.appendChild(repliesContainer);
+
+    if (!c) return;
+
+    seen[comment.blog_comment_id] = true;
+    c.appendChild(
+      exploreBlogGraph(comment, blogID, blogGraph, node) ||
+        document.createElement("div")
+    );
+  });
+  return c;
+}
 
 export default function Comments({ blogID }: { blogID: string }) {
-  const [comments, setComments] = useState<BlogComment[]>([]);
+  const [commentsGraph, setCommentsGraph] = useState<HTMLDivElement>();
+  const [comments, setComments] = useState<BlogComment[]>();
   useEffect(() => {
     async function getComments() {
       const res = await fetch(`/api/comments/${blogID}`);
-      const comments = await res.json();
-      // setComments(comments);
-      console.log("comments ", comments);
-      setComments(comments);
+      const comments: BlogComment[] = await res.json();
+      const blogGraph: { [key: string]: { children: BlogComment[] } } = {
+        [blogID]: { children: [] },
+      };
+      comments.forEach((c) => {
+        if (!blogGraph[c.blog_comment_id]) {
+          blogGraph[c.blog_comment_id] = {
+            children: [],
+          };
+        }
+        blogGraph[c.responds_to].children.push(c);
+      });
+      const blogNode = exploreBlogGraph(
+        {
+          responds_to: "",
+          blog_comment_id: blogID,
+          date: "",
+          text: "",
+          journalist_id: "",
+        },
+        blogID,
+        blogGraph
+      );
+      if (blogNode) {
+        setComments(comments);
+        setCommentsGraph(blogNode);
+      }
     }
     getComments();
   }, [blogID]);
-  useEffect(() => {
-    function exploreBlogGraph(v: any, container?: HTMLDivElement) {
-      if (typeof document !== "undefined") {
-        let c = container;
-        if (!c) {
-          c = document.createElement("div");
-        }
-        c.setAttribute("id", v.id);
-        let seen: any = {};
-        blogGraph[v.id].children.forEach((v) => {
-          if (!seen[v.id]) {
-            const node = document.createElement("div");
-            node.setAttribute("id", v.id);
-            if (!c) return;
-            seen[v.id] = true;
-            c.append(exploreBlogGraph(v, node));
-          }
-        });
-        return c;
-      }
-      return "";
-    }
-    console.log(exploreBlogGraph({ id: 0 }));
-  }, [comments]);
 
+  useEffect(() => {
+    async function onReplySubmit(this: HTMLFormElement, e: Event) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      formData.append("date", dayjs().format("MM/DD/YYYY"));
+      const res = await fetch("/api/comments/create-comment", {
+        method: "POST",
+        body: formData,
+      });
+    }
+    function onClickReplyToButton(this: HTMLButtonElement) {
+      const replyForm = this.nextElementSibling;
+      if (replyForm) {
+        replyForm.classList.toggle("hidden-reply-form");
+      }
+    }
+    function onClickRepliesButton(this: HTMLButtonElement) {
+      const blogID = this.dataset["repliesFor"];
+      const replyContainer = document.querySelector(`[data-reply="${blogID}"]`);
+      if (replyContainer) {
+        replyContainer.classList.toggle("hidden-replies");
+      }
+    }
+    if (commentsGraph && typeof document !== "undefined") {
+      const replyToButtons = document.querySelectorAll("[data-responds-to]");
+      const replyForms = document.querySelectorAll("[data-reply-form]");
+      const repliesButtons = document.querySelectorAll("[data-replies-for]");
+      Array.from(replyForms).forEach((f) => {
+        f.addEventListener("submit", onReplySubmit);
+      });
+      Array.from(replyToButtons).forEach((b) => {
+        b.addEventListener("click", onClickReplyToButton);
+      });
+      Array.from(repliesButtons).forEach((b) => {
+        b.addEventListener("click", onClickRepliesButton);
+      });
+      return () => {
+        Array.from(replyForms).forEach((f) => {
+          f.removeEventListener("submit", onReplySubmit);
+        });
+        Array.from(replyToButtons).forEach((b) => {
+          b.removeEventListener("click", onClickReplyToButton);
+        });
+        Array.from(repliesButtons).forEach((b) => {
+          b.removeEventListener("click", onClickRepliesButton);
+        });
+      };
+    }
+  }, [commentsGraph]);
+  if (!commentsGraph || !comments) return <></>;
   return (
     <>
-      {comments.map((c) => {
-        return <></>;
-      })}
+      <Typography variant="h2" sx={{ fontSize: "20px", fontWeight: 500 }}>
+        {comments.length} Comments
+      </Typography>
+      <div
+        dangerouslySetInnerHTML={{ __html: commentsGraph.innerHTML || "" }}
+      />
     </>
   );
 }

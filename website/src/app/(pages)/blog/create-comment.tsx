@@ -25,8 +25,8 @@ export default function CreateComment({
           value={respondsTo}
         />
         <Box component="input" type="hidden" name="blogID" value={blogID} />
-        <TextField multiline name="text" />
-        <Button type="submit">Submit</Button>
+        <TextField multiline name="text" variant="standard" />
+        <Button type="submit">Add a comment</Button>
       </Box>
     </ErrorBoundary>
   );
