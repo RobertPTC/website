@@ -58,10 +58,14 @@ function exploreBlogGraph(
     replyForm.appendChild(submitButton);
 
     const replyContainer = document.createElement("div");
-    replyContainer.setAttribute("data-reply", comment.blog_comment_id);
 
-    const repliesContainer = document.createElement("div");
+    const repliesContainer = document.createElement("button");
     repliesContainer.setAttribute("data-replies-for", comment.blog_comment_id);
+
+    // const res = await fetch(`/api/comments/${comment.blog_comment_id}/count`);
+    // const { count } = await res.json();
+    // console.log("count ", count);
+    // repliesContainer.textContent = `${count} replies`;
 
     replyContainer.appendChild(date);
     replyContainer.appendChild(text);
@@ -96,7 +100,13 @@ function exploreBlogGraph(
 export default function Comments({ blogID }: { blogID: string }) {
   const [commentsGraph, setCommentsGraph] = useState<HTMLDivElement>();
   const [comments, setComments] = useState<BlogComment[]>();
+  const [commentsCount, setCommentsCount] = useState<number | null>(null);
   useEffect(() => {
+    async function getCommentsCount() {
+      const res = await fetch(`/api/comments/${blogID}/count`);
+      const { count } = await res.json();
+      setCommentsCount(count);
+    }
     async function getComments() {
       const res = await fetch(`/api/comments/${blogID}`);
       const comments: BlogComment[] = await res.json();
@@ -128,6 +138,7 @@ export default function Comments({ blogID }: { blogID: string }) {
       }
     }
     getComments();
+    getCommentsCount();
   }, [blogID]);
 
   useEffect(() => {
@@ -164,6 +175,12 @@ export default function Comments({ blogID }: { blogID: string }) {
         b.addEventListener("click", onClickReplyToButton);
       });
       Array.from(repliesButtons).forEach((b) => {
+        const repliesFor = (b as HTMLButtonElement).dataset.repliesFor;
+        fetch(`/api/comments/${repliesFor}/count`).then((res) =>
+          res.json().then(({ count }) => {
+            b.textContent = `${count} replies`;
+          })
+        );
         b.addEventListener("click", onClickRepliesButton);
       });
       return () => {
@@ -183,7 +200,7 @@ export default function Comments({ blogID }: { blogID: string }) {
   return (
     <>
       <Typography variant="h2" sx={{ fontSize: "20px", fontWeight: 500 }}>
-        {comments.length} Comments
+        {commentsCount} Comments
       </Typography>
       <div
         dangerouslySetInnerHTML={{ __html: commentsGraph.innerHTML || "" }}

@@ -12,6 +12,7 @@ export default interface Database {
   setMoment(moment: Moment): Promise<string | null>;
   getMomentsNav(email: string): Promise<string[]>;
   getCommentsForBlog(blogID: string): Promise<BlogComment[] | null>;
+  getCommentsCountForBlog(blogID: string): Promise<number | null>;
   setComment(comment: BlogComment): Promise<string | null>;
   getJournalistIDForEmail(email: string): Promise<string | null>;
 }
@@ -72,18 +73,8 @@ export const db: Database = {
   },
   async getCommentsForBlog(blogID) {
     try {
-      const data = await client`WITH RECURSIVE get_blog_comments AS (
-        SELECT text, responds_to, blog_comment_id, date, created_at
-        FROM blog_comment
-        WHERE responds_to = ${blogID}
-      
-        UNION ALL
-      
-        SELECT bc.text, bc.responds_to, bc.blog_comment_id, bc.date, bc.created_at
-        FROM blog_comment bc
-        INNER JOIN get_blog_comments gbc ON bc.responds_to = gbc.blog_comment_id
-      )
-      SELECT text, responds_to, blog_comment_id, date FROM get_blog_comments ORDER BY created_at ASC;`;
+      const data =
+        await client`SELECT text, responds_to, blog_comment_id, date FROM blog_comment WHERE responds_to=${blogID} ORDER BY created_at ASC;`;
       return data.map((d) => ({
         responds_to: d.responds_to,
         text: d.text,
@@ -117,6 +108,26 @@ export const db: Database = {
       return journalist[0].journalist_id;
     } catch (error) {
       console.error("error", error);
+      return null;
+    }
+  },
+  async getCommentsCountForBlog(blogID) {
+    try {
+      const data = await client`WITH RECURSIVE get_blog_comments AS (
+        SELECT text, responds_to, blog_comment_id, date, created_at
+        FROM blog_comment
+        WHERE responds_to = ${blogID}
+      
+        UNION ALL
+      
+        SELECT bc.text, bc.responds_to, bc.blog_comment_id, bc.date, bc.created_at
+        FROM blog_comment bc
+        INNER JOIN get_blog_comments gbc ON bc.responds_to = gbc.blog_comment_id
+      )
+      SELECT COUNT(blog_comment_id) FROM get_blog_comments;`;
+      return data[0].count;
+    } catch (error) {
+      console.error("error ", error);
       return null;
     }
   },
