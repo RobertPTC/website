@@ -61,6 +61,7 @@ export default function Intention({
   const isEditAwaitingInput = useRef(true);
   const pomodoroSpans = useRef<number[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const startDate = useRef<Dayjs>(dayjs());
   const [activeDuration, setActiveDuration] = useState<number>(initialSeconds);
@@ -84,6 +85,23 @@ export default function Intention({
     }
   }
   const playAudioCallback = useCallback(playAudio, []);
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    function onVisibilityChange() {
+      if (
+        document.visibilityState === "visible" &&
+        intention === activeIntention &&
+        submitButtonRef.current
+      ) {
+        submitButtonRef.current.focus();
+      }
+    }
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, [activeIntention, intention]);
 
   useEffect(() => {
     function onWorkerMessage(e: MessageEvent) {
@@ -411,6 +429,7 @@ export default function Intention({
               type="submit"
               variant="contained"
               sx={{ mr: 2, textTransform: "capitalize" }}
+              ref={submitButtonRef}
               disabled={
                 !activeDuration || Number(inputRef.current?.value) === 0
               }
