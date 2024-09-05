@@ -88,18 +88,20 @@ export default function Intention({
 
   useEffect(() => {
     if (typeof document === "undefined") return;
-    function onVisibilityChange() {
+    function onDocumentKeydown(e: KeyboardEvent) {
       if (
-        document.visibilityState === "visible" &&
         intention === activeIntention &&
-        submitButtonRef.current
+        submitButtonRef.current &&
+        e.code === "Space" &&
+        document.activeElement?.tagName === "BODY"
       ) {
-        submitButtonRef.current.focus();
+        e.preventDefault();
+        submitButtonRef.current.click();
       }
     }
-    document.addEventListener("visibilitychange", onVisibilityChange);
+    document.addEventListener("keydown", onDocumentKeydown);
     return () => {
-      document.removeEventListener("visibilitychange", onVisibilityChange);
+      document.removeEventListener("keydown", onDocumentKeydown);
     };
   }, [activeIntention, intention]);
 
