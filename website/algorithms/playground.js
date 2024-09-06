@@ -158,3 +158,19 @@ function debounce(fn, timeout) {
 // debouncedFn("first");
 // debouncedFn("second");
 // debouncedFn("a", "b", { bat: "cat" }, [7, 7, 7]);
+
+function reverseString(s) {
+  let stack = [];
+  for (let i = 0; i < s.length; i++) {
+    stack.unshift(s[i]);
+  }
+  console.log("stack ", stack);
+}
+
+reverseString("CodingMoney");
+
+async function getWP(url) {
+  const res = await fetch(url);
+  const json = await res.json();
+  console.log("json ", json);
+}
