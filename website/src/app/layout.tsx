@@ -24,17 +24,7 @@ export default function RootLayout({
       <AppRouterCacheProvider>
         <ThemeProvider theme={theme}>
           <Box component="body" sx={{ ...roboto.style }}>
-            <Box
-              sx={{
-                position: "sticky",
-                top: 0,
-                background: "rgb(var(--background-start-rgb))",
-                p: 2,
-                zIndex: 300,
-              }}
-            >
-              <Nav />
-            </Box>
+            <Nav />
             <Box>{children}</Box>
           </Box>
         </ThemeProvider>
