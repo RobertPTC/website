@@ -41,7 +41,15 @@ function MobileNav() {
   }
   return (
     <>
-      <Drawer open={isDrawerOpen} onClose={handleDrawerToggle}>
+      <Drawer
+        open={isDrawerOpen}
+        onClose={handleDrawerToggle}
+        sx={{
+          ".MuiPaper-root": {
+            backgroundColor: "rgb(var(--background-start-rgb))",
+          },
+        }}
+      >
         <Box
           display="grid"
           gridTemplateColumns="repeat(24, 1fr)"
@@ -49,7 +57,7 @@ function MobileNav() {
           width="270px"
         >
           <IconButton onClick={handleDrawerToggle} sx={{ gridColumn: "24" }}>
-            <Close />
+            <Close sx={{ fill: "rgb(var(--foreground-rgb))" }} />
           </IconButton>
           <Box gridColumn="span 24">
             <NavLinks />
@@ -58,7 +66,7 @@ function MobileNav() {
       </Drawer>
       <Box display="grid" gridTemplateColumns="repeat(24, 1fr)">
         <IconButton sx={{ gridColumn: "24" }} onClick={handleDrawerToggle}>
-          <Menu />
+          <Menu sx={{ fill: "rgb(var(--foreground-rgb))" }} />
         </IconButton>
       </Box>
     </>
