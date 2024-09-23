@@ -100,7 +100,7 @@ export function Nav() {
             gridColumn: "span 12",
           },
           ".second_column": {
-            gridColumn: "13 / span 12",
+            gridColumn: "span 12",
             display: "flex",
             justifyContent: "flex-end",
             a: {
