@@ -12,21 +12,27 @@ const linkStyles: SxProps = {
 function NavLinks() {
   return (
     <>
-      <Box className="first_column">
-        <Link href="/">
+      <Box
+        className="first_column"
+        sx={{ ".link": { color: "rgb(var(--foreground-rgb))" } }}
+      >
+        <Link href="/" className="link">
           <Typography variant="body1" sx={linkStyles}>
             Robert P Cunningham
           </Typography>
         </Link>
       </Box>
-      <Box className="second_column">
-        <Link href="/planetary-hours-calculator">
+      <Box
+        className="second_column"
+        sx={{ ".link": { color: "rgb(var(--foreground-rgb))" } }}
+      >
+        <Link href="/planetary-hours-calculator" className="link">
           <Typography variant="body1">Planetary Hours Calculator</Typography>
         </Link>
-        <Link href="/pomodoro-timer">
+        <Link href="/pomodoro-timer" className="link">
           <Typography variant="body1">Pomodoro Timer</Typography>
         </Link>
-        <Link href="/blog/building-the-google-timer">
+        <Link href="/blog/building-the-google-timer" className="link">
           <Typography variant="body1">Blog</Typography>
         </Link>
       </Box>
