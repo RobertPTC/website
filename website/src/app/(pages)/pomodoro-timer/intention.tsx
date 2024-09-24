@@ -271,6 +271,11 @@ export default function Intention({
       isEditAwaitingInput.current = false;
       onChange(newValue);
     }
+    if (e.key === "Enter" && submitButtonRef.current) {
+      e.preventDefault();
+      submitButtonRef.current.click();
+      return;
+    }
     if (isNaN(Number(e.key))) {
       e.preventDefault();
     }
