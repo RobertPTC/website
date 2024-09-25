@@ -41,7 +41,7 @@ export default function StackedBarChart({
 }: StackedBarChartProps) {
   const svgRef = useRef<HTMLDivElement | null>(null);
   const colorInterpolator = scaleOrdinal()
-    .domain(bars.allLabels)
+    .domain(new Array(11).fill(""))
     .range(schemeRdYlBu[11]);
   useEffect(() => {
     function onWindowResize() {
