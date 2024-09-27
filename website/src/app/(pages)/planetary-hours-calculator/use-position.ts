@@ -19,28 +19,32 @@ export default function usePosition(
   location: string | null
 ): [Position | undefined, Dispatch<SetStateAction<Position | undefined>>] {
   const [pos, setPos] = useState<Position>();
-  if (typeof window !== "undefined") {
-    navigator.geolocation.watchPosition(
-      (pos) => {
-        if (location) return;
-        setSessionStorage(
-          SessionStorageKeys.POSITION,
-          JSON.stringify({
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      navigator.geolocation.watchPosition(
+        (pos) => {
+          if (location) return;
+          setSessionStorage(
+            SessionStorageKeys.POSITION,
+            JSON.stringify({
+              latitude: pos.coords.latitude,
+              longitude: pos.coords.longitude,
+            })
+          );
+          setPos({
             latitude: pos.coords.latitude,
             longitude: pos.coords.longitude,
-          })
-        );
-        setPos({
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-          state: "success",
-        });
-      },
-      (e) => {
-        console.error("position error", e);
-      }
-    );
-  }
+            state: "success",
+          });
+        },
+        (e) => {
+          console.error("position error", e);
+        }
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const coords = getSessionStorage(SessionStorageKeys.POSITION);

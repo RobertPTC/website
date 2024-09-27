@@ -7,30 +7,14 @@ import { PlanetaryHour } from "./types";
 const circularPath = "M 50, 50 m -45, 0 a 45,45 0 1,0 90,0 a 45,45 0 1,0 -90,0";
 
 export default function Countdown({ hour }: { hour: PlanetaryHour }) {
-  const [minuteArc, setMinuteArc] = useState<number>();
-  const [startDash, setStartDash] = useState<number>();
-  const [animationDuration, setAnimationDuration] = useState<number>();
-  const [hourLength, setHourLength] = useState<number>();
-  useEffect(() => {
-    if (hour) {
-      const hourEnd = hour.hourEnd.valueOf();
-      const hourStart = hour.hourStart.valueOf();
-      const elapsed = +new Date() - hourStart.valueOf();
-      const hourLength = hourEnd - hourStart;
-      const ratio = elapsed / hourLength;
-      const startDash = 283 * ratio;
-      const animationDuration = hourLength - elapsed;
-      const minuteArc = 360 * ratio;
-      setMinuteArc(minuteArc);
-      setStartDash(startDash);
-      setAnimationDuration(animationDuration);
-      setHourLength(hourLength);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hour.ruler]);
-
-  if (!minuteArc || !startDash || !animationDuration || !hour || !hourLength)
-    return <></>;
+  const hourEnd = hour.hourEnd.valueOf();
+  const hourStart = hour.hourStart.valueOf();
+  const elapsed = +new Date() - hourStart.valueOf();
+  const hourLength = hourEnd - hourStart;
+  const ratio = elapsed / hourLength;
+  const startDash = 283 * ratio;
+  const animationDuration = hourLength - elapsed;
+  const minuteArc = 360 * ratio;
 
   return (
     <Box>
