@@ -18,7 +18,11 @@ export default function Countdown({ hour }: { hour: PlanetaryHour }) {
 
   return (
     <Box>
-      <Box component="svg" sx={{ height: "100px", width: "100px" }}>
+      <Box
+        component="svg"
+        sx={{ height: "100px", width: "100px" }}
+        aria-label="Planetary Hours Clock"
+      >
         <Box component="g" sx={{ fill: "none", stroke: "none" }}>
           <Box
             component="circle"
