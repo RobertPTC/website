@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Box } from "@mui/material";
 import dayjs from "dayjs";
@@ -8,6 +8,7 @@ import { PlanetaryHour } from "./types";
 const circularPath = "M 50, 50 m -45, 0 a 45,45 0 1,0 90,0 a 45,45 0 1,0 -90,0";
 
 export default function Countdown({ hour }: { hour: PlanetaryHour }) {
+  const minuteHandRef = useRef<HTMLElement>();
   const now = dayjs();
   const hourEnd = hour.hourEnd.valueOf();
   const hourStart = hour.hourStart.valueOf();
@@ -19,7 +20,7 @@ export default function Countdown({ hour }: { hour: PlanetaryHour }) {
   const minuteArc = 360 * ratio;
   const startSecondArc = 360 / now.get("seconds");
   const endSecondArc = 360 + startSecondArc;
-  console.log("secondArc ", startSecondArc);
+
   useEffect(() => {
     console.log("hourStart effect ", hourStart, hour.ruler);
   }, [hourStart, hour.ruler]);
@@ -76,6 +77,7 @@ export default function Countdown({ hour }: { hour: PlanetaryHour }) {
             y2="93"
           />
           <Box
+            ref={minuteHandRef}
             component="line"
             id="minute-hand"
             stroke={hour.color}
@@ -84,18 +86,18 @@ export default function Countdown({ hour }: { hour: PlanetaryHour }) {
             x2="50"
             y2="50"
             strokeWidth="4px"
-            sx={{
-              "@keyframes minute": {
-                "0%": {
-                  transform: `rotate(${minuteArc}deg)`,
-                },
-                "100%": {
-                  transform: "rotate(360deg)",
-                },
-              },
-              animation: `minute ${animationDuration}ms linear`,
-              transformOrigin: "50px 50px",
-            }}
+            // sx={{
+            //   "@keyframes minute": {
+            //     "0%": {
+            //       transform: `rotate(${minuteArc}deg)`,
+            //     },
+            //     "100%": {
+            //       transform: "rotate(360deg)",
+            //     },
+            //   },
+            //   animation: `minute ${animationDuration}ms linear`,
+            //   transformOrigin: "50px 50px",
+            // }}
           />
           <Box
             component="line"
