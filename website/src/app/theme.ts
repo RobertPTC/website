@@ -40,13 +40,6 @@ const theme = createTheme({
         },
       },
     },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          background: "rgb(var(--foreground-rgb))",
-        },
-      },
-    },
     MuiAutocomplete: {
       styleOverrides: {
         root: {

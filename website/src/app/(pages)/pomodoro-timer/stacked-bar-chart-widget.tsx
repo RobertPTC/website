@@ -116,7 +116,7 @@ export default function StackedBarChartWidget() {
         })
         .then(responseHandler)
         .then((v) => {
-          setHasPomodoros(true);
+          setHasPomodoros(!!Object.keys(v as any).length);
         })
         .catch((e) => {
           setHasPomodoros(false);

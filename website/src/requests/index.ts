@@ -292,47 +292,39 @@ const Requests = {
         const newPomodoroIntentions = (pomodoroIntentions || []).filter(
           (p) => p !== intention
         );
-        if (pomodoros) {
-          Object.keys(pomodoros).forEach((year) => {
-            Object.keys(pomodoros[year]).forEach((month) => {
-              Object.keys(pomodoros[year][month]).forEach((date) => {
-                Object.keys(pomodoros[year][month][date]).forEach((hour) => {
-                  const newPomodoros = pomodoros[year][month][date][
-                    hour
-                  ].filter((p: Pomodoro) => {
-                    return p.label !== intention;
-                  });
-                  pomodoros[year][month][date][hour] = newPomodoros;
-                  if (!newPomodoros.length) {
-                    delete pomodoros[year][month][date][hour];
-                  }
-                  if (!Object.keys(pomodoros[year][month][date]).length) {
-                    delete pomodoros[year][month][date];
-                  }
-                  if (!Object.keys(pomodoros[year][month]).length) {
-                    delete pomodoros[year][month];
-                  }
-                  if (!Object.keys(pomodoros[year]).length) {
-                    delete pomodoros[year];
-                  }
-                });
-              });
-            });
-          });
-        }
-        if (!newPomodoroIntentions.length) {
-          storage.removeItem("/api/pomodoro");
-          storage.removeItem("/api/pomodoro-intention");
-          return;
-        }
-        if (newPomodoroIntentions.length && !Object.keys(pomodoros).length) {
+        if (!pomodoros && pomodoroIntentions.length) {
           storage.setItem(
             "/api/pomodoro-intention",
             JSON.stringify(newPomodoroIntentions)
           );
-          storage.removeItem("/api/pomodoro");
           return;
         }
+        Object.keys(pomodoros).forEach((year) => {
+          Object.keys(pomodoros[year]).forEach((month) => {
+            Object.keys(pomodoros[year][month]).forEach((date) => {
+              Object.keys(pomodoros[year][month][date]).forEach((hour) => {
+                const newPomodoros = pomodoros[year][month][date][hour].filter(
+                  (p: Pomodoro) => {
+                    return p.label !== intention;
+                  }
+                );
+                pomodoros[year][month][date][hour] = newPomodoros;
+                if (!newPomodoros.length) {
+                  delete pomodoros[year][month][date][hour];
+                }
+                if (!Object.keys(pomodoros[year][month][date]).length) {
+                  delete pomodoros[year][month][date];
+                }
+                if (!Object.keys(pomodoros[year][month]).length) {
+                  delete pomodoros[year][month];
+                }
+                if (!Object.keys(pomodoros[year]).length) {
+                  delete pomodoros[year];
+                }
+              });
+            });
+          });
+        });
         storage.setItem("/api/pomodoro", JSON.stringify(pomodoros));
         storage.setItem(
           "/api/pomodoro-intention",
