@@ -1,7 +1,11 @@
 "use client";
 import type {} from "@mui/x-date-pickers/themeAugmentation";
 
-import { inputLabelClasses, outlinedInputClasses } from "@mui/material";
+import {
+  inputLabelClasses,
+  outlinedInputClasses,
+  autocompleteClasses,
+} from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
@@ -32,6 +36,22 @@ const theme = createTheme({
           color: "rgb(var(--foreground-rgb))",
           [`&.Mui-focused.${inputLabelClasses.root}`]: {
             color: "rgb(var(--foreground-rgb))",
+          },
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          background: "rgb(var(--foreground-rgb))",
+        },
+      },
+    },
+    MuiAutocomplete: {
+      styleOverrides: {
+        root: {
+          [`.${autocompleteClasses.endAdornment} svg`]: {
+            fill: "rgb(var(--foreground-rgb))",
           },
         },
       },

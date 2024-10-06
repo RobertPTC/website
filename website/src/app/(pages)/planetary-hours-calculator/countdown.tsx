@@ -24,7 +24,7 @@ export default function Countdown({ hour }: { hour: PlanetaryHour }) {
     const minuteArc = 360 * ratio;
     const hourAnimationDuration = hourLength - elapsed;
     const startSecondArc = 360 / now.get("seconds");
-    console.log("hourAnimationDuration ", hourAnimationDuration);
+
     if (
       minuteHandRef.current &&
       hourHandRef.current &&

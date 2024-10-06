@@ -103,14 +103,16 @@ a {
 }
 
 .directory-contents-closed {
-  visibility: hidden; 
+  visibility: hidden;
 }
 
 .directory-closed::before {
-  content: '▶️';
+  content: "▶️";
 }
 
-.directory, .leaf, .directory-closed {
+.directory,
+.leaf,
+.directory-closed {
   display: block;
   background-color: transparent;
   border: none;
@@ -120,11 +122,11 @@ a {
 }
 
 .leaf::before {
-  content: '📝';
+  content: "📝";
 }
 
 .directory::before {
-  content: '🔽';
+  content: "🔽";
 }
 
 .directory ~ div {

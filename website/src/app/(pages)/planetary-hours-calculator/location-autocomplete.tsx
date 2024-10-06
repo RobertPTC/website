@@ -1,6 +1,6 @@
 import { SyntheticEvent, useEffect, useState } from "react";
 
-import { Autocomplete, TextField } from "@mui/material";
+import { Autocomplete, TextField, Popper, Paper } from "@mui/material";
 
 import { LocationAutocompleteOption, PositionSuccess } from "./types";
 import useGetClosestCity from "./use-get-closest-city";
@@ -67,7 +67,9 @@ export default function LocationAutocomplete({
   return (
     <Autocomplete
       freeSolo
-      sx={{ maxWidth: { md: "500px" } }}
+      sx={{
+        maxWidth: { md: "500px" },
+      }}
       options={options}
       getOptionLabel={(o) => {
         if (typeof o === "string") return o;
@@ -84,6 +86,9 @@ export default function LocationAutocomplete({
       onChange={onChange}
       onInputChange={(_, v) => {
         onInputChange(v);
+      }}
+      PaperComponent={(props) => {
+        return <Paper>{props.children}</Paper>;
       }}
     />
   );

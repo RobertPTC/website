@@ -21,7 +21,7 @@ export default function usePosition(
   const [pos, setPos] = useState<Position>();
   useEffect(() => {
     if (typeof window !== "undefined") {
-      navigator.geolocation.watchPosition(
+      const watchID = navigator.geolocation.watchPosition(
         (pos) => {
           if (location) return;
           setSessionStorage(
@@ -39,32 +39,22 @@ export default function usePosition(
         },
         (e) => {
           console.error("position error", e);
+          const coords = getSessionStorage(SessionStorageKeys.POSITION);
+          if (coords) {
+            const parsedCoords = JSON.parse(coords);
+            setPos({
+              latitude: parsedCoords.latitude,
+              longitude: parsedCoords.longitude,
+              state: "success",
+            });
+          }
         }
       );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const coords = getSessionStorage(SessionStorageKeys.POSITION);
-      if (coords) {
-        const parsedCoords = JSON.parse(coords);
-        setPos({
-          latitude: parsedCoords.latitude,
-          longitude: parsedCoords.longitude,
-          state: "success",
-        });
-      }
-      navigator.geolocation.getCurrentPosition((pos) => {
-        if (location) return;
-        setPos({
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-          state: "success",
-        });
-      });
+      return () => {
+        navigator.geolocation.clearWatch(watchID);
+      };
     }
   }, [location]);
+
   return [pos, setPos];
 }
