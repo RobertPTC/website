@@ -1,6 +1,6 @@
 import { SyntheticEvent, useEffect, useState } from "react";
 
-import { Autocomplete, TextField, Popper, Paper } from "@mui/material";
+import { Autocomplete, TextField, Paper } from "@mui/material";
 
 import { LocationAutocompleteOption, PositionSuccess } from "./types";
 import useGetClosestCity from "./use-get-closest-city";

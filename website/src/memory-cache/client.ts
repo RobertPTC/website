@@ -14,7 +14,6 @@ export function getMemoryCacheClient() {
 
 export async function connectMemoryCache(client: RedisClientType) {
   if (!isConnected) {
-    console.log("isConnected ", isConnected);
     isConnected = true;
     client.on("error", (e) => {
       console.log("memory cache client error ", e);
