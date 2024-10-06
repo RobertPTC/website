@@ -19,48 +19,42 @@ export default function usePosition(
   location: string | null
 ): [Position | undefined, Dispatch<SetStateAction<Position | undefined>>] {
   const [pos, setPos] = useState<Position>();
-  if (typeof window !== "undefined") {
-    navigator.geolocation.watchPosition(
-      (pos) => {
-        if (location) return;
-        setSessionStorage(
-          SessionStorageKeys.POSITION,
-          JSON.stringify({
-            latitude: pos.coords.latitude,
-            longitude: pos.coords.longitude,
-          })
-        );
-        setPos({
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-          state: "success",
-        });
-      },
-      (e) => {
-        console.error("position error", e);
-      }
-    );
-  }
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const coords = getSessionStorage(SessionStorageKeys.POSITION);
-      if (coords) {
-        const parsedCoords = JSON.parse(coords);
-        setPos({
-          latitude: parsedCoords.latitude,
-          longitude: parsedCoords.longitude,
-          state: "success",
-        });
-      }
-      navigator.geolocation.getCurrentPosition((pos) => {
-        if (location) return;
-        setPos({
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude,
-          state: "success",
-        });
-      });
+      const watchID = navigator.geolocation.watchPosition(
+        (pos) => {
+          if (location) return;
+          setSessionStorage(
+            SessionStorageKeys.POSITION,
+            JSON.stringify({
+              latitude: pos.coords.latitude,
+              longitude: pos.coords.longitude,
+            })
+          );
+          setPos({
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+            state: "success",
+          });
+        },
+        (e) => {
+          console.error("position error", e);
+          const coords = getSessionStorage(SessionStorageKeys.POSITION);
+          if (coords) {
+            const parsedCoords = JSON.parse(coords);
+            setPos({
+              latitude: parsedCoords.latitude,
+              longitude: parsedCoords.longitude,
+              state: "success",
+            });
+          }
+        }
+      );
+      return () => {
+        navigator.geolocation.clearWatch(watchID);
+      };
     }
   }, [location]);
+
   return [pos, setPos];
 }

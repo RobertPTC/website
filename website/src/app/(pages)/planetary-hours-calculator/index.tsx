@@ -44,16 +44,12 @@ export default function PlanetaryHours() {
     }
     searchParams.delete(SearchParams.DATE);
   };
-  if (!planetaryHours) return <Loading loadingText="Loading Planetary Hours" />;
+  if (!planetaryHours)
+    return <Loading loadingText="Loading Planetary Hours Calculator" />;
   if (pos && pos.state !== "success") return <>No Position</>;
   const currentHour = planetaryHours.hours.find((h) => h.isCurrent);
   return (
     <Box>
-      <Box mb={2}>
-        <Typography variant="h1" sx={{ fontSize: "2rem", textAlign: "center" }}>
-          Planetary Hours Calculator
-        </Typography>
-      </Box>
       {dateInput && dateInput.isCurrent && currentHour && (
         <Box mb={3}>
           <Box mb={3}>

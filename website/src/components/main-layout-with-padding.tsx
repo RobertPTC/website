@@ -8,7 +8,7 @@ export default function MainLayoutWithPadding({
   children: ReactNode;
 }) {
   return (
-    <Box component="main" sx={{ p: 2 }}>
+    <Box component="main" sx={{ p: 2, maxWidth: "1440px", margin: "auto" }}>
       {children}
     </Box>
   );

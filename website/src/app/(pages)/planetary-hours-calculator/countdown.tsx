@@ -1,40 +1,78 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import { Box } from "@mui/material";
+import dayjs from "dayjs";
 
 import { PlanetaryHour } from "./types";
 
 const circularPath = "M 50, 50 m -45, 0 a 45,45 0 1,0 90,0 a 45,45 0 1,0 -90,0";
 
 export default function Countdown({ hour }: { hour: PlanetaryHour }) {
-  const [minuteArc, setMinuteArc] = useState<number>();
-  const [startDash, setStartDash] = useState<number>();
-  const [animationDuration, setAnimationDuration] = useState<number>();
-  const [hourLength, setHourLength] = useState<number>();
-  useEffect(() => {
-    if (hour) {
-      const hourEnd = hour.hourEnd.valueOf();
-      const hourStart = hour.hourStart.valueOf();
-      const elapsed = +new Date() - hourStart.valueOf();
-      const hourLength = hourEnd - hourStart;
-      const ratio = elapsed / hourLength;
-      const startDash = 283 * ratio;
-      const animationDuration = hourLength - elapsed;
-      const minuteArc = 360 * ratio;
-      setMinuteArc(minuteArc);
-      setStartDash(startDash);
-      setAnimationDuration(animationDuration);
-      setHourLength(hourLength);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hour.ruler]);
+  const hourHandRef = useRef<HTMLElement>();
+  const minuteHandRef = useRef<HTMLElement>();
+  const hourSecondHandRef = useRef<HTMLElement>();
+  const base60SecondHandRef = useRef<HTMLElement>();
 
-  if (!minuteArc || !startDash || !animationDuration || !hour || !hourLength)
-    return <></>;
+  useEffect(() => {
+    const now = dayjs();
+    const hourEnd = hour.hourEnd.valueOf();
+    const hourStart = hour.hourStart.valueOf();
+    const elapsed = +new Date() - hourStart.valueOf();
+    const hourLength = hourEnd - hourStart;
+    const ratio = elapsed / hourLength;
+    const startDash = 283 * ratio;
+    const minuteArc = 360 * ratio;
+    const hourAnimationDuration = hourLength - elapsed;
+    const startSecondArc = 360 / now.get("seconds");
+
+    if (
+      minuteHandRef.current &&
+      hourHandRef.current &&
+      hourSecondHandRef.current &&
+      base60SecondHandRef.current
+    ) {
+      const minuteAnimation = minuteHandRef.current.animate(
+        [
+          { transform: `rotate(${minuteArc}deg)` },
+          { transform: `rotate(${minuteArc + 360}deg)` },
+        ],
+        { duration: hourLength, iterations: Infinity }
+      );
+      const hourHandAnimation = hourHandRef.current.animate(
+        [{ strokeDashoffset: startDash }, { strokeDashoffset: 283 }],
+        { duration: hourAnimationDuration, iterations: 1 }
+      );
+      const hourSecondHandAnimation = hourSecondHandRef.current.animate(
+        [
+          { transform: `rotate(${startSecondArc}deg)` },
+          { transform: `rotate(${startSecondArc + 360}deg)` },
+        ],
+        { duration: hourLength / 60, iterations: Infinity }
+      );
+      const base60SecondHandAnimation = base60SecondHandRef.current.animate(
+        [
+          { transform: `rotate(${startSecondArc}deg)` },
+          { transform: `rotate(${startSecondArc + 360}deg)` },
+        ],
+        { duration: 60 * 1000, iterations: Infinity }
+      );
+
+      return () => {
+        minuteAnimation.cancel();
+        hourHandAnimation.cancel();
+        hourSecondHandAnimation.cancel();
+        base60SecondHandAnimation.cancel();
+      };
+    }
+  }, [hour.hourEnd, hour.hourStart]);
 
   return (
     <Box>
-      <Box component="svg" sx={{ height: "100px", width: "100px" }}>
+      <Box
+        component="svg"
+        sx={{ height: "100px", width: "100px" }}
+        aria-label="Planetary Hours Clock"
+      >
         <Box component="g" sx={{ fill: "none", stroke: "none" }}>
           <Box
             component="circle"
@@ -45,17 +83,9 @@ export default function Countdown({ hour }: { hour: PlanetaryHour }) {
           />
 
           <Box
+            ref={hourHandRef}
             component="path"
-            sx={{
-              "@keyframes elapse": {
-                "100%": {
-                  strokeDashoffset: "283",
-                },
-              },
-              animation: `elapse ${animationDuration}ms linear`,
-            }}
             strokeWidth="6px"
-            strokeDashoffset={startDash}
             strokeDasharray="283"
             stroke={hour.color}
             d={circularPath}
@@ -78,6 +108,7 @@ export default function Countdown({ hour }: { hour: PlanetaryHour }) {
             y2="93"
           />
           <Box
+            ref={minuteHandRef}
             component="line"
             id="minute-hand"
             stroke={hour.color}
@@ -87,19 +118,11 @@ export default function Countdown({ hour }: { hour: PlanetaryHour }) {
             y2="50"
             strokeWidth="4px"
             sx={{
-              "@keyframes minute": {
-                "0%": {
-                  transform: `rotate(${minuteArc}deg)`,
-                },
-                "100%": {
-                  transform: "rotate(360deg)",
-                },
-              },
-              animation: `minute ${animationDuration}ms linear`,
               transformOrigin: "50px 50px",
             }}
           />
           <Box
+            ref={hourSecondHandRef}
             component="line"
             id="second-hand-e"
             fill="none"
@@ -109,43 +132,24 @@ export default function Countdown({ hour }: { hour: PlanetaryHour }) {
             y1="50"
             x2="50"
             y2="50"
+            sx={{
+              transformOrigin: "50px 50px",
+            }}
           />
           <Box
+            ref={base60SecondHandRef}
             component="line"
             id="second-hand-c"
             fill="none"
-            stroke="white"
             strokeWidth="2px"
             x1="9"
             y1="50"
             x2="50"
             y2="50"
-          />
-          <Box
-            component="animateTransform"
-            type="rotate"
-            accumulate="none"
-            additive="sum"
-            xlinkHref="#second-hand-e"
-            repeatCount="indefinite"
-            dur={hourLength / 1000 / 60}
-            to="360 50 50"
-            from="0 50 50"
-            attributeName="transform"
-            attributeType="xml"
-          />
-          <Box
-            component="animateTransform"
-            type="rotate"
-            accumulate="none"
-            additive="sum"
-            xlinkHref="#second-hand-c"
-            repeatCount="indefinite"
-            dur="60"
-            to="360 50 50"
-            from="0 50 50"
-            attributeName="transform"
-            attributeType="xml"
+            sx={{
+              transformOrigin: "50px 50px",
+              stroke: "rgb(var(--foreground-rgb))",
+            }}
           />
         </Box>
       </Box>

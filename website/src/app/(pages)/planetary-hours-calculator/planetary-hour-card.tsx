@@ -13,6 +13,7 @@ export default function PlanetaryHourCard({ h }: { h: PlanetaryHour }) {
         color: useWhite ? "white" : "black",
         height: "100%",
       }}
+      component="article"
     >
       <CardContent
         sx={{
@@ -21,11 +22,16 @@ export default function PlanetaryHourCard({ h }: { h: PlanetaryHour }) {
           flexDirection: "column",
         }}
       >
-        <Box sx={{ mb: 1 }}>{h.Icon()}</Box>
-        <Box>
-          <Typography fontSize="1.2rem" color={useWhite ? "white" : "inherit"}>
+        <Box mb={1} display="flex" alignItems="center">
+          <Typography
+            fontSize="1.2rem"
+            color={useWhite ? "white" : "inherit"}
+            variant="h3"
+            sx={{ mr: 1 }}
+          >
             {h.ruler}
           </Typography>
+          <Box sx={{ height: "24px", width: "24px" }}>{h.Icon()}</Box>
         </Box>
         <Box mb={1}>
           <Typography color={useWhite ? "white" : "inherit"}>

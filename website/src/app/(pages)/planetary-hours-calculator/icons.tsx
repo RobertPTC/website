@@ -8,6 +8,7 @@ export const Sun = () => (
       height="24px"
       viewBox="0 0 12 12"
       version="1.1"
+      aria-label="Astrological symbol for the sun"
     >
       <circle
         cx="6"
@@ -33,6 +34,7 @@ export const Venus = () => (
       height="24px"
       viewBox="0 0 12 12"
       version="1.1"
+      aria-label="Astrological symbol for venus"
     >
       <g id="surface1">
         <path
@@ -83,11 +85,10 @@ export const Mercury = () => (
   <SvgIcon>
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="24px"
-      height="24px"
       viewBox="0 0 12 12"
       version="1.1"
       id="svg11"
+      aria-label="astrological symbol for mercury"
     >
       <g id="g848">
         <path
@@ -173,6 +174,7 @@ export const Moon = () => (
       height="24px"
       viewBox="0 0 12 12"
       version="1.1"
+      aria-label="Astrological symbol for the moon"
     >
       <path
         d="m 8.5,1 c -2.7617188,0 -5,2.2382812 -5,5 0,2.7617188 2.2382812,5 5,5 C 6.7148438,9.96875 5.6132812,8.0625 5.6132812,6 5.6132812,3.9375 6.7148438,2.03125 8.5,1 Z"
@@ -202,6 +204,7 @@ export const Saturn = () => (
         strokeLinejoin: "round",
         strokeWidth: "0.6",
       }}
+      aria-label="Astrological symbol for saturn"
     >
       <path d="M 3,3 H 7" />
       <path d="M 5,1 V 6" />
@@ -225,6 +228,7 @@ export const Jupiter = () => (
         strokeLinejoin: "round",
         strokeWidth: "0.6",
       }}
+      aria-label="Astrological symbol for jupiter"
     >
       <path d="m 2.25,1 c 1.3398438,0.773437 2.1640625,2.203125 2.1640625,3.75 0,1.546875 -0.8242187,2.9765625 -2.1640625,3.75 h 7.5" />
       <path d="m 7.25,6 v 5" />
@@ -246,6 +250,7 @@ export const Mars = () => (
       strokeLinejoin: "round",
       strokeWidth: "0.6",
     }}
+    aria-label="Astrological symbol for mars"
   >
     <circle cx="5" cy="7" r="4" />
     <path d="M 7.828125,4.171875 11,1" />
