@@ -154,6 +154,14 @@ a {
   margin-left: 4em;
 }
 
+.hidden-reply-form {
+  display: none;
+}
+
+.hidden-replies {
+  display: none;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

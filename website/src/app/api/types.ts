@@ -58,3 +58,11 @@ export type Moments = {
 };
 
 export type MomentEntries = [string, MonthMoment][];
+
+export type BlogComment = {
+  blog_comment_id: string;
+  responds_to: string;
+  date: string;
+  text: string;
+  journalist_id: string;
+};

@@ -4,10 +4,13 @@ import { CodeBlock, a11yLight, a11yDark } from "react-code-blocks";
 import { Box, Typography } from "@mui/material";
 
 import { blogStyles } from "./blogs";
+import Comments from "./comments";
+import CreateComment from "./create-comment";
 import useIsDarkMode from "./use-is-dark-mode";
 
-export function BuildingTheGoogleTimer() {
+export function BuildingTheGoogleTimer({ id }: { id: string }) {
   const isDarkMode = useIsDarkMode();
+
   return (
     <Box component="article">
       <Box sx={{ mb: 4 }}>
@@ -543,6 +546,8 @@ return () => {
           solve!
         </Typography>
       </Box>
+      <CreateComment respondsTo={id} blogID={id} />
+      <Comments blogID={id} />
     </Box>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -89,7 +89,7 @@ export default function PlanetaryHours() {
       {planetaryHours && (
         <Grid container spacing={2}>
           {planetaryHours.hours.map((h) => (
-            <Grid key={h.hourStart.toISOString()} item xs={12} sm={4} md={3}>
+            <Grid key={h.hourStart.toISOString()} item xs={12} md={6} lg={3}>
               <PlanetaryHourCard h={h} />
             </Grid>
           ))}
