@@ -6,6 +6,64 @@ import dayjs from "dayjs";
 
 import { BlogComment } from "@app/app/api/types";
 
+function Comment(comment: BlogComment) {
+  if (typeof document === "undefined") return null;
+  const node = document.createElement("div");
+  node.setAttribute("id", comment.blog_comment_id);
+
+  const date = document.createElement("p");
+  date.textContent = comment.date;
+
+  const text = document.createElement("p");
+  text.textContent = comment.text;
+
+  const reply = document.createElement("button");
+  reply.classList.add("reply-to-button");
+  reply.setAttribute("data-responds-to", comment.blog_comment_id);
+  reply.textContent = "Reply";
+
+  const replyForm = document.createElement("form");
+  replyForm.setAttribute("data-reply-form", comment.blog_comment_id);
+  replyForm.classList.add("hidden-reply-form");
+
+  const textInput = document.createElement("input");
+  textInput.setAttribute("name", "text");
+  replyForm.appendChild(textInput);
+
+  const respondsToInput = document.createElement("input");
+  respondsToInput.setAttribute("type", "hidden");
+  respondsToInput.setAttribute("value", comment.blog_comment_id);
+  respondsToInput.setAttribute("name", "responds_to");
+  replyForm.appendChild(respondsToInput);
+
+  const submitButton = document.createElement("button");
+  submitButton.setAttribute("type", "submit");
+  submitButton.textContent = "Reply";
+  replyForm.appendChild(submitButton);
+
+  const repliesContainer = document.createElement("div");
+  const getRepliesButton = document.createElement("button");
+  const replies = document.createElement("div");
+  getRepliesButton.setAttribute(
+    "data-get-replies-for",
+    comment.blog_comment_id
+  );
+  replies.setAttribute("data-replies-for", comment.blog_comment_id);
+  repliesContainer.appendChild(getRepliesButton);
+  repliesContainer.appendChild(replies);
+
+  const replyContainer = document.createElement("div");
+  replyContainer.appendChild(date);
+  replyContainer.appendChild(text);
+  replyContainer.appendChild(reply);
+  replyContainer.appendChild(replyForm);
+
+  node.appendChild(replyContainer);
+  node.appendChild(repliesContainer);
+
+  return node;
+}
+
 function exploreBlogGraph(
   v: BlogComment,
   blogID: string,
@@ -22,53 +80,9 @@ function exploreBlogGraph(
   blogGraph[v.blog_comment_id].children.forEach((comment) => {
     if (seen[v.blog_comment_id]) return;
 
-    const node = document.createElement("div");
-    node.setAttribute("id", comment.blog_comment_id);
+    const node = Comment(comment);
 
-    const date = document.createElement("p");
-    date.textContent = comment.date;
-
-    const text = document.createElement("p");
-    text.textContent = comment.text;
-
-    const reply = document.createElement("button");
-    reply.classList.add("reply-to-button");
-    reply.setAttribute("data-responds-to", comment.blog_comment_id);
-    reply.textContent = "Reply";
-
-    const replyForm = document.createElement("form");
-    replyForm.setAttribute("data-reply-form", comment.blog_comment_id);
-    replyForm.classList.add("hidden-reply-form");
-
-    const textInput = document.createElement("input");
-    textInput.setAttribute("name", "text");
-    replyForm.appendChild(textInput);
-
-    const respondsToInput = document.createElement("input");
-    respondsToInput.setAttribute("type", "hidden");
-    respondsToInput.setAttribute("value", comment.blog_comment_id);
-    respondsToInput.setAttribute("name", "responds_to");
-    replyForm.appendChild(respondsToInput);
-
-    const submitButton = document.createElement("button");
-    submitButton.setAttribute("type", "submit");
-    submitButton.textContent = "Reply";
-    replyForm.appendChild(submitButton);
-
-    const replyContainer = document.createElement("div");
-
-    const repliesContainer = document.createElement("button");
-    repliesContainer.setAttribute("data-replies-for", comment.blog_comment_id);
-
-    replyContainer.appendChild(date);
-    replyContainer.appendChild(text);
-    replyContainer.appendChild(reply);
-    replyContainer.appendChild(replyForm);
-
-    node.appendChild(replyContainer);
-    node.appendChild(repliesContainer);
-
-    if (!c) return;
+    if (!c || !node) return;
 
     seen[comment.blog_comment_id] = true;
     c.appendChild(
@@ -79,18 +93,24 @@ function exploreBlogGraph(
   return c;
 }
 
-export default function Comments({ blogID }: { blogID: string }) {
+export default function Comments({
+  blogID,
+  initialComments,
+}: {
+  blogID: string;
+  initialComments: BlogComment[];
+}) {
   const [commentsGraph, setCommentsGraph] = useState<HTMLDivElement>();
-  const [comments, setComments] = useState<BlogComment[]>();
+  const [comments, setComments] = useState<BlogComment[]>(initialComments);
   const [commentsCount, setCommentsCount] = useState<number | null>(null);
   useEffect(() => {
     async function getCommentsCount() {
-      const res = await fetch(`/api/comments/${blogID}/count`);
+      const res = await fetch(`/api/blogs/${blogID}/comments/count`);
       const { count } = await res.json();
       setCommentsCount(count);
     }
     async function getComments() {
-      const res = await fetch(`/api/comments/${blogID}`);
+      const res = await fetch(`/api/blogs/${blogID}/comments`);
       const comments: BlogComment[] = await res.json();
       const blogGraph: { [key: string]: { children: BlogComment[] } } = {
         [blogID]: { children: [] },
@@ -119,9 +139,35 @@ export default function Comments({ blogID }: { blogID: string }) {
         setCommentsGraph(blogNode);
       }
     }
-    getComments();
-    getCommentsCount();
-  }, [blogID]);
+    const blogGraph: { [key: string]: { children: BlogComment[] } } = {
+      [blogID]: { children: [] },
+    };
+    comments.forEach((c) => {
+      if (!blogGraph[c.blog_comment_id]) {
+        blogGraph[c.blog_comment_id] = {
+          children: [],
+        };
+      }
+      blogGraph[c.responds_to].children.push(c);
+    });
+    const blogNode = exploreBlogGraph(
+      {
+        responds_to: "",
+        blog_comment_id: blogID,
+        date: "",
+        text: "",
+        journalist_id: "",
+      },
+      blogID,
+      blogGraph
+    );
+    if (blogNode) {
+      setComments(comments);
+      setCommentsGraph(blogNode);
+    }
+    // getComments();
+    // getCommentsCount();
+  }, [comments, blogID]);
 
   useEffect(() => {
     async function onReplySubmit(this: HTMLFormElement, e: Event) {
@@ -139,20 +185,28 @@ export default function Comments({ blogID }: { blogID: string }) {
         replyForm.classList.toggle("hidden-reply-form");
       }
     }
-    function onClickRepliesButton(this: HTMLButtonElement) {
-      const commentID = this.dataset["repliesFor"];
-      console.log("blogID ", commentID);
-      const replyContainer = document.querySelector(
-        `[data-reply="${commentID}"]`
-      );
-      if (replyContainer) {
-        replyContainer.classList.toggle("hidden-replies");
+    async function onClickRepliesButton(this: HTMLButtonElement) {
+      const commentID = this.dataset["getRepliesFor"];
+      try {
+        const res = await fetch(`/api/comments/${commentID}/comments`);
+        const json = await res.json();
+        console.log("json ", json);
+        const replyContainer = document.querySelector(
+          `[data-replies-for="${commentID}"]`
+        );
+        if (replyContainer) {
+          replyContainer.classList.toggle("hidden-replies");
+        }
+      } catch (error) {
+        console.log("error ", error);
       }
     }
     if (commentsGraph && typeof document !== "undefined") {
       const replyToButtons = document.querySelectorAll("[data-responds-to]");
       const replyForms = document.querySelectorAll("[data-reply-form]");
-      const repliesButtons = document.querySelectorAll("[data-replies-for]");
+      const repliesButtons = document.querySelectorAll(
+        "[data-get-replies-for]"
+      );
       Array.from(replyForms).forEach((f) => {
         f.addEventListener("submit", onReplySubmit);
       });
@@ -160,7 +214,7 @@ export default function Comments({ blogID }: { blogID: string }) {
         b.addEventListener("click", onClickReplyToButton);
       });
       Array.from(repliesButtons).forEach((b) => {
-        const repliesFor = (b as HTMLButtonElement).dataset.repliesFor;
+        const repliesFor = (b as HTMLButtonElement).dataset.getRepliesFor;
         fetch(`/api/comments/${repliesFor}/count`).then((res) =>
           res.json().then(({ count }) => {
             b.textContent = `${count} ${count > 1 ? "replies" : "reply"}`;

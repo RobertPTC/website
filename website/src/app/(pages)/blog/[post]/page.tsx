@@ -3,14 +3,8 @@ import { Metadata } from "next";
 
 import MainLayoutWithPadding from "components/main-layout-with-padding";
 
-import {
-  blogIndexes,
-  blogPosts,
-  PostNames,
-  blogMetadata,
-  blogPostToID,
-} from "../blogs";
-import Directory from "../directory";
+import { blogIndexes, blogPosts, PostNames, blogMetadata } from "./blogs";
+import Directory from "./directory";
 
 export async function generateStaticParams() {
   return Object.keys(blogPosts).map((k) => ({

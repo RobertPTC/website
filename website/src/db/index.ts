@@ -12,8 +12,9 @@ export default interface Database {
   setMoment(moment: Moment): Promise<string | null>;
   getMomentsNav(email: string): Promise<string[]>;
   getCommentsForBlog(blogID: string): Promise<BlogComment[] | null>;
-  getRepliesForComment(commentID: string): Promise<BlogComment[] | null>;
+  getCommentsForComment(commentID: string): Promise<BlogComment[] | null>;
   getCommentsCountForBlog(blogID: string): Promise<number | null>;
+  getCommentsCountForComment(commentID: string): Promise<number | null>;
   setComment(comment: BlogComment): Promise<string | null>;
   getJournalistIDForEmail(email: string): Promise<string | null>;
 }
@@ -132,10 +133,21 @@ export const db: Database = {
       return null;
     }
   },
-  async getRepliesForComment(commentID) {
+  async getCommentsForComment(commentID) {
     try {
-      const data =
-        await client`SELECT text, responds_to, blog_comment_id, date FROM blog_comment WHERE responds_to=${commentID} ORDER BY created_at ASC;`;
+      const data = await client`WITH RECURSIVE get_comments_comments AS (
+  SELECT text, responds_to, blog_comment_id, date, created_at
+  FROM blog_comment
+  WHERE responds_to = ${commentID}
+
+  UNION ALL
+
+  SELECT bc.text, bc.responds_to, bc.blog_comment_id, bc.date, bc.created_at
+  FROM blog_comment bc
+  INNER JOIN get_comments_comments gcc ON bc.responds_to = gcc.blog_comment_id
+)
+SELECT text, responds_to, blog_comment_id, date FROM get_comments_comments ORDER BY created_at ASC LIMIT 10;
+`;
       return data.map((d) => ({
         responds_to: d.responds_to,
         text: d.text,
@@ -146,6 +158,28 @@ export const db: Database = {
     } catch (error) {
       console.error("error ", error);
       return [];
+    }
+  },
+  getCommentsCountForComment: async function (
+    commentID: string
+  ): Promise<number | null> {
+    try {
+      const data = await client`WITH RECURSIVE get_comments_comments AS (
+        SELECT text, responds_to, blog_comment_id, date, created_at
+        FROM blog_comment
+        WHERE responds_to = ${commentID}
+      
+        UNION ALL
+      
+        SELECT bc.text, bc.responds_to, bc.blog_comment_id, bc.date, bc.created_at
+        FROM blog_comment bc
+        INNER JOIN get_comments_comments gcc ON bc.responds_to = gcc.blog_comment_id
+      )
+      SELECT COUNT(blog_comment_id) FROM get_comments_comments;`;
+      return data[0].count;
+    } catch (error) {
+      console.error("error ", error);
+      return null;
     }
   },
 };

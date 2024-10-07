@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 
 import { Metadata } from "next";
 
-import { BuildingTheGoogleTimer } from "./building-the-google-timer";
+import { BuildingTheGoogleTimer } from "../building-the-google-timer";
 
 export type Blog = {
   title: string;
@@ -23,7 +23,7 @@ export const blogPostToID: { [K in PostNames]: string } = {
   "prayer-meeting.post": "",
 };
 
-export const blogPosts: { [K in PostNames]: () => ReactNode } = {
+export const blogPosts: { [K in PostNames]: () => JSX.Element } = {
   "building-the-blog-file-directory.post": () => (
     <>Building the Blog File Directory Component</>
   ),
