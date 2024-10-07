@@ -6,8 +6,6 @@ import dayjs from "dayjs";
 
 import { BlogComment } from "@app/app/api/types";
 
-// fe1830dc-5dfe-4108-91f2-15e77e21f90f
-
 function exploreBlogGraph(
   v: BlogComment,
   blogID: string,
@@ -62,27 +60,11 @@ function exploreBlogGraph(
     const repliesContainer = document.createElement("button");
     repliesContainer.setAttribute("data-replies-for", comment.blog_comment_id);
 
-    // const res = await fetch(`/api/comments/${comment.blog_comment_id}/count`);
-    // const { count } = await res.json();
-    // console.log("count ", count);
-    // repliesContainer.textContent = `${count} replies`;
-
     replyContainer.appendChild(date);
     replyContainer.appendChild(text);
     replyContainer.appendChild(reply);
     replyContainer.appendChild(replyForm);
 
-    // if (v.blog_comment_id !== blogID) {
-    //   const repliesContainer = document.createElement("div");
-    //   const repliesButton = document.createElement("button");
-    //   repliesButton.setAttribute("data-replies-for", comment.blog_comment_id);
-    //   const children = blogGraph[v.blog_comment_id].children;
-    //   repliesButton.textContent = `${children.length} ${
-    //     children.length > 1 ? "replies" : "reply"
-    //   }`;
-    //   repliesContainer.appendChild(repliesButton);
-    //   node.appendChild(repliesContainer);
-    // }
     node.appendChild(replyContainer);
     node.appendChild(repliesContainer);
 
@@ -158,8 +140,11 @@ export default function Comments({ blogID }: { blogID: string }) {
       }
     }
     function onClickRepliesButton(this: HTMLButtonElement) {
-      const blogID = this.dataset["repliesFor"];
-      const replyContainer = document.querySelector(`[data-reply="${blogID}"]`);
+      const commentID = this.dataset["repliesFor"];
+      console.log("blogID ", commentID);
+      const replyContainer = document.querySelector(
+        `[data-reply="${commentID}"]`
+      );
       if (replyContainer) {
         replyContainer.classList.toggle("hidden-replies");
       }
@@ -178,7 +163,7 @@ export default function Comments({ blogID }: { blogID: string }) {
         const repliesFor = (b as HTMLButtonElement).dataset.repliesFor;
         fetch(`/api/comments/${repliesFor}/count`).then((res) =>
           res.json().then(({ count }) => {
-            b.textContent = `${count} replies`;
+            b.textContent = `${count} ${count > 1 ? "replies" : "reply"}`;
           })
         );
         b.addEventListener("click", onClickRepliesButton);
