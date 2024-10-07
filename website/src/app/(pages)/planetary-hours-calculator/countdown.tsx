@@ -64,7 +64,8 @@ export default function Countdown({ hour }: { hour: PlanetaryHour }) {
         base60SecondHandAnimation.cancel();
       };
     }
-  }, [hour.hourEnd, hour.hourStart]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hour.ruler]);
 
   return (
     <Box>
