@@ -9,5 +9,6 @@ async function getComments(blogID: string) {
 export default async function CommentsData({ blogID }: { blogID: string }) {
   const comments = await getComments(blogID);
   console.log("comments ", comments);
+
   return <Comments blogID={blogID} initialComments={comments} />;
 }

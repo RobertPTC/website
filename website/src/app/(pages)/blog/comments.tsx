@@ -165,8 +165,6 @@ export default function Comments({
       setComments(comments);
       setCommentsGraph(blogNode);
     }
-    // getComments();
-    // getCommentsCount();
   }, [comments, blogID]);
 
   useEffect(() => {
