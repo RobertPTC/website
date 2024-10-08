@@ -4,9 +4,45 @@ import { useEffect, useState } from "react";
 import { Typography } from "@mui/material";
 import dayjs from "dayjs";
 
-import { BlogComment } from "@app/app/api/types";
+import { BlogComment, BlogCommentTree } from "@app/app/api/types";
 
-function Comment(comment: BlogComment) {
+// async function getCommentsCount() {
+//   const res = await fetch(`/api/blogs/${blogID}/comments/count`);
+//   const { count } = await res.json();
+//   setCommentsCount(count);
+// }
+// async function getComments() {
+//   const res = await fetch(`/api/blogs/${blogID}/comments`);
+//   const comments: BlogComment[] = await res.json();
+//   const blogGraph: { [key: string]: { children: BlogComment[] } } = {
+//     [blogID]: { children: [] },
+//   };
+//   comments.forEach((c) => {
+//     if (!blogGraph[c.blog_comment_id]) {
+//       blogGraph[c.blog_comment_id] = {
+//         children: [],
+//       };
+//     }
+//     blogGraph[c.responds_to].children.push(c);
+//   });
+//   const blogNode = exploreBlogGraph(
+//     {
+//       responds_to: "",
+//       blog_comment_id: blogID,
+//       date: "",
+//       text: "",
+//       journalist_id: "",
+//     },
+//     blogID,
+//     blogGraph
+//   );
+//   if (blogNode) {
+//     setComments(comments);
+//     setCommentsGraph(blogNode);
+//   }
+// }
+
+function Comment(comment: BlogCommentTree) {
   if (typeof document === "undefined") return null;
   const node = document.createElement("div");
   node.setAttribute("id", comment.blog_comment_id);
@@ -41,14 +77,19 @@ function Comment(comment: BlogComment) {
   submitButton.textContent = "Reply";
   replyForm.appendChild(submitButton);
 
-  const repliesContainer = document.createElement("div");
   const getRepliesButton = document.createElement("button");
-  const replies = document.createElement("div");
   getRepliesButton.setAttribute(
     "data-get-replies-for",
     comment.blog_comment_id
   );
+  getRepliesButton.textContent = `${comment.reply_count} ${
+    comment.reply_count > 1 ? "Replies" : "Reply"
+  }`;
+
+  const replies = document.createElement("div");
   replies.setAttribute("data-replies-for", comment.blog_comment_id);
+
+  const repliesContainer = document.createElement("div");
   repliesContainer.appendChild(getRepliesButton);
   repliesContainer.appendChild(replies);
 
@@ -65,9 +106,9 @@ function Comment(comment: BlogComment) {
 }
 
 function exploreBlogGraph(
-  v: BlogComment,
+  v: BlogCommentTree,
   blogID: string,
-  blogGraph: { [key: string]: { children: BlogComment[] } },
+  blogGraph: { [key: string]: { children: BlogCommentTree[] } },
   container?: HTMLDivElement
 ) {
   if (typeof document === "undefined") return "";
@@ -75,11 +116,10 @@ function exploreBlogGraph(
   if (!c) {
     c = document.createElement("div");
   }
-  c.setAttribute("id", v.blog_comment_id);
+
   let seen: any = {};
   blogGraph[v.blog_comment_id].children.forEach((comment) => {
     if (seen[v.blog_comment_id]) return;
-
     const node = Comment(comment);
 
     if (!c || !node) return;
@@ -96,50 +136,19 @@ function exploreBlogGraph(
 export default function Comments({
   blogID,
   initialComments,
+  initialCommentsCount,
 }: {
   blogID: string;
-  initialComments: BlogComment[];
+  initialComments: BlogCommentTree[];
+  initialCommentsCount: number;
 }) {
   const [commentsGraph, setCommentsGraph] = useState<HTMLDivElement>();
-  const [comments, setComments] = useState<BlogComment[]>(initialComments);
-  const [commentsCount, setCommentsCount] = useState<number | null>(null);
+  const [comments, setComments] = useState<BlogCommentTree[]>(initialComments);
+  const [commentsCount, setCommentsCount] = useState<number | null>(
+    initialCommentsCount
+  );
   useEffect(() => {
-    async function getCommentsCount() {
-      const res = await fetch(`/api/blogs/${blogID}/comments/count`);
-      const { count } = await res.json();
-      setCommentsCount(count);
-    }
-    async function getComments() {
-      const res = await fetch(`/api/blogs/${blogID}/comments`);
-      const comments: BlogComment[] = await res.json();
-      const blogGraph: { [key: string]: { children: BlogComment[] } } = {
-        [blogID]: { children: [] },
-      };
-      comments.forEach((c) => {
-        if (!blogGraph[c.blog_comment_id]) {
-          blogGraph[c.blog_comment_id] = {
-            children: [],
-          };
-        }
-        blogGraph[c.responds_to].children.push(c);
-      });
-      const blogNode = exploreBlogGraph(
-        {
-          responds_to: "",
-          blog_comment_id: blogID,
-          date: "",
-          text: "",
-          journalist_id: "",
-        },
-        blogID,
-        blogGraph
-      );
-      if (blogNode) {
-        setComments(comments);
-        setCommentsGraph(blogNode);
-      }
-    }
-    const blogGraph: { [key: string]: { children: BlogComment[] } } = {
+    const blogGraph: { [key: string]: { children: BlogCommentTree[] } } = {
       [blogID]: { children: [] },
     };
     comments.forEach((c) => {
@@ -157,6 +166,7 @@ export default function Comments({
         date: "",
         text: "",
         journalist_id: "",
+        reply_count: 0,
       },
       blogID,
       blogGraph
@@ -184,17 +194,44 @@ export default function Comments({
       }
     }
     async function onClickRepliesButton(this: HTMLButtonElement) {
-      const commentID = this.dataset["getRepliesFor"];
       try {
+        const commentID = this.dataset["getRepliesFor"];
+        if (!commentID) {
+          throw new Error(`button missing id`);
+        }
         const res = await fetch(`/api/comments/${commentID}/comments`);
         const json = await res.json();
-        console.log("json ", json);
-        const replyContainer = document.querySelector(
+        const repliesContainer: HTMLDivElement | null = document.querySelector(
           `[data-replies-for="${commentID}"]`
         );
-        if (replyContainer) {
-          replyContainer.classList.toggle("hidden-replies");
+        if (!repliesContainer) {
+          throw new Error(`no replies container for ${commentID}`);
         }
+        const blogGraph: { [key: string]: { children: BlogCommentTree[] } } = {
+          [commentID]: { children: [] },
+        };
+        json.comments.forEach((c: BlogCommentTree) => {
+          if (!blogGraph[c.blog_comment_id]) {
+            blogGraph[c.blog_comment_id] = {
+              children: [],
+            };
+          }
+          blogGraph[c.responds_to].children.push(c);
+        });
+        const t = exploreBlogGraph(
+          {
+            responds_to: "",
+            blog_comment_id: commentID,
+            date: "",
+            text: "",
+            journalist_id: "",
+            reply_count: 0,
+          },
+          commentID,
+          blogGraph,
+          repliesContainer
+        );
+        console.log("t ", t);
       } catch (error) {
         console.log("error ", error);
       }
@@ -205,6 +242,7 @@ export default function Comments({
       const repliesButtons = document.querySelectorAll(
         "[data-get-replies-for]"
       );
+
       Array.from(replyForms).forEach((f) => {
         f.addEventListener("submit", onReplySubmit);
       });
@@ -212,12 +250,6 @@ export default function Comments({
         b.addEventListener("click", onClickReplyToButton);
       });
       Array.from(repliesButtons).forEach((b) => {
-        const repliesFor = (b as HTMLButtonElement).dataset.getRepliesFor;
-        fetch(`/api/comments/${repliesFor}/count`).then((res) =>
-          res.json().then(({ count }) => {
-            b.textContent = `${count} ${count > 1 ? "replies" : "reply"}`;
-          })
-        );
         b.addEventListener("click", onClickRepliesButton);
       });
       return () => {
@@ -240,6 +272,7 @@ export default function Comments({
         {commentsCount} Comments
       </Typography>
       <div
+        id={blogID}
         dangerouslySetInnerHTML={{ __html: commentsGraph.innerHTML || "" }}
       />
     </>
