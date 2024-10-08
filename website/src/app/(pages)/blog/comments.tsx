@@ -42,42 +42,113 @@ import { BlogComment, BlogCommentTree } from "@app/app/api/types";
 //   }
 // }
 
-function Comment(comment: BlogCommentTree) {
-  if (typeof document === "undefined") return null;
-  const node = document.createElement("div");
-  node.setAttribute("id", comment.blog_comment_id);
-
-  const date = document.createElement("p");
-  date.textContent = comment.date;
-
-  const text = document.createElement("p");
-  text.textContent = comment.text;
-
+function ReplyButton(comment: BlogComment) {
   const reply = document.createElement("button");
   reply.classList.add("reply-to-button");
   reply.setAttribute("data-responds-to", comment.blog_comment_id);
   reply.textContent = "Reply";
+  return reply;
+}
 
+function Container(comment: BlogComment) {
+  const node = document.createElement("div");
+  node.setAttribute("id", comment.blog_comment_id);
+  return node;
+}
+
+function Date(comment: BlogComment) {
+  const date = document.createElement("p");
+  date.textContent = comment.date;
+  return date;
+}
+
+function Text(comment: BlogComment) {
+  const text = document.createElement("p");
+  text.textContent = comment.text;
+  return text;
+}
+
+function ReplyForm(comment: BlogComment) {
   const replyForm = document.createElement("form");
   replyForm.setAttribute("data-reply-form", comment.blog_comment_id);
   replyForm.classList.add("hidden-reply-form");
+  return replyForm;
+}
 
+function ReplyInput(comment: BlogComment) {
   const textInput = document.createElement("input");
   textInput.setAttribute("name", "text");
-  replyForm.appendChild(textInput);
+  return textInput;
+}
 
+function RespondsToInput(comment: BlogComment) {
   const respondsToInput = document.createElement("input");
   respondsToInput.setAttribute("type", "hidden");
   respondsToInput.setAttribute("value", comment.blog_comment_id);
   respondsToInput.setAttribute("name", "responds_to");
-  replyForm.appendChild(respondsToInput);
+  return respondsToInput;
+}
+
+function GetRepliesButton(comment: BlogComment) {
+  const getRepliesButton = document.createElement("button");
+  getRepliesButton.setAttribute(
+    "data-get-replies-for",
+    comment.blog_comment_id
+  );
+  return getRepliesButton;
+}
+
+function Reply(comment: BlogComment) {
+  if (typeof document === "undefined") return null;
+  const node = Container(comment);
+  const date = Date(comment);
+  const text = Text(comment);
+  const replyButton = ReplyButton(comment);
+
+  const replyForm = ReplyForm(comment);
+  replyForm.appendChild(ReplyInput(comment));
+  replyForm.appendChild(RespondsToInput(comment));
 
   const submitButton = document.createElement("button");
   submitButton.setAttribute("type", "submit");
   submitButton.textContent = "Reply";
   replyForm.appendChild(submitButton);
 
-  const getRepliesButton = document.createElement("button");
+  const replies = document.createElement("div");
+  replies.setAttribute("data-replies-for", comment.blog_comment_id);
+
+  const repliesContainer = document.createElement("div");
+  repliesContainer.appendChild(replies);
+
+  const replyContainer = document.createElement("div");
+  replyContainer.appendChild(date);
+  replyContainer.appendChild(text);
+  replyContainer.appendChild(replyButton);
+  replyContainer.appendChild(replyForm);
+
+  node.appendChild(replyContainer);
+  node.appendChild(repliesContainer);
+
+  return node;
+}
+
+function Comment(comment: BlogCommentTree) {
+  if (typeof document === "undefined") return null;
+  const node = Container(comment);
+  const date = Date(comment);
+  const text = Text(comment);
+  const replyButton = ReplyButton(comment);
+
+  const replyForm = ReplyForm(comment);
+  replyForm.appendChild(ReplyInput(comment));
+  replyForm.appendChild(RespondsToInput(comment));
+
+  const submitButton = document.createElement("button");
+  submitButton.setAttribute("type", "submit");
+  submitButton.textContent = "Reply";
+  replyForm.appendChild(submitButton);
+
+  const getRepliesButton = GetRepliesButton(comment);
   getRepliesButton.setAttribute(
     "data-get-replies-for",
     comment.blog_comment_id
@@ -96,7 +167,7 @@ function Comment(comment: BlogCommentTree) {
   const replyContainer = document.createElement("div");
   replyContainer.appendChild(date);
   replyContainer.appendChild(text);
-  replyContainer.appendChild(reply);
+  replyContainer.appendChild(replyButton);
   replyContainer.appendChild(replyForm);
 
   node.appendChild(replyContainer);
@@ -109,6 +180,7 @@ function exploreBlogGraph(
   v: BlogCommentTree,
   blogID: string,
   blogGraph: { [key: string]: { children: BlogCommentTree[] } },
+  componentFn: (btc: BlogCommentTree) => HTMLDivElement | null,
   container?: HTMLDivElement
 ) {
   if (typeof document === "undefined") return "";
@@ -120,13 +192,13 @@ function exploreBlogGraph(
   let seen: any = {};
   blogGraph[v.blog_comment_id].children.forEach((comment) => {
     if (seen[v.blog_comment_id]) return;
-    const node = Comment(comment);
+    const node = componentFn(comment);
 
     if (!c || !node) return;
 
     seen[comment.blog_comment_id] = true;
     c.appendChild(
-      exploreBlogGraph(comment, blogID, blogGraph, node) ||
+      exploreBlogGraph(comment, blogID, blogGraph, componentFn, node) ||
         document.createElement("div")
     );
   });
@@ -151,7 +223,7 @@ export default function Comments({
     const blogGraph: { [key: string]: { children: BlogCommentTree[] } } = {
       [blogID]: { children: [] },
     };
-    comments.forEach((c) => {
+    comments.forEach(async (c) => {
       if (!blogGraph[c.blog_comment_id]) {
         blogGraph[c.blog_comment_id] = {
           children: [],
@@ -169,7 +241,8 @@ export default function Comments({
         reply_count: 0,
       },
       blogID,
-      blogGraph
+      blogGraph,
+      Comment
     );
     if (blogNode) {
       setComments(comments);
@@ -218,7 +291,7 @@ export default function Comments({
           }
           blogGraph[c.responds_to].children.push(c);
         });
-        const t = exploreBlogGraph(
+        exploreBlogGraph(
           {
             responds_to: "",
             blog_comment_id: commentID,
@@ -229,9 +302,9 @@ export default function Comments({
           },
           commentID,
           blogGraph,
+          Reply,
           repliesContainer
         );
-        console.log("t ", t);
       } catch (error) {
         console.log("error ", error);
       }

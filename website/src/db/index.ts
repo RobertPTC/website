@@ -146,7 +146,7 @@ export const db: Database = {
   FROM blog_comment bc
   INNER JOIN get_comments_comments gcc ON bc.responds_to = gcc.blog_comment_id
 )
-SELECT text, responds_to, blog_comment_id, date FROM get_comments_comments ORDER BY created_at ASC LIMIT 10;
+SELECT text, responds_to, blog_comment_id, date FROM get_comments_comments ORDER BY created_at ASC;
 `;
       return data.map((d) => ({
         responds_to: d.responds_to,
