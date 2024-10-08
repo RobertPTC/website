@@ -223,7 +223,7 @@ export default function Comments({
     const blogGraph: { [key: string]: { children: BlogCommentTree[] } } = {
       [blogID]: { children: [] },
     };
-    comments.forEach(async (c) => {
+    comments.forEach((c) => {
       if (!blogGraph[c.blog_comment_id]) {
         blogGraph[c.blog_comment_id] = {
           children: [],
