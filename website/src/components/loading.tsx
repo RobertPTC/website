@@ -12,7 +12,10 @@ export function Loading({ loadingText }: { loadingText: string }) {
           flexDirection: "column",
         }}
       >
-        <Typography sx={{ fontSize: "18px", textAlign: "center" }} variant="h1">
+        <Typography
+          sx={{ fontSize: "18px", textAlign: "center", mb: 1 }}
+          variant="h1"
+        >
           {loadingText}
         </Typography>
         <CircularProgress

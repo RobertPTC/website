@@ -23,7 +23,7 @@ export default function Countdown({ hour }: { hour: PlanetaryHour }) {
     const startDash = 283 * ratio;
     const minuteArc = 360 * ratio;
     const hourAnimationDuration = hourLength - elapsed;
-    const startSecondArc = 360 / now.get("seconds");
+    const startSecondArc = now.get("seconds") * 6;
 
     if (
       minuteHandRef.current &&
@@ -71,7 +71,7 @@ export default function Countdown({ hour }: { hour: PlanetaryHour }) {
     <Box>
       <Box
         component="svg"
-        sx={{ height: "100px", width: "100px" }}
+        sx={{ height: "100px", width: "100px", transform: "rotate(90deg)" }}
         aria-label="Planetary Hours Clock"
       >
         <Box component="g" sx={{ fill: "none", stroke: "none" }}>
