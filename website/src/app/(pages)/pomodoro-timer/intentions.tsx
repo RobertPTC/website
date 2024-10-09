@@ -39,7 +39,7 @@ export default function Intentions() {
       worker.terminate();
     };
   }, []);
-  if (!intentions && loaded)
+  if (!intentions?.length && loaded)
     return (
       <Box>
         <Typography sx={{ fontSize: "35px", textAlign: "center" }}>
