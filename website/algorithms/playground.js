@@ -218,6 +218,29 @@ function exploreBlogGraph(v) {
     }
   });
 }
+const timeoutDelay = 1000;
+const start = Date.now();
+function controlSetTimeout() {
+  setTimeout(() => {
+    console.log("control", Date.now() - start);
+    controlSetTimeout();
+  }, timeoutDelay);
+}
 
-console.log("blogGraph ", JSON.stringify(blogGraph));
-exploreBlogGraph({ id: 0, respondsTo: -1 });
+function attunedSetTimeout(delay, fn) {
+  const start = Date.now();
+  const id = setTimeout(() => {
+    const end = Date.now();
+    const span = end - start;
+    const newDelay = timeoutDelay * 2 - span;
+    console.log("newDelay is greater than 1000 ", newDelay > timeoutDelay);
+
+    fn();
+    attunedSetTimeout(newDelay, fn);
+  }, delay);
+}
+
+attunedSetTimeout(1000, () => {
+  console.log("attuned ", Date.now() - start);
+});
+controlSetTimeout();

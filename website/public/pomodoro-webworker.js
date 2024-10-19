@@ -43,11 +43,29 @@ let intentionIntervalIDs = {};
  */
 let intentionDurations = {};
 
+const timeoutDelay = 1000;
+/**
+ *
+ * @param {number} delay
+ * @param {Function} fn
+ */
+function attunedSetTimeout(delay, fn) {
+  const start = Date.now();
+  const id = setTimeout(() => {
+    const end = Date.now();
+    const span = end - start;
+    const newDelay = timeoutDelay * 2 - span;
+    fn();
+    attunedSetTimeout(newDelay, fn);
+  }, delay);
+}
+
 /**
  *
  * @function onMessage
  * @param {MessageEvent<SetTimerDuration | StartTimer | StopTimer | ResetTimer>} e
  */
+
 function onMessage(e) {
   const {
     data: { action, packet },
@@ -57,6 +75,7 @@ function onMessage(e) {
       intentionDurations[packet.intention] = packet.duration;
       break;
     case "startTimer":
+      console.log("start ", Date.now());
       const intervalID = setInterval(() => {
         const nextDuration = intentionDurations[packet.intention] - 1;
         intentionDurations[packet.intention] = nextDuration;
@@ -65,6 +84,7 @@ function onMessage(e) {
           duration: nextDuration,
         });
         if (!nextDuration) {
+          console.log("end ", Date.now());
           clearInterval(intentionIntervalIDs[packet.intention]);
         }
       }, 1000);
