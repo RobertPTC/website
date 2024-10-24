@@ -88,6 +88,51 @@ export function BuildingTheGoogleTimer({ id }: { id: string }) {
             React component. Put this file in whichever directory the public
             assets for your website are served.
           </Typography>
+          <Box component="pre" sx={{ whiteSpace: "pre-wrap" }}>
+            {`// @type {Object.<string, NodeJS.Timeout>}
+let intentionIntervalIDs = {};
+
+//@type {Object.<string, number>}
+let intentionDurations = {};
+
+// @function onMessage
+// @param {MessageEvent<SetTimerDuration | StartTimer | StopTimer | ResetTimer>} e
+function onMessage(e) {
+  const {
+    data: { action, packet },
+  } = e;
+   // handle message action
+  switch (action) {
+    case "setTimerDuration":
+      intentionDurations[packet.intention] = packet.duration;
+      break;
+    case "startTimer":
+      // create interval to invoke a callback every second; in the callback, decrement duration by one
+      // and signal the tab thread via postMessage to update its duration state
+      const intervalID = setInterval(() => {
+        const nextDuration = intentionDurations[packet.intention] - 1;
+        intentionDurations[packet.intention] = nextDuration;
+        self.postMessage({
+          intention: packet.intention,
+          duration: nextDuration,
+        });
+        if (!nextDuration) {
+          clearInterval(intentionIntervalIDs[packet.intention]);
+        }
+      }, 1000);
+      intentionIntervalIDs[packet.intention] = intervalID;
+      break;
+    case "stopTimer":
+      clearInterval(intentionIntervalIDs[packet.intention]);
+      break;
+    case "resetTimer":
+      clearInterval(intentionIntervalIDs[packet.intention]);
+      intentionDurations[packet.intention] = packet.duration;
+      break;
+  }
+}
+self.onmessage = onMessage`}
+          </Box>
           {/* <CodeBlock
             customStyle={{
               backgroundColor: "var(--background-start-rgb)",

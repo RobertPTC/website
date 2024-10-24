@@ -35,14 +35,22 @@ export default async function CommentsData({ blogID }: { blogID: string }) {
   const commentsCount = await getCommentsCount(blogID);
   const blogCommentTree: BlogCommentTree[] = await Promise.all(
     comments.map(async (c) => {
-      const res = await fetch(
-        `${process.env.API_URL}/comments/${c.blog_comment_id}/count`
-      );
-      const json = await res.json();
-      return {
-        ...c,
-        reply_count: json.count,
-      };
+      try {
+        const count = await db.getCommentsCountForComment(c.blog_comment_id);
+        if (count === null) {
+          throw new Error("could not get count");
+        }
+        return {
+          ...c,
+          reply_count: count,
+        };
+      } catch (error) {
+        console.error("error ", error);
+        return {
+          ...c,
+          reply_count: 0,
+        };
+      }
     })
   );
   if (!commentsCount) return <></>;

@@ -6,42 +6,6 @@ import dayjs from "dayjs";
 
 import { BlogComment, BlogCommentTree } from "@app/app/api/types";
 
-// async function getCommentsCount() {
-//   const res = await fetch(`/api/blogs/${blogID}/comments/count`);
-//   const { count } = await res.json();
-//   setCommentsCount(count);
-// }
-// async function getComments() {
-//   const res = await fetch(`/api/blogs/${blogID}/comments`);
-//   const comments: BlogComment[] = await res.json();
-//   const blogGraph: { [key: string]: { children: BlogComment[] } } = {
-//     [blogID]: { children: [] },
-//   };
-//   comments.forEach((c) => {
-//     if (!blogGraph[c.blog_comment_id]) {
-//       blogGraph[c.blog_comment_id] = {
-//         children: [],
-//       };
-//     }
-//     blogGraph[c.responds_to].children.push(c);
-//   });
-//   const blogNode = exploreBlogGraph(
-//     {
-//       responds_to: "",
-//       blog_comment_id: blogID,
-//       date: "",
-//       text: "",
-//       journalist_id: "",
-//     },
-//     blogID,
-//     blogGraph
-//   );
-//   if (blogNode) {
-//     setComments(comments);
-//     setCommentsGraph(blogNode);
-//   }
-// }
-
 function ReplyButton(comment: BlogComment) {
   const reply = document.createElement("button");
   reply.classList.add("reply-to-button");
@@ -262,9 +226,8 @@ export default function Comments({
     }
     function onClickReplyToButton(this: HTMLButtonElement) {
       const replyForm = this.nextElementSibling;
-      if (replyForm) {
-        replyForm.classList.toggle("hidden-reply-form");
-      }
+      if (!replyForm) return;
+      replyForm.classList.toggle("hidden-reply-form");
     }
     async function onClickRepliesButton(this: HTMLButtonElement) {
       try {
