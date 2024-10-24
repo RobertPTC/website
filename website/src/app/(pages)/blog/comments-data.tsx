@@ -1,23 +1,37 @@
 import { BlogComment, BlogCommentTree } from "@app/app/api/types";
+import { db } from "@app/db";
 
 import Comments from "./comments";
 
 async function getComments(blogID: string) {
-  const res = await fetch(`${process.env.API_URL}/blogs/${blogID}/comments`);
-  const json = await res.json();
-  return json;
+  try {
+    const comments = await db.getCommentsForBlog(blogID);
+    if (!comments) {
+      return [];
+    }
+    return comments;
+  } catch (error) {
+    console.error("error ", error);
+    return null;
+  }
 }
 
 async function getCommentsCount(blogID: string) {
-  const res = await fetch(
-    `${process.env.API_URL}/blogs/${blogID}/comments/count`
-  );
-  const json = await res.json();
-  return json;
+  try {
+    const count = await db.getCommentsCountForBlog(blogID);
+    if (count === null) {
+      throw new Error("could not get count");
+    }
+    return count;
+  } catch (error) {
+    console.error("error ", error);
+    return null;
+  }
 }
 
 export default async function CommentsData({ blogID }: { blogID: string }) {
-  const comments: BlogComment[] = await getComments(blogID);
+  const comments: BlogComment[] | null = await getComments(blogID);
+  if (!comments) return <></>;
   const commentsCount = await getCommentsCount(blogID);
   const blogCommentTree: BlogCommentTree[] = await Promise.all(
     comments.map(async (c) => {
@@ -31,12 +45,12 @@ export default async function CommentsData({ blogID }: { blogID: string }) {
       };
     })
   );
-
+  if (!commentsCount) return <></>;
   return (
     <Comments
       blogID={blogID}
       initialComments={blogCommentTree}
-      initialCommentsCount={commentsCount.count}
+      initialCommentsCount={commentsCount}
     />
   );
 }

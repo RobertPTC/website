@@ -94,6 +94,9 @@ const theme = createTheme({
   },
 
   typography: {
+    h1: {
+      lineHeight: "3rem",
+    },
     body1: {
       fontWeight: 300,
       lineHeight: "1.75rem",

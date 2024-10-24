@@ -10,9 +10,9 @@ export function BuildingTheGoogleTimer({ id }: { id: string }) {
   const isDarkMode = true;
 
   return (
-    <Box component="article">
+    <Box component="article" sx={{ px: 2 }}>
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h1" sx={{ fontSize: "4rem" }}>
+        <Typography variant="h1" sx={{ fontSize: "4rem", mb: 1 }}>
           Building the Google Timer
         </Typography>
         <Typography>August 30, 2024</Typography>
