@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 
 import { Metadata } from "next";
 
-import { BuildingTheGoogleTimer } from "../building-the-google-timer";
+import { BuildingTheGoogleTimer } from "./building-the-google-timer";
 
 export type Blog = {
   title: string;

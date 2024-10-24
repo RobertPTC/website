@@ -1,7 +1,9 @@
 "use client";
 import { CodeBlock, a11yLight, a11yDark } from "react-code-blocks";
+
+import useDarkMode from "./use-dark-mode";
 export default function BlogCodeBlock({ text }: { text: string }) {
-  const isDarkMode = true;
+  const isDarkMode = useDarkMode();
   return (
     <CodeBlock
       customStyle={{

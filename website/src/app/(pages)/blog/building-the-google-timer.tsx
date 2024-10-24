@@ -1,13 +1,12 @@
 import { Box, Typography } from "@mui/material";
 
-import { blogStyles } from "./[post]/blogs";
+import { blogStyles } from "./blogs";
 import BlogCodeBlock from "./code-block";
 import CommentsData from "./comments-data";
 import CreateComment from "./create-comment";
+import GoogleTimerSchematic from "./google-timer-schematic";
 
 export function BuildingTheGoogleTimer({ id }: { id: string }) {
-  const isDarkMode = true;
-
   return (
     <Box component="article" sx={{ px: 2 }}>
       <Box sx={{ mb: 4 }}>
@@ -142,18 +141,7 @@ self.onmessage = onMessage;`}
             hold a reference to the Web Worker instance, and an effect to load
             the script file.
           </Typography>
-          {/* <CodeBlock
-            customStyle={{
-              backgroundColor: "var(--background-start-rgb)",
-              fontFamily: "monospace",
-              border: "1px solid",
-              borderColor: "var(--foreground-rgb)",
-              padding: "1rem",
-              marginBottom: "16px",
-            }}
-            language="typescript"
-            theme={isDarkMode ? a11yDark : a11yLight}
-            showLineNumbers={false}
+          <BlogCodeBlock
             text={`// State to hold reference to Web Worker            
 const [worker, setWorker] = useState(null);
 
@@ -169,7 +157,7 @@ return () => {
   myWorker.terminate();
 };
 }, []); // Run this effect only once when the component mounts`}
-          /> */}
+          />
         </Box>
         <Box>
           <Typography variant="h3" sx={{ ...blogStyles.h3, mb: 1 }}>
@@ -181,18 +169,7 @@ return () => {
             case, because each timer handles its own duration, I attach a
             listener in each timer card component.
           </Typography>
-          {/* <CodeBlock
-            customStyle={{
-              backgroundColor: "var(--background-start-rgb)",
-              fontFamily: "monospace",
-              border: "1px solid",
-              borderColor: "var(--foreground-rgb)",
-              padding: "1rem",
-              marginBottom: "8px",
-            }}
-            language="typescript"
-            theme={isDarkMode ? a11yDark : a11yLight}
-            showLineNumbers={false}
+          <BlogCodeBlock
             text={`useEffect(() => {
     function onWorkerMessage(e: MessageEvent) {
     // When the timer card receives a message from the Web Worker, 
@@ -206,7 +183,7 @@ return () => {
       worker.removeEventListener("message", onWorkerMessage);
     };
   }, [worker, intention]);`}
-          /> */}
+          />
         </Box>
         <Box>
           <Typography>
@@ -230,18 +207,7 @@ return () => {
           it does not, then break it up into smaller intervals that fill within
           the frame of an hour.
         </Typography>
-        {/* <CodeBlock
-          customStyle={{
-            backgroundColor: "var(--background-start-rgb)",
-            fontFamily: "monospace",
-            border: "1px solid",
-            borderColor: "var(--foreground-rgb)",
-            padding: "1rem",
-            marginBottom: "16px",
-          }}
-          language="typescript"
-          theme={isDarkMode ? a11yDark : a11yLight}
-          showLineNumbers={false}
+        <BlogCodeBlock
           text={`function determinePomodoroTimeSegments(
   seconds: number,
   startDate: Dayjs,
@@ -301,7 +267,7 @@ return () => {
   ];
   return p;
 }`}
-        /> */}
+        />
       </Box>
       <Box component="article" id="schematic" sx={{ mb: 2 }}>
         <Typography variant="h2" sx={{ ...blogStyles.h2, mb: 1 }}>
@@ -323,22 +289,7 @@ return () => {
           Start button is pressed.
         </Typography>
         <Box>
-          {!isDarkMode && (
-            <Box
-              component="img"
-              src="/pomodoro-schematic.svg"
-              width="100%"
-              alt="schematic of google timer"
-            />
-          )}
-          {isDarkMode && (
-            <Box
-              component="img"
-              src="/pomodoro-schematic-dark.svg"
-              width="100%"
-              alt="schematic of google timer"
-            />
-          )}
+          <GoogleTimerSchematic />
         </Box>
       </Box>
       <Box component="article" id="alert" sx={{ mb: 2 }}>
@@ -352,23 +303,13 @@ return () => {
           user interaction. So, I created a function to do that when a duration
           is submitted for a given intention:
         </Typography>
-        {/* <CodeBlock
-          customStyle={{
-            backgroundColor: "var(--background-start-rgb)",
-            fontFamily: "monospace",
-            border: "1px solid",
-            borderColor: "var(--foreground-rgb)",
-            padding: "1rem",
-          }}
-          language="typescript"
-          theme={isDarkMode ? a11yDark : a11yLight}
-          showLineNumbers={false}
+        <BlogCodeBlock
           text={`function setAudioSource() {
   if (audioRef.current) {
     audioRef.current.src = "time-up.m4a";
   }
 }`}
-        /> */}
+        />
       </Box>
       <Box component="article" id="datavisualization" sx={{ mb: 2 }}>
         <Typography variant="h2" sx={{ ...blogStyles.h2, mb: 1 }}>
@@ -404,18 +345,7 @@ return () => {
             with JS and it comes down with a nice array of objects we can map
             over in React to create our bar chart.
           </Typography>
-          {/* <CodeBlock
-            customStyle={{
-              backgroundColor: "var(--background-start-rgb)",
-              fontFamily: "monospace",
-              border: "1px solid",
-              borderColor: "var(--foreground-rgb)",
-              padding: "1rem",
-              marginBottom: "16px",
-            }}
-            language="typescript"
-            theme={isDarkMode ? a11yDark : a11yLight}
-            showLineNumbers={false}
+          <BlogCodeBlock
             text={`function makeBarsOutput(
   // PomodorosForDate is a map of date to Pomodoro, which is an object with properties id, seconds (length of interval), and intention
   pomodorosForDates: PomodorosForDate,
@@ -456,7 +386,7 @@ return () => {
   const bars = Object.entries(pomodorosForDates).map(mapFn);
   return { bars, allLabels: Object.keys(allLabels) };
 }`}
-          /> */}
+          />
         </Box>
         <Box>
           <Typography variant="h3" sx={{ ...blogStyles.h3, mb: 1 }}>
@@ -468,17 +398,7 @@ return () => {
             nothing more than mapping over the objects we produced in the first
             step!
           </Typography>
-          {/* <CodeBlock
-            customStyle={{
-              backgroundColor: "var(--background-start-rgb)",
-              fontFamily: "monospace",
-              border: "1px solid",
-              borderColor: "var(--foreground-rgb)",
-              padding: "1rem",
-            }}
-            language="typescript"
-            theme={isDarkMode ? a11yDark : a11yLight}
-            showLineNumbers={false}
+          <BlogCodeBlock
             text={`// imagine this map is contained in an SVG element 
 {bars.bars.map((b, i) => {
   if (!b.barHeight) return <Box component="g" key={b.timeUnit} />;
@@ -519,7 +439,7 @@ return () => {
     </Box>
   );
 })}`}
-          /> */}
+          />
         </Box>
       </Box>
       <Box>
