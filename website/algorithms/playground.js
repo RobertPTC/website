@@ -220,6 +220,7 @@ function exploreBlogGraph(v) {
 }
 const timeoutDelay = 1000;
 const start = Date.now();
+
 function controlSetTimeout() {
   setTimeout(() => {
     console.log("control", Date.now() - start);
@@ -257,42 +258,40 @@ function setDriftlessInterval(fn, delayMs, ...params) {
     fn(...args) {
       opts.atMs += delayMs;
       tryDriftless(id, opts);
-      return fn.call(this, ...args, ...params);
+      fn.call(this, ...args, ...params);
     },
   };
   id = setDriftless(opts);
   return id;
 }
-
-function backoff(fn) {
-  if (fn.__next - Date.now() > 1) {
-    setTimeout(() => {
-      backoff(fn);
-    }, (fn.__next - Date.now()) / 1.1);
-    return;
+//
+function backoff(delay, fn) {
+  const lapse = fn.__next - Date.now();
+  if (lapse > 1) {
+    return setTimeout(() => {
+      backoff(delay, fn);
+    }, lapse / 1.1);
   }
-  setTimeout(() => {
+  return setTimeout(() => {
+    attunedSetTimeout(delay, fn);
     fn();
   });
-  attunedSetTimeout(1000, fn);
 }
 
 function attunedSetTimeout(delay, fn) {
-  const start = Date.now();
-  fn.__next = start + delay;
-  const lapse = fn.__next - Date.now();
-  if (lapse > 1) {
-    setTimeout(() => {
-      backoff(fn);
-    }, lapse / 1.1);
+  if (!fn.__isInit) {
+    fn.__next = Date.now() + delay;
+    fn.__isInit = true;
+  } else {
+    fn.__next += delay;
   }
+  backoff(delay, fn);
 }
 
-attunedSetTimeout(1000, () => {
-  console.log("attuned ", Date.now() - start);
-});
+// attunedSetTimeout(1000, () => {
+//   console.log("attuned ", Date.now() - start);
+// });
 
-setDriftlessInterval(() => {
-  console.log("driftless ", Date.now() - start);
-}, 1000);
-controlSetTimeout();
+// setDriftlessInterval(() => {
+//   console.log("driftless ", Date.now() - start);
+// }, 1000);

@@ -44,20 +44,43 @@ let intentionIntervalIDs = {};
 let intentionDurations = {};
 
 const timeoutDelay = 1000;
+
 /**
  *
  * @param {number} delay
  * @param {Function} fn
+ * @param {string} intention
+ * @returns
  */
-function attunedSetTimeout(delay, fn) {
-  const start = Date.now();
+function backoff(delay, fn, intention) {
+  const lapse = fn.__next - Date.now();
+  if (lapse > 1) {
+    const id = setTimeout(() => {
+      backoff(delay, fn, intention);
+    }, lapse / 1.1);
+    intentionIntervalIDs[intention] = id;
+    return;
+  }
   const id = setTimeout(() => {
-    const end = Date.now();
-    const span = end - start;
-    const newDelay = timeoutDelay * 2 - span;
+    attunedSetTimeout(delay, fn, intention);
     fn();
-    attunedSetTimeout(newDelay, fn);
-  }, delay);
+  });
+  intentionIntervalIDs[intention] = id;
+}
+/**
+ *
+ * @param {number} delay
+ * @param {Function} fn
+ * @param {string} intention
+ */
+function attunedSetTimeout(delay, fn, intention) {
+  if (!fn.__isInit) {
+    fn.__next = Date.now() + delay;
+    fn.__isInit = true;
+  } else {
+    fn.__next += delay;
+  }
+  backoff(delay, fn, intention);
 }
 
 /**
@@ -75,8 +98,7 @@ function onMessage(e) {
       intentionDurations[packet.intention] = packet.duration;
       break;
     case "startTimer":
-      console.log("start ", Date.now());
-      const intervalID = setInterval(() => {
+      const timeoutCallback = () => {
         const nextDuration = intentionDurations[packet.intention] - 1;
         intentionDurations[packet.intention] = nextDuration;
         self.postMessage({
@@ -84,17 +106,16 @@ function onMessage(e) {
           duration: nextDuration,
         });
         if (!nextDuration) {
-          console.log("end ", Date.now());
           clearInterval(intentionIntervalIDs[packet.intention]);
         }
-      }, 1000);
-      intentionIntervalIDs[packet.intention] = intervalID;
+      };
+      attunedSetTimeout(timeoutDelay, timeoutCallback, packet.intention);
       break;
     case "stopTimer":
-      clearInterval(intentionIntervalIDs[packet.intention]);
+      clearTimeout(intentionIntervalIDs[packet.intention]);
       break;
     case "resetTimer":
-      clearInterval(intentionIntervalIDs[packet.intention]);
+      clearTimeout(intentionIntervalIDs[packet.intention]);
       intentionDurations[packet.intention] = packet.duration;
       break;
   }
