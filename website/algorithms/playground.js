@@ -218,6 +218,80 @@ function exploreBlogGraph(v) {
     }
   });
 }
+const timeoutDelay = 1000;
+const start = Date.now();
 
-console.log("blogGraph ", JSON.stringify(blogGraph));
-exploreBlogGraph({ id: 0, respondsTo: -1 });
+function controlSetTimeout() {
+  setTimeout(() => {
+    console.log("control", Date.now() - start);
+    controlSetTimeout();
+  }, timeoutDelay);
+}
+
+let nextId = 0;
+
+function tryDriftless(id, opts) {
+  const { atMs, fn, thresholdMs = 1, aggression = 1.1 } = opts;
+  const delayMs = atMs - Date.now();
+  const handle =
+    delayMs > thresholdMs
+      ? setTimeout(() => {
+          tryDriftless.apply(this, arguments); // eslint-disable-line prefer-rest-params
+        }, delayMs / aggression)
+      : setTimeout(() => {
+          // Call the function using setTimeout to ensure asynchrony
+          fn();
+        }, 0);
+}
+
+function setDriftless(opts) {
+  const id = nextId;
+  nextId += 1;
+  tryDriftless(id, opts);
+  return id;
+}
+
+function setDriftlessInterval(fn, delayMs, ...params) {
+  let id;
+  const opts = {
+    atMs: Date.now() + delayMs,
+    fn(...args) {
+      opts.atMs += delayMs;
+      tryDriftless(id, opts);
+      fn.call(this, ...args, ...params);
+    },
+  };
+  id = setDriftless(opts);
+  return id;
+}
+//
+function backoff(delay, fn) {
+  const lapse = fn.__next - Date.now();
+  if (lapse > 1) {
+    return setTimeout(() => {
+      backoff(delay, fn);
+    }, lapse / 1.1);
+  }
+  return setTimeout(() => {
+    attunedSetTimeout(delay, fn);
+    fn();
+  });
+}
+
+function attunedSetTimeout(delay, fn) {
+  if (!fn.__isInit) {
+    fn.__next = Date.now() + delay;
+    fn.__isInit = true;
+  } else {
+    fn.__next += delay;
+  }
+  backoff(delay, fn);
+}
+
+// attunedSetTimeout(1000, () => {
+//   console.log("attuned ", Date.now() - start);
+// });
+
+// setDriftlessInterval(() => {
+//   console.log("driftless ", Date.now() - start);
+// }, 1000);
